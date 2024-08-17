@@ -1,0 +1,65 @@
+:root {
+  --tt-red-color: #df1b12;
+  --tt-white-color: #ffffff;
+  --tt-black-color: #000000;
+  --tt-gray-color: #f5f5f5;
+  --tt-green-color: #00a65e;
+  --tt-yellow-color: #ffcc00;
+  --tt-orange-color: #ff5d00;
+  --tt-blue-color: #0078ff;
+  --tt-dark-blue-color: #004b7f;
+  --tt-dark-gray-color: #333333;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+.leaflet-container {
+  width: 600px;
+  height: 600px;
+}
+
+main {
+  border: 1px solid var(--tt-red-color);
+}
+
+.loader-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.loader-spinner {
+  border: 8px solid var(--tomtom-gray-color);
+  border-top: 8px solid var(--tomtom-red-color);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 500ms infinite linear;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

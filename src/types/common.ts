@@ -15,7 +15,7 @@ export class Path<T> {
   empty(): boolean {
     return this.points.length === 0;
   }
-  notEmpty(): boolean {
+  isNotEmpty(): boolean {
     return !this.empty();
   }
   constructor(points: T[], name: string = "") {
@@ -85,7 +85,7 @@ export class Maybe<E, T> {
 }
 
 /**
- * Represents a message with a string value.
+ * Represents a message with a text.
  */
 export type Message = {
   value: string;

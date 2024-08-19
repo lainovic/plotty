@@ -1,7 +1,7 @@
 import { Maybe, Message } from "../types/common";
 
 export interface ParsedResult<T> {
-    result: T;
+  result: T;
   message: Message;
 }
 

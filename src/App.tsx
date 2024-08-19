@@ -3,10 +3,11 @@ import "./App.css";
 import { Message } from "./types/common";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import MapView from "./MapView";
+import MapComponent from "./MapComponent";
 import RoutingResponseParser from "./parsers/RoutingResponseParser";
 import { Path } from "./types/paths";
 import { ParsedResult } from "./parsers/Parser";
+import GeoPointsParser from "./parsers/GeoPointsParser";
 
 function App() {
   const [inputData, setInputData] = React.useState<string>("");
@@ -22,9 +23,10 @@ function App() {
   const [isLoading, setLoading] = React.useState<boolean>(false);
 
   const routingResponseParser = new RoutingResponseParser();
+  const geoPointsParser = new GeoPointsParser();
 
   React.useEffect(() => {
-    handleInputDataChange();
+    handleInput();
   }, [inputData]);
 
   React.useEffect(() => {
@@ -45,7 +47,7 @@ function App() {
     setInputData(pastedText);
   };
 
-  function handleInputDataChange() {
+  function handleInput() {
     if (inputData === "") {
       return;
     }
@@ -68,9 +70,7 @@ function App() {
             parseSuccess = true;
           })
           .ifFailure((error) => {
-            console.log(
-              `Error: ${error.value}`
-            );
+            console.log(`Error: ${error.value}`);
           });
       }
       if (!parseSuccess) {
@@ -89,7 +89,7 @@ function App() {
         </div>
       )}
       <main>
-        <MapView paths={paths} />
+        <MapComponent paths={paths} />
       </main>
       <footer></footer>
       <ToastContainer

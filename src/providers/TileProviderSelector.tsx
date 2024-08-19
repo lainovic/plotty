@@ -77,7 +77,6 @@ export default function TileProviderSelector({
     onTileProviderChanged(tileProvider);
   }, [selectedTileVendor]);
 
-  // on key press, update the tile provider using the iterable object
   React.useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "j" || event.key === "J") {

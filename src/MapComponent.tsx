@@ -5,13 +5,13 @@ import "leaflet/dist/leaflet.css";
 import TileProviderSelector from "./providers/TileProviderSelector";
 
 import { TileProvider } from "./providers/TileProvider";
-import { filter, Path, RoutePath } from "./types/paths";
+import { filter, GeoPath, Path, RoutePath } from "./types/paths";
 import { openStreetMapTileProvider } from "./providers/const";
 import RouteLayer from "./layers/RouteLayer";
 import { tomtomPrimaryColor } from "./colors";
-import Checkbox from "@mui/material/Checkbox";
-import { IconButton } from "@mui/material";
-import AdsClickIcon from "@mui/icons-material/AdsClick";
+import LayerPanel from "./LayerPanel";
+import { getBoundingBox } from "./utils";
+import GeoLayer from "./layers/GeoLayer";
 
 function MapPlaceholder() {
   return (
@@ -22,7 +22,7 @@ function MapPlaceholder() {
 }
 
 let colorCounter = 0;
-const routeColors = [
+const layerColors = [
   tomtomPrimaryColor,
   "#FF9E80",
   "#FF80AB",
@@ -36,11 +36,15 @@ const routeColors = [
 ];
 
 function increaseColorCounter() {
-  colorCounter = (colorCounter + 1) % routeColors.length;
+  colorCounter = (colorCounter + 1) % layerColors.length;
+}
+
+function resetColorCounter() {
+  colorCounter = 0;
 }
 
 function getNewColor() {
-  const currentColor = routeColors[colorCounter];
+  const currentColor = layerColors[colorCounter];
   increaseColorCounter();
   return currentColor;
 }
@@ -105,28 +109,45 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
   }
 
   const RouteLayers: React.FC<{ paths: Path[] }> = React.memo(({ paths }) => {
-    console.log(">>> rendering RouteLayers");
-    const routePaths = filter<RoutePath>(paths, RoutePath);
-    return (
-      <>
-        {routePaths.map(
-          (path, index) =>
-            path.isNotEmpty() && (
-              <RouteLayer
-                key={path.name}
-                path={path}
-                onLayerReady={(group) => {
-                  setLayerGroup(index, group);
-                }}
-                color={getNewColor()}
-              />
-            )
-        )}
-      </>
+    console.log(">>> rendering route layers");
+    return paths.map(
+      (path, index) =>
+        path.isNotEmpty() &&
+        path instanceof RoutePath && (
+          <RouteLayer
+            key={path.name}
+            path={path}
+            onLayerReady={(group) => {
+              setLayerGroup(index, group);
+            }}
+            color={getNewColor()}
+          />
+        )
     );
   });
 
-  console.log(">>> rendering MapComponent");
+  const PointLayers: React.FC<{ paths: Path[] }> = React.memo(({ paths }) => {
+    console.log(">>> rendering geo layers");
+    return paths.map(
+      (path, index) =>
+        path.isNotEmpty() &&
+        path instanceof GeoPath && (
+          <GeoLayer
+            key={path.name}
+            path={path}
+            onLayerReady={(group) => {
+              setLayerGroup(index, group);
+            }}
+            color={getNewColor()}
+          />
+        )
+    );
+  });
+
+  console.log(">>> rendering map");
+
+  resetColorCounter();
+
   return (
     <>
       <TileProviderSelector
@@ -158,6 +179,7 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
             url={tileProvider.getUrl()}
           />
           <RouteLayers paths={paths} />
+          <PointLayers paths={paths} />
         </MapContainer>
         <LayerPanel
           paths={paths}
@@ -168,149 +190,4 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
       </div>
     </>
   );
-}
-
-const LayerPanel: React.FC<{
-  paths: Path[];
-  initialVisibility: Map<number, boolean>;
-  onVisibilityChange: (index: number) => void;
-  onView: (path: Path) => void;
-}> = ({ paths, initialVisibility, onVisibilityChange, onView }) => {
-  // TODO current hack before trying external state management
-  const [visibility, setVisibility] = React.useState<Map<number, boolean>>(
-    new Map()
-  );
-  paths.forEach((_, index) =>
-    visibility.set(index, initialVisibility.get(index) || false)
-  );
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        padding: "10px",
-        border: "1px solid #ccc",
-      }}
-    >
-      <h3>Layers</h3>
-      {paths.map((path, index) => (
-        <LayerCheckbox
-          key={path.name}
-          index={index}
-          checked={visibility.get(index) || false}
-          onChange={() => {
-            onVisibilityChange(index);
-            setVisibility((prev) => {
-              const newVisibility = new Map(prev);
-              newVisibility.set(index, !newVisibility.get(index));
-              return newVisibility;
-            });
-          }}
-          name={path.name}
-          onView={() => onView(path)}
-        />
-      ))}
-    </div>
-  );
-};
-
-interface CheckboxProps {
-  index: number;
-  name: string;
-  checked: boolean;
-  onChange: (index: number) => void;
-  onView: () => void;
-}
-
-const LayerCheckbox: React.FC<CheckboxProps> = ({
-  index,
-  name,
-  checked,
-  onChange,
-  onView,
-}) => {
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        gap: "10px",
-        padding: "10px",
-        margin: "5px 0",
-        border: "1px solid #ccc",
-      }}
-    >
-      <Checkbox
-        checked={checked}
-        onChange={() => onChange(index)}
-        inputProps={{ "aria-label": "controlled" }}
-      />
-      {name}
-      {/* <button onClick={onView}>Overview</button> */}
-      <IconButton aria-label="center" onClick={onView}>
-        <AdsClickIcon fontSize="small" />
-      </IconButton>
-    </div>
-  );
-};
-
-// function PointLayers({
-//   layers,
-//   focusedIndex,
-//   onPointClicked,
-// }: {
-//   layers: Layer[];
-//   focusedIndex?: number | null;
-//   onPointClicked?: (index: number) => void;
-// }) {
-//   return (
-//     <>
-//       {layers.map((layer) => (
-//         <>
-//           {layer.shouldRender() && (
-//             <RouteLayer
-//               key={layer.name}
-//               path={layer.path}
-//               onPointClicked={onPointClicked}
-//             />
-//           )}
-//         </>
-//       ))}
-//     </>
-//   );
-// }
-
-/**
- * The bounding box of a geographic area,
- * used to define the visible area of a map, for purposes such as
- * centering the map.
- */
-type BoundingBox = {
-  minLatitude: number;
-  maxLatitude: number;
-  minLongitude: number;
-  maxLongitude: number;
-};
-
-/**
- * Calculates the bounding box for the given path.
- *
- * @param path - The path to calculate the bounding box for.
- * @returns The bounding box for the path, or `null` if the path is empty.
- */
-function getBoundingBox(path: Path): BoundingBox {
-  const latitudes = path.points.map((point) => point.latitude);
-  const longitudes = path.points.map((point) => point.longitude);
-
-  const boundingBox = {
-    minLatitude: Math.min(...latitudes),
-    maxLatitude: Math.max(...latitudes),
-    minLongitude: Math.min(...longitudes),
-    maxLongitude: Math.max(...longitudes),
-  };
-
-  return boundingBox;
 }

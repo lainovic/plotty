@@ -41,7 +41,7 @@ export type RouteInstruction = {
 /**
  * A counter to keep track of the number of routes created.
  */
-let routeCounter = 0;
+let counter = 0;
 
 /**
  * Represents a route, which is a collection of geographic points, stops, and instructions.
@@ -56,7 +56,7 @@ export class RoutePath extends Path<RoutePoint> {
   readonly source: Route;
 
   constructor(source: Route) {
-    super(pointsFromSource(source), `Route ${++routeCounter}`);
+    super(pointsFromSource(source), `Route ${++counter}`);
     this.stops = stopsFromSource(source);
     this.instructions = instructionsFromSource(source);
     this.source = source;

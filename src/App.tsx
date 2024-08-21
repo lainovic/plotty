@@ -54,7 +54,7 @@ function App() {
     setLoading(true);
     setTimeout(() => {
       let parseSuccess = false;
-      for (const parser of [routingResponseParser]) {
+      for (const parser of [routingResponseParser, geoPointsParser]) {
         if (parseSuccess) {
           break;
         }

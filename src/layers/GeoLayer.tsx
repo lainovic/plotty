@@ -1,24 +1,18 @@
-import { LayerGroup, useMap } from "react-leaflet";
-import { RoutePath } from "../types/paths";
-import Point from "../points/Point";
-import Origin from "../points/Origin";
-import Destination from "../points/Destination";
-import L from "leaflet";
-import React from "react";
 import { tomtomPrimaryColor } from "../colors";
+import { GeoPath } from "../types/geo_types";
+import Point from "../points/Point";
+import { LayerGroup, useMap } from "react-leaflet";
+import React from "react";
 
-export default function RouteLayer({
+export default function GeoLayer({
   path,
   onLayerReady = () => {},
   color = tomtomPrimaryColor,
 }: {
-  path: RoutePath;
+  path: GeoPath;
   onLayerReady?: (layer: L.LayerGroup | null) => void;
   color?: string;
 }) {
-  const origin = path.points[0];
-  const destination = path.points[path.points.length - 1];
-
   const markers = React.useRef<(L.Layer | null)[]>(
     new Array(path.points.length).fill(null)
   );
@@ -72,13 +66,13 @@ export default function RouteLayer({
         onLayerReady(r);
       }}
     >
-      {path.points.slice(1, -1).map((point, index) => (
+      {path.points.map((point, index) => (
         <Point
-          index={index + 1} // adjust index to match the original array
-          key={index + 1}
+          index={index} // adjust index to match the original array
+          key={index}
           point={point}
           onMarkerReady={(marker) => {
-            markers.current[index + 1] = marker;
+            markers.current[index] = marker;
           }}
           onGoingForward={handleGoingForward}
           onGoingBackward={handleGoingBackward}
@@ -86,32 +80,6 @@ export default function RouteLayer({
           color={color}
         />
       ))}
-      <Origin
-        key={0}
-        point={origin}
-        onMarkerReady={(marker) => {
-          markers.current[0] = marker;
-        }}
-        onGoingForward={handleGoingForward}
-        onGoingBackward={handleGoingBackward}
-        onOriginClick={() => {
-          currentFocusedIndex = 0;
-          isLayerFocused.current = true;
-        }}
-      />
-      <Destination
-        key={path.points.length - 1}
-        point={destination}
-        onMarkerReady={(marker) => {
-          markers.current[path.points.length - 1] = marker;
-        }}
-        onGoingForward={handleGoingForward}
-        onGoingBackward={handleGoingBackward}
-        onDestinationClick={() => {
-          currentFocusedIndex = path.points.length - 1;
-          isLayerFocused.current = true;
-        }}
-      />
     </LayerGroup>
   );
 }

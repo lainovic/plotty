@@ -2,16 +2,22 @@ import React from "react";
 import { IconButton } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import AdsClickIcon from "@mui/icons-material/AdsClick";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import { toast } from "react-toastify";
 
 export default function PointPopup({
   title,
   text,
-  handlePointClick = () => {},
+  onLocateClick = () => {},
+  onLeftArrowClick = () => {},
+  onRightArrowClick = () => {},
 }: {
   title: string;
   text: string;
-  handlePointClick?: () => void;
+  onLocateClick?: () => void;
+  onLeftArrowClick?: () => void;
+  onRightArrowClick?: () => void;
 }) {
   const handleCopy = () => {
     navigator.clipboard.writeText(text);
@@ -20,9 +26,15 @@ export default function PointPopup({
 
   return (
     <div style={styles.popupContent}>
-      <h3>{title}</h3>
+      <h3 style={styles.title}>{title}</h3>
       {text}
-      <IconButton aria-label="center" onClick={handlePointClick}>
+      <IconButton aria-label="left" onClick={onLeftArrowClick}>
+        <KeyboardArrowLeftIcon fontSize="small" />
+      </IconButton>
+      <IconButton aria-label="right" onClick={onRightArrowClick}>
+        <KeyboardArrowRightIcon fontSize="small" />
+      </IconButton>
+      <IconButton aria-label="center" onClick={onLocateClick}>
         <AdsClickIcon fontSize="small" />
       </IconButton>
       <IconButton aria-label="copy" onClick={handleCopy}>
@@ -38,6 +50,15 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
-    gap: "10px",
+    gap: "0px",
+  },
+  title: {
+    fontSize: "1.2em",
+    color: "red",
+    marginRight: "10px",
+  },
+  text: {
+    fontSize: "1em",
+    color: "black",
   },
 };

@@ -5,11 +5,13 @@ import "leaflet/dist/leaflet.css";
 import TileProviderSelector from "./providers/TileProviderSelector";
 
 import { TileProvider } from "./providers/TileProvider";
-import { Path, RoutePath, GeoPath, TtpPath, LogcatPath } from "./types/paths";
+import { filter, Path, RoutePath } from "./types/paths";
 import { openStreetMapTileProvider } from "./providers/const";
-import { pathsToLayers } from "./layers/layer_utils";
-import Layer from "./layers/model/Layer";
 import RouteLayer from "./layers/RouteLayer";
+import { tomtomPrimaryColor } from "./colors";
+import Checkbox from "@mui/material/Checkbox";
+import { IconButton } from "@mui/material";
+import AdsClickIcon from "@mui/icons-material/AdsClick";
 
 function MapPlaceholder() {
   return (
@@ -19,6 +21,30 @@ function MapPlaceholder() {
   );
 }
 
+let colorCounter = 0;
+const routeColors = [
+  tomtomPrimaryColor,
+  "#FF9E80",
+  "#FF80AB",
+  "#EA80FC",
+  "#B388FF",
+  "#8C9EFF",
+  "#82B1FF",
+  "#80D8FF",
+  "#84FFFF",
+  "#A7FFEB",
+];
+
+function increaseColorCounter() {
+  colorCounter = (colorCounter + 1) % routeColors.length;
+}
+
+function getNewColor() {
+  const currentColor = routeColors[colorCounter];
+  increaseColorCounter();
+  return currentColor;
+}
+
 /**
  * Renders a map view with provided paths.
  *
@@ -26,68 +52,39 @@ function MapPlaceholder() {
  * @returns A React component that renders the map view.
  */
 export default function MapComponent({ paths }: { paths: Path[] }) {
-  const [map, setMap] = React.useState<L.Map | null>(null);
+  const map = React.useRef<L.Map | null>(null);
   const [tileProvider, setTileProvider] = React.useState<TileProvider>(
     openStreetMapTileProvider
   );
-  const [focusedMarkerIndex, setFocusedMarkerIndex] = React.useState<
-    number | null
-  >(null);
-  const [focusedLayer, setFocusedLayer] = React.useState<Layer | null>(null);
 
-  const routeLayers = React.useMemo(() => {
-    const result = pathsToLayers(paths, RoutePath);
-    console.log("routeLayers", result);
-    return result;
-  }, [paths]);
-
-  const geoPathLayers = React.useMemo(() => {
-    const result = pathsToLayers(paths, GeoPath);
-    console.log("geoPathLayers", result);
-    return result;
-  }, [paths]);
-
-  const ttpPathLayers = React.useMemo(
-    () => pathsToLayers(paths, TtpPath),
-    [paths]
+  const layerGroups = React.useRef<Map<number, L.LayerGroup | null>>(new Map());
+  const setLayerGroup = React.useCallback(
+    (index: number, group: L.LayerGroup | null) => {
+      layerGroups.current.set(index, group);
+    },
+    []
   );
 
-  const logcatPathLayers = React.useMemo(
-    () => pathsToLayers(paths, LogcatPath),
-    [paths]
-  );
+  console.log(">>> rendering MapComponent");
 
-  const layers = React.useMemo(() => {
-    console.log("layers calculated");
-    return [
-      ...routeLayers,
-      ...geoPathLayers,
-      ...ttpPathLayers,
-      ...logcatPathLayers,
-    ];
-  }, [routeLayers, geoPathLayers, ttpPathLayers, logcatPathLayers]);
-
-  const [visibility, setVisibility] = React.useState(() => {
-    const initialVisibility = new Map<Layer, boolean>();
-    layers.forEach((layer) => initialVisibility.set(layer, true));
-    return initialVisibility;
+  const visibility = React.useRef<Map<number, boolean>>(new Map());
+  paths.forEach((_, index) => {
+    if (!visibility.current.has(index)) {
+      visibility.current.set(index, true);
+    }
   });
 
-  console.log("visibilities", visibility);
-
-  const toggleVisibility = (layer: Layer) => {
-    setVisibility((prev) => {
-      const newVisibility = new Map(prev);
-      newVisibility.set(layer, !newVisibility.get(layer));
-      return newVisibility;
-    });
+  const toggleVisibility = (index: number) => {
+    const newVisibility = !visibility.current.get(index);
+    if (map.current) {
+      if (newVisibility) {
+        layerGroups.current.get(index)!.addTo(map.current);
+      } else {
+        layerGroups.current.get(index)!.removeFrom(map.current);
+      }
+    }
+    visibility.current.set(index, newVisibility);
   };
-
-  React.useEffect(() => {
-    const initialVisibility = new Map<Layer, boolean>();
-    layers.forEach((layer) => initialVisibility.set(layer, true));
-    setVisibility(initialVisibility);
-  }, [layers]);
 
   /**
    * Calculates the bounding box of the path and flies the map to that bounding box,
@@ -99,96 +96,35 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
     if (path.empty()) return;
     const { minLatitude, maxLatitude, minLongitude, maxLongitude } =
       getBoundingBox(path);
-    map?.fitBounds([
-      [minLatitude, minLongitude],
-      [maxLatitude, maxLongitude],
-    ]);
+    if (map.current) {
+      map.current.fitBounds([
+        [minLatitude, minLongitude],
+        [maxLatitude, maxLongitude],
+      ]);
+    }
   }
 
-  const increaseFocusedMarkerIndex = React.useCallback(() => {
-    if (focusedLayer === null) {
-      console.log("focusedLayer is null");
-      return;
-    }
-    setFocusedMarkerIndex((prev) => {
-      if (prev === null) return 0;
-      return (prev + 1) % focusedLayer.path.points.length;
-    });
-  }, [focusedLayer]);
-
-  const decreaseFocusedMarkerIndex = React.useCallback(() => {
-    if (focusedLayer === null) {
-      console.log("focusedLayer is null");
-      return;
-    }
-    setFocusedMarkerIndex((prev) => {
-      const length = focusedLayer.path.points.length;
-      if (prev === null) return length - 1;
-      return (prev - 1 + length) % length;
-    });
-  }, [focusedLayer]);
-
-  /**
-   * When the focused layer or marker index changes,
-   * update the map view to focus on the new marker.
-   */
-  React.useEffect(() => {
-    if (map && focusedLayer && focusedMarkerIndex) {
-      const { latitude, longitude } =
-        focusedLayer.path.points[focusedMarkerIndex];
-      map.flyTo([latitude, longitude]);
-    }
-  }, [focusedMarkerIndex]);
-
-  /**
-   * Listen for key presses to increase or decrease the focused marker index.
-   */
-  // React.useEffect(() => {
-  //   const handleKeyPress = (event: KeyboardEvent) => {
-  //     if (event.key === "h" || event.key === "H") {
-  //       decreaseFocusedMarkerIndex();
-  //     } else if (event.key === "l" || event.key === "L") {
-  //       increaseFocusedMarkerIndex();
-  //     } else if (event.key === "r" || event.key === "R") {
-  //       // TODO enter Ruler mode
-  //     }
-  //   };
-  //   document.addEventListener("keydown", handleKeyPress);
-  //   return () => {
-  //     document.removeEventListener("keydown", handleKeyPress);
-  //   };
-  // }, [increaseFocusedMarkerIndex, decreaseFocusedMarkerIndex]);
-
-  const focusOnLayer = (layer: Layer) => {
-    zoomToBoundingBox(layer.path);
-    if (focusedLayer !== layer) {
-      setFocusedMarkerIndex(null);
-      setFocusedLayer(layer);
-    }
-  };
-
-  const RouteLayers: React.FC<{
-    layers: Layer[];
-    focusedIndex?: number | null;
-    onPointClicked?: (index: number) => void;
-  }> = ({ layers, focusedIndex, onPointClicked }) => {
+  const RouteLayers: React.FC<{ paths: Path[] }> = React.memo(({ paths }) => {
+    console.log(">>> rendering RouteLayers");
+    const routePaths = filter<RoutePath>(paths, RoutePath);
     return (
       <>
-        {layers.map((layer) => (
-          <>
-            {/* {visibility.get(layer) && layer.shouldRender() && ( */}
-            {layer.shouldRender() && (
+        {routePaths.map(
+          (path, index) =>
+            path.isNotEmpty() && (
               <RouteLayer
-                key={layer.name}
-                path={layer.path}
-                onPointClicked={onPointClicked}
+                key={path.name}
+                path={path}
+                onLayerReady={(group) => {
+                  setLayerGroup(index, group);
+                }}
+                color={getNewColor()}
               />
-            )}
-          </>
-        ))}
+            )
+        )}
       </>
     );
-  };
+  });
 
   console.log(">>> rendering MapComponent");
   return (
@@ -198,7 +134,6 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
           setTileProvider(tileProvider);
         }}
       />
-      {/* center around Belgrade */}
       <div
         style={{
           display: "flex",
@@ -207,84 +142,146 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
         }}
       >
         <MapContainer
-          center={[44.7866, 20.4489]}
-          zoom={13}
+          center={[44.7866, 20.4489]} // Belgrade
+          zoom={11}
           minZoom={0}
           maxZoom={18}
           style={{ height: "90vh" }}
           scrollWheelZoom
-          ref={setMap}
+          ref={(r) => {
+            map.current = r;
+          }}
           placeholder={<MapPlaceholder />}
         >
           <TileLayer
             attribution={tileProvider.getAttribution()}
             url={tileProvider.getUrl()}
           />
-
-          <RouteLayers
-            layers={routeLayers}
-            focusedIndex={focusedMarkerIndex}
-            onPointClicked={(index) => {
-              setFocusedMarkerIndex(index);
-            }}
-          />
-          {/* <PointLayers layers={geoPathLayers} /> */}
+          <RouteLayers paths={paths} />
         </MapContainer>
-        {layers.map((layer) => (
-          <>
-            <div
-              key={layer.name}
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: "10px",
-                backgroundColor: focusedLayer === layer ? "lightblue" : "white",
-                padding: "10px",
-                margin: "5px 0",
-                border: "1px solid #ccc",
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={visibility.get(layer)}
-                onChange={() => toggleVisibility(layer)}
-              />
-              {layer.name}
-              <button onClick={() => focusOnLayer(layer)}>View</button>
-            </div>
-          </>
-        ))}
+        <LayerPanel
+          paths={paths}
+          onView={(path) => zoomToBoundingBox(path)}
+          initialVisibility={visibility.current}
+          onVisibilityChange={toggleVisibility}
+        />
       </div>
     </>
   );
 }
 
-function PointLayers({
-  layers,
-  focusedIndex,
-  onPointClicked,
-}: {
-  layers: Layer[];
-  focusedIndex?: number | null;
-  onPointClicked?: (index: number) => void;
-}) {
-  return (
-    <>
-      {layers.map((layer) => (
-        <>
-          {layer.shouldRender() && (
-            <RouteLayer
-              key={layer.name}
-              path={layer.path}
-              onPointClicked={onPointClicked}
-            />
-          )}
-        </>
-      ))}
-    </>
+const LayerPanel: React.FC<{
+  paths: Path[];
+  initialVisibility: Map<number, boolean>;
+  onVisibilityChange: (index: number) => void;
+  onView: (path: Path) => void;
+}> = ({ paths, initialVisibility, onVisibilityChange, onView }) => {
+  // TODO current hack before trying external state management
+  const [visibility, setVisibility] = React.useState<Map<number, boolean>>(
+    new Map()
   );
+  paths.forEach((_, index) =>
+    visibility.set(index, initialVisibility.get(index) || false)
+  );
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        padding: "10px",
+        border: "1px solid #ccc",
+      }}
+    >
+      <h3>Layers</h3>
+      {paths.map((path, index) => (
+        <LayerCheckbox
+          key={path.name}
+          index={index}
+          checked={visibility.get(index) || false}
+          onChange={() => {
+            onVisibilityChange(index);
+            setVisibility((prev) => {
+              const newVisibility = new Map(prev);
+              newVisibility.set(index, !newVisibility.get(index));
+              return newVisibility;
+            });
+          }}
+          name={path.name}
+          onView={() => onView(path)}
+        />
+      ))}
+    </div>
+  );
+};
+
+interface CheckboxProps {
+  index: number;
+  name: string;
+  checked: boolean;
+  onChange: (index: number) => void;
+  onView: () => void;
 }
+
+const LayerCheckbox: React.FC<CheckboxProps> = ({
+  index,
+  name,
+  checked,
+  onChange,
+  onView,
+}) => {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        gap: "10px",
+        padding: "10px",
+        margin: "5px 0",
+        border: "1px solid #ccc",
+      }}
+    >
+      <Checkbox
+        checked={checked}
+        onChange={() => onChange(index)}
+        inputProps={{ "aria-label": "controlled" }}
+      />
+      {name}
+      {/* <button onClick={onView}>Overview</button> */}
+      <IconButton aria-label="center" onClick={onView}>
+        <AdsClickIcon fontSize="small" />
+      </IconButton>
+    </div>
+  );
+};
+
+// function PointLayers({
+//   layers,
+//   focusedIndex,
+//   onPointClicked,
+// }: {
+//   layers: Layer[];
+//   focusedIndex?: number | null;
+//   onPointClicked?: (index: number) => void;
+// }) {
+//   return (
+//     <>
+//       {layers.map((layer) => (
+//         <>
+//           {layer.shouldRender() && (
+//             <RouteLayer
+//               key={layer.name}
+//               path={layer.path}
+//               onPointClicked={onPointClicked}
+//             />
+//           )}
+//         </>
+//       ))}
+//     </>
+//   );
+// }
 
 /**
  * The bounding box of a geographic area,

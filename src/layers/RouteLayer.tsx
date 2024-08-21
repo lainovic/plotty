@@ -1,82 +1,116 @@
 import { LayerGroup, useMap } from "react-leaflet";
-import { Path } from "../types/paths";
-import Point from "../markers/Point";
-import OriginMarker from "../markers/OriginMarker";
-import DestinationMarker from "../markers/DestinationMarker";
+import { RoutePath } from "../types/paths";
+import Point from "../points/Point";
+import Origin from "../points/Origin";
+import Destination from "../points/Destination";
+import L from "leaflet";
 import React from "react";
+import { tomtomPrimaryColor } from "../colors";
 
 export default function RouteLayer({
   path,
+  onLayerReady = () => {},
+  color = tomtomPrimaryColor,
 }: {
-  path: Path;
-  onPointClicked?: (index: number) => void;
+  path: RoutePath;
+  onLayerReady?: (layer: L.LayerGroup | null) => void;
+  color?: string;
 }) {
-  const map = useMap();
+  console.log(">>> rendering RouteLayer of color", color);
 
   const origin = path.points[0];
   const destination = path.points[path.points.length - 1];
 
-  const [focusedIndex, setFocusedIndex] = React.useState<number | null>(null);
+  const markers = React.useRef<(L.Layer | null)[]>(
+    new Array(path.points.length).fill(null)
+  );
 
-  const increaseFocusedMarkerIndex = React.useCallback(() => {
-    setFocusedIndex((prev) => {
-      if (prev === null) return 0;
-      return (prev + 1) % path.points.length;
-    });
-  }, [path]);
+  let currentFocusedIndex: number = 0;
+  const isLayerFocused = React.useRef(false);
 
-  const decreaseFocusedMarkerIndex = React.useCallback(() => {
-    setFocusedIndex((prev) => {
-      const length = path.points.length;
-      if (prev === null) return length - 1;
-      return (prev - 1 + length) % length;
-    });
-  }, [path]);
+  useMap().on("click", () => {
+    isLayerFocused.current = false;
+  });
+
+  const handleClick = (index: number) => {
+    currentFocusedIndex = index;
+    isLayerFocused.current = true;
+  };
+
+  const handleGoingForward = () => {
+    markers.current[currentFocusedIndex]!.closePopup();
+    currentFocusedIndex = (currentFocusedIndex + 1) % path.points.length;
+    markers.current[currentFocusedIndex]!.openPopup();
+  };
+
+  const handleGoingBackward = () => {
+    markers.current[currentFocusedIndex]!.closePopup();
+    currentFocusedIndex =
+      (currentFocusedIndex - 1 + path.points.length) % path.points.length;
+    markers.current[currentFocusedIndex]!.openPopup();
+  };
 
   React.useEffect(() => {
-    if (focusedIndex !== null && path.isNotEmpty()) {
-      const { latitude, longitude } = path.points[focusedIndex];
-      map.setView([latitude, longitude]);
-    }
-  }, [focusedIndex, path]);
-
-  React.useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      if (event.key === "h" || event.key === "H") {
-        decreaseFocusedMarkerIndex();
-      } else if (event.key === "l" || event.key === "L") {
-        increaseFocusedMarkerIndex();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+      if (isLayerFocused.current) {
+        if (key === "l") {
+          handleGoingForward();
+        } else if (key === "h") {
+          handleGoingBackward();
+        }
       }
     };
-    document.addEventListener("keydown", handleKeyPress);
+
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.removeEventListener("keydown", handleKeyPress);
+      window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [increaseFocusedMarkerIndex, decreaseFocusedMarkerIndex]);
+  }, []);
 
   return (
-    <LayerGroup>
+    <LayerGroup
+      ref={(r) => {
+        onLayerReady(r);
+      }}
+    >
       {path.points.slice(1, -1).map((point, index) => (
         <Point
           index={index + 1} // adjust index to match the original array
           key={index + 1}
           point={point}
-          isFocused={focusedIndex === index + 1}
-          onClicked={(idx) => {
-            setFocusedIndex(idx);
-            const map = useMap();
-            map.flyTo([point.latitude, point.longitude], 18, {
-              animate: true,
-              duration: 0.5,
-            });
+          onMarkerReady={(marker) => {
+            markers.current[index + 1] = marker;
           }}
+          onGoingForward={handleGoingForward}
+          onGoingBackward={handleGoingBackward}
+          onClick={handleClick}
+          color={color}
         />
       ))}
-      <OriginMarker key={0} point={origin} isFocused={focusedIndex === 0} />
-      <DestinationMarker
+      <Origin
+        key={0}
+        point={origin}
+        onMarkerReady={(marker) => {
+          markers.current[0] = marker;
+        }}
+        onGoingForward={handleGoingForward}
+        onGoingBackward={handleGoingBackward}
+        onOriginClick={() => {
+          currentFocusedIndex = 0;
+        }}
+      />
+      <Destination
         key={path.points.length - 1}
         point={destination}
-        isFocused={focusedIndex === path.points.length - 1}
+        onMarkerReady={(marker) => {
+          markers.current[path.points.length - 1] = marker;
+        }}
+        onGoingForward={handleGoingForward}
+        onGoingBackward={handleGoingBackward}
+        onDestinationClick={() => {
+          currentFocusedIndex = path.points.length - 1;
+        }}
       />
     </LayerGroup>
   );

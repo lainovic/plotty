@@ -2,56 +2,53 @@ import { GeoPoint } from "../types/geo_types";
 import { CircleMarker, Popup, useMap } from "react-leaflet";
 import PointPopup from "./PointPopup";
 import L from "leaflet";
-import React from "react";
 import { tomtomPrimaryColor } from "../colors";
 
 export default function Point({
   index,
   point,
-  isFocused = false,
-  onClicked = () => {},
+  color = tomtomPrimaryColor,
+  onMarkerReady = () => {},
+  onClick = () => {},
+  onGoingForward = () => {},
+  onGoingBackward = () => {},
 }: {
   index: number;
   point: GeoPoint;
-  isFocused?: boolean;
-  onClicked?: (index: number) => void;
+  color?: string;
+  onMarkerReady?: (marker: L.CircleMarker | null) => void;
+  onClick?: (index: number) => void;
+  onGoingForward?: () => void;
+  onGoingBackward?: () => void;
 }) {
-  const [refReady, setRefReady] = React.useState(false);
-  let popupRef = React.useRef<L.Popup | null>(null);
   const map = useMap();
-
-  React.useEffect(() => {
-    if (map && refReady && isFocused) {
-      popupRef.current!.openOn(map);
-    }
-  }, [isFocused, refReady, map]);
 
   return (
     <CircleMarker
+      ref={(r) => {
+        onMarkerReady(r);
+      }}
       center={[point.latitude, point.longitude]}
       radius={4}
-      pathOptions={{ color: tomtomPrimaryColor }}
+      pathOptions={{ color: color }}
       eventHandlers={{
         click: () => {
-          onClicked(index);
+          onClick(index);
         },
       }}
     >
-      <Popup
-        ref={(r) => {
-          popupRef.current = r;
-          setRefReady(true);
-        }}
-      >
+      <Popup>
         <PointPopup
           title={`${index}`}
           text={`${point.latitude}, ${point.longitude}`}
-          handlePointClick={() => {
+          onLocateClick={() => {
             map?.flyTo([point.latitude, point.longitude], 18, {
               animate: true,
-              duration: 0.5,
+              duration: 0.25,
             });
           }}
+          onLeftArrowClick={onGoingBackward}
+          onRightArrowClick={onGoingForward}
         />
       </Popup>
     </CircleMarker>

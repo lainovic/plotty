@@ -2,51 +2,48 @@ import { GeoPoint } from "../types/geo_types";
 import { Marker, Popup, useMap } from "react-leaflet";
 import PointPopup from "./PointPopup";
 import L from "leaflet";
-import React from "react";
 import { originIcon } from "../icons";
 
-export default function OriginMarker({
+export default function Origin({
   point,
-  isFocused = false,
+  onMarkerReady = () => {},
+  onOriginClick = () => {},
+  onGoingForward = () => {},
+  onGoingBackward = () => {},
 }: {
   point: GeoPoint;
-  isFocused?: boolean;
+  onMarkerReady?: (marker: L.Marker | null) => void;
+  onOriginClick?: () => void;
+  onGoingForward?: () => void;
+  onGoingBackward?: () => void;
 }) {
-  const [refReady, setRefReady] = React.useState(false);
-  let popupRef = React.useRef<L.Popup | null>(null);
   const map = useMap();
-
-  React.useEffect(() => {
-    if (map && refReady && isFocused) {
-      popupRef.current!.openOn(map);
-    }
-  }, [isFocused, refReady, map]);
 
   return (
     <Marker
+      ref={(r) => {
+        onMarkerReady(r);
+      }}
       position={[point.latitude, point.longitude]}
       icon={originIcon}
       eventHandlers={{
-        click: (e) => {
-          console.log("CircleMarker clicked", e);
+        click: () => {
+          onOriginClick();
         },
       }}
     >
-      <Popup
-        ref={(r) => {
-          popupRef.current = r;
-          setRefReady(true);
-        }}
-      >
+      <Popup>
         <PointPopup
           title="O"
           text={`${point.latitude}, ${point.longitude}`}
-          handlePointClick={() => {
+          onLocateClick={() => {
             map?.flyTo([point.latitude, point.longitude], 18, {
               animate: true,
               duration: 0.5,
             });
           }}
+          onLeftArrowClick={onGoingBackward}
+          onRightArrowClick={onGoingForward}
         />
       </Popup>
     </Marker>

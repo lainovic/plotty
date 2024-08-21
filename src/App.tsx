@@ -84,7 +84,10 @@ function App() {
   return (
     <div onPaste={handlePaste}>
       <header style={styles.header}>
-        Plo<span style={styles.headerSpan}>tt</span>y
+        <div>
+          Plo<span style={styles.headerSpan}>tt</span>y
+        </div>
+        <span style={styles.subtitleSpan}>Paste to Plot</span>
       </header>
       {isLoading && (
         <div className="loader-container">
@@ -94,7 +97,7 @@ function App() {
       <main style={styles.container}>
         <MapComponent paths={paths} />
       </main>
-      <footer></footer>
+      <footer style={styles.footer}></footer>
       <ToastContainer
         position="top-center"
         hideProgressBar
@@ -117,19 +120,28 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: "center",
     justifyContent: "center",
   },
-  map: {
-    width: "100%",
-    height: "100%",
-  },
   header: {
-    fontSize: "2.0em",
+    fontSize: "1.0rem",
     color: `${tomtomBlackColor}`,
     fontFamily: "'Roboto', sans-serif",
     textTransform: "uppercase",
     fontWeight: 700,
+    height: "5vh",
+    display: "flex",
+    alignItems: "center",
+    paddingLeft: "10px",
+  },
+  footer: {
+    height: "5vh",
   },
   headerSpan: {
     color: `${tomtomSecondaryColor}`,
+  },
+  subtitleSpan: {
+    fontSize: "2.0rem",
+    fontWeight: 400,
+    marginLeft: "10px",
+    color: "rgba(0, 0, 0, 0.1)",
   },
 };
 export default App;

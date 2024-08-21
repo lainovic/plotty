@@ -8,6 +8,12 @@ import {
   tomTomMapsOrbisTileProvider,
 } from "./const";
 
+import MenuItem from "@mui/material/MenuItem";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import FormHelperText from "@mui/material/FormHelperText";
+import { emphasize } from "@mui/material";
+import { tomtomBlackColor, tomtomSecondaryColor } from "../colors";
+
 /**
  * Represents the available tile vendors that can be used to fetch map tiles.
  */
@@ -67,9 +73,8 @@ export default function TileProviderSelector({
   const [selectedTileVendor, setSelectedTileVendor] =
     React.useState<TileVendors>(Object.values(TileVendors)[0]);
 
-  function handleSelect(e: React.ChangeEvent<HTMLSelectElement>) {
-    const selectedVendor = e.target.value as TileVendors;
-    setSelectedTileVendor(selectedVendor);
+  function handleSelect(e: SelectChangeEvent<TileVendors>) {
+    setSelectedTileVendor(e.target.value as TileVendors);
   }
 
   React.useEffect(() => {
@@ -101,16 +106,32 @@ export default function TileProviderSelector({
 
   return (
     <div style={styles.container}>
-      <span>Select a tile provider </span>
       <div>
-        <select onChange={handleSelect} value={selectedTileVendor}>
-          {[...tileProviders.current.keys()].map((layer) => (
-            <option key={layer} value={layer}>
-              {layer}
-            </option>
+        <FormHelperText>
+          Tile provider (use <span style={styles.emphasize}>J</span> or{" "}
+          <span style={styles.emphasize}>K</span> to switch)
+        </FormHelperText>
+        <Select
+          value={selectedTileVendor}
+          onChange={handleSelect}
+          sx={{
+            color: `${tomtomBlackColor}`,
+            "&.MuiSvgIcon-root": {
+              color: `${tomtomSecondaryColor}`,
+            },
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: `${tomtomSecondaryColor}`,
+            },
+          }}
+        >
+          {[...tileProviders.current.keys()].map((provider) => (
+            <MenuItem key={provider} value={provider}>
+              {provider}
+            </MenuItem>
           ))}
-        </select>
+        </Select>
         {selectedTileProvider instanceof AuthTileProvider && (
+          // TODO the text input does not work as expected
           <PasswordInput
             label="API key"
             value={selectedTileProvider.getApiKey() || ""}
@@ -118,7 +139,7 @@ export default function TileProviderSelector({
               selectedTileProvider.setApiKey(key);
               onTileProviderChanged(selectedTileProvider);
             }}
-            style={{ marginLeft: "10px" }}
+            style={{ marginLeft: "10px", color: `${tomtomBlackColor}` }}
           />
         )}
       </div>
@@ -128,11 +149,21 @@ export default function TileProviderSelector({
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
+    position: "fixed",
+    bottom: "6vh",
+    left: "10px",
     display: "flex",
     flexDirection: "row",
     gap: "10px",
-    alignItems: "flex-start",
+    alignItems: "center",
     padding: "10px",
     minHeight: "50px",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    zIndex: 1000,
+    borderRadius: "15px",
+    minWidth: "500px",
+  },
+  emphasize: {
+    color: emphasize(`${tomtomSecondaryColor}`, 0.1),
   },
 };

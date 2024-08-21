@@ -204,7 +204,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     position: "fixed",
     top: "50%",
     right: "10px",
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
     fontFamily: "'Roboto', sans-serif",
     padding: "10px",
     borderRadius: "25px",
@@ -215,6 +215,6 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   map: {
     width: "100vw",
-    height: "80vh",
+    height: "90vh",
   },
 };

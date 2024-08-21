@@ -62,6 +62,12 @@ const LayerCheckbox: React.FC<CheckboxProps> = ({
   return (
     <div style={styles.container}>
       <Checkbox
+        sx={{
+          color: `${tomtomSecondaryColor}`,
+          "&.Mui-checked": {
+            color: `${tomtomSecondaryColor}`,
+          },
+        }}
         checked={checked}
         onChange={() => onChange(index)}
         inputProps={{ "aria-label": "controlled" }}

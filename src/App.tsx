@@ -48,6 +48,9 @@ function App() {
     setInputData(pastedText);
   };
 
+  // TODO add support for dropping files
+  // add ruler mode
+
   function handleInput() {
     if (inputData === "") {
       return;
@@ -84,9 +87,7 @@ function App() {
   return (
     <div onPaste={handlePaste}>
       <header style={styles.header}>
-        <div>
-          Plo<span style={styles.headerSpan}>tt</span>y
-        </div>
+        Plo<span style={styles.headerSpan}>tt</span>y
         <span style={styles.subtitleSpan}>Paste to Plot</span>
       </header>
       {isLoading && (

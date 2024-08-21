@@ -1,4 +1,7 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+
 :root {
+  --tt-primary-color: #1988cf;
   --tt-red-color: #df1b12;
   --tt-white-color: #ffffff;
   --tt-black-color: #000000;
@@ -11,26 +14,9 @@
   --tt-dark-gray-color: #333333;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
 .leaflet-container {
   width: 600px;
   height: 600px;
-}
-
-main {
-  border: 1px solid var(--tt-red-color);
 }
 
 .loader-container {

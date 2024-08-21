@@ -3,13 +3,15 @@ import Checkbox from "@mui/material/Checkbox";
 import AdsClickIcon from "@mui/icons-material/AdsClick";
 import React from "react";
 import { Path } from "./types/paths";
+import { tomtomSecondaryColor } from "./colors";
 
 const LayerPanel: React.FC<{
+  style?: React.CSSProperties;
   paths: Path[];
   initialVisibility: Map<number, boolean>;
   onVisibilityChange: (index: number) => void;
   onView: (path: Path) => void;
-}> = ({ paths, initialVisibility, onVisibilityChange, onView }) => {
+}> = ({ style, paths, initialVisibility, onVisibilityChange, onView }) => {
   // TODO current hack before trying external state management
   const [visibility, setVisibility] = React.useState<Map<number, boolean>>(
     new Map()
@@ -19,16 +21,8 @@ const LayerPanel: React.FC<{
   );
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        padding: "10px",
-        border: "1px solid #ccc",
-      }}
-    >
-      <h3>Layers</h3>
+    <div style={style}>
+      {paths.length > 0 && <h3 style={styles.header}>Layers</h3>}
       {paths.map((path, index) => (
         <LayerCheckbox
           key={path.name}
@@ -66,17 +60,7 @@ const LayerCheckbox: React.FC<CheckboxProps> = ({
   onView,
 }) => {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        gap: "10px",
-        padding: "10px",
-        margin: "5px 0",
-        border: "1px solid #ccc",
-      }}
-    >
+    <div style={styles.container}>
       <Checkbox
         checked={checked}
         onChange={() => onChange(index)}
@@ -91,4 +75,18 @@ const LayerCheckbox: React.FC<CheckboxProps> = ({
   );
 };
 
+const styles: { [key: string]: React.CSSProperties } = {
+  container: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: "10px",
+    padding: "10px",
+    margin: "5px 0",
+  },
+  header: {
+    fontSize: "1.2em",
+    color: `${tomtomSecondaryColor}`,
+  },
+};
 export default LayerPanel;

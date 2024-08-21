@@ -8,6 +8,7 @@ import RoutingResponseParser from "./parsers/RoutingResponseParser";
 import { Path } from "./types/paths";
 import { ParsedResult } from "./parsers/Parser";
 import GeoPointsParser from "./parsers/GeoPointsParser";
+import { tomtomBlackColor, tomtomSecondaryColor } from "./colors";
 
 function App() {
   const [inputData, setInputData] = React.useState<string>("");
@@ -82,13 +83,15 @@ function App() {
 
   return (
     <div onPaste={handlePaste}>
-      <header>Plotty</header>
+      <header style={styles.header}>
+        Plo<span style={styles.headerSpan}>tt</span>y
+      </header>
       {isLoading && (
         <div className="loader-container">
           <div className="loader-spinner"></div>
         </div>
       )}
-      <main>
+      <main style={styles.container}>
         <MapComponent paths={paths} />
       </main>
       <footer></footer>
@@ -107,4 +110,26 @@ function App() {
   );
 }
 
+const styles: { [key: string]: React.CSSProperties } = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  map: {
+    width: "100%",
+    height: "100%",
+  },
+  header: {
+    fontSize: "2.0em",
+    color: `${tomtomBlackColor}`,
+    fontFamily: "'Roboto', sans-serif",
+    textTransform: "uppercase",
+    fontWeight: 700,
+  },
+  headerSpan: {
+    color: `${tomtomSecondaryColor}`,
+  },
+};
 export default App;

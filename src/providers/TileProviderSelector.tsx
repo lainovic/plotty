@@ -100,26 +100,39 @@ export default function TileProviderSelector({
   const selectedTileProvider = tileProviders.current.get(selectedTileVendor);
 
   return (
-    <>
-      <span>Select a tile provider: </span>
-      <select onChange={handleSelect} value={selectedTileVendor}>
-        {[...tileProviders.current.keys()].map((layer) => (
-          <option key={layer} value={layer}>
-            {layer}
-          </option>
-        ))}
-      </select>
-      {selectedTileProvider instanceof AuthTileProvider && (
-        <PasswordInput
-          label="API key"
-          value={selectedTileProvider.getApiKey() || ""}
-          onValueChange={(key) => {
-            selectedTileProvider.setApiKey(key);
-            onTileProviderChanged(selectedTileProvider);
-          }}
-          style={{ marginLeft: "10px" }}
-        />
-      )}
-    </>
+    <div style={styles.container}>
+      <span>Select a tile provider </span>
+      <div>
+        <select onChange={handleSelect} value={selectedTileVendor}>
+          {[...tileProviders.current.keys()].map((layer) => (
+            <option key={layer} value={layer}>
+              {layer}
+            </option>
+          ))}
+        </select>
+        {selectedTileProvider instanceof AuthTileProvider && (
+          <PasswordInput
+            label="API key"
+            value={selectedTileProvider.getApiKey() || ""}
+            onValueChange={(key) => {
+              selectedTileProvider.setApiKey(key);
+              onTileProviderChanged(selectedTileProvider);
+            }}
+            style={{ marginLeft: "10px" }}
+          />
+        )}
+      </div>
+    </div>
   );
 }
+
+const styles: { [key: string]: React.CSSProperties } = {
+  container: {
+    display: "flex",
+    flexDirection: "row",
+    gap: "10px",
+    alignItems: "flex-start",
+    padding: "10px",
+    minHeight: "50px",
+  },
+};

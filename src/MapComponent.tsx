@@ -5,10 +5,14 @@ import "leaflet/dist/leaflet.css";
 import TileProviderSelector from "./providers/TileProviderSelector";
 
 import { TileProvider } from "./providers/TileProvider";
-import { filter, GeoPath, Path, RoutePath } from "./types/paths";
+import { GeoPath, Path, RoutePath } from "./types/paths";
 import { openStreetMapTileProvider } from "./providers/const";
 import RouteLayer from "./layers/RouteLayer";
-import { tomtomPrimaryColor } from "./colors";
+import {
+  tomtomBlackColor,
+  tomtomPrimaryColor,
+  tomtomSecondaryColor,
+} from "./colors";
 import LayerPanel from "./LayerPanel";
 import { getBoundingBox } from "./utils";
 import GeoLayer from "./layers/GeoLayer";
@@ -24,6 +28,8 @@ function MapPlaceholder() {
 let colorCounter = 0;
 const layerColors = [
   tomtomPrimaryColor,
+  tomtomSecondaryColor,
+  tomtomBlackColor,
   "#FF9E80",
   "#FF80AB",
   "#EA80FC",
@@ -150,24 +156,18 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
 
   return (
     <>
-      <TileProviderSelector
-        onTileProviderChanged={(tileProvider) => {
-          setTileProvider(tileProvider);
-        }}
-      />
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-        }}
-      >
+      <div style={styles.container}>
+        <TileProviderSelector
+          onTileProviderChanged={(tileProvider) => {
+            setTileProvider(tileProvider);
+          }}
+        />
         <MapContainer
+          style={styles.map}
           center={[44.7866, 20.4489]} // Belgrade
           zoom={11}
           minZoom={0}
           maxZoom={18}
-          style={{ height: "90vh" }}
           scrollWheelZoom
           ref={(r) => {
             map.current = r;
@@ -182,6 +182,7 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
           <PointLayers paths={paths} />
         </MapContainer>
         <LayerPanel
+          style={styles.layerPanel}
           paths={paths}
           onView={(path) => zoomToBoundingBox(path)}
           initialVisibility={visibility.current}
@@ -191,3 +192,29 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
     </>
   );
 }
+
+const styles: { [key: string]: React.CSSProperties } = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    justifyContent: "center",
+  },
+  layerPanel: {
+    position: "fixed",
+    top: "50%",
+    right: "10px",
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    fontFamily: "'Roboto', sans-serif",
+    padding: "10px",
+    borderRadius: "25px",
+    zIndex: 1000,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  map: {
+    width: "100vw",
+    height: "80vh",
+  },
+};

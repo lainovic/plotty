@@ -5,6 +5,7 @@ import AdsClickIcon from "@mui/icons-material/AdsClick";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import { toast } from "react-toastify";
+import { tomtomSecondaryColor } from "../colors";
 
 export default function PointPopup({
   title,
@@ -54,7 +55,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   title: {
     fontSize: "1.2em",
-    color: "red",
+    color: `${tomtomSecondaryColor}`,
     marginRight: "10px",
   },
   text: {

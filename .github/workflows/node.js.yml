@@ -26,8 +26,10 @@ jobs:
       with:
         node-version: 20
         cache: 'pnpm'
-    - run: pnpm install
-    - run: pnpm run build
+    - name: Install dependencies
+      run: pnpm install
+    - name: Build
+      run: pnpm run build
     - name: Deploy
       run: |
         git config --global user.name $user_name

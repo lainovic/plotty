@@ -139,15 +139,5 @@ const styles: { [key: string]: React.CSSProperties } = {
   headerSpan: {
     color: `${tomtomSecondaryColor}`,
   },
-  helpButton: {
-    position: "fixed",
-    bottom: "10px",
-    right: "10px",
-    zIndex: 1000,
-    backgroundColor: `${tomtomSecondaryColor}`,
-    width: "64px",
-    height: "64px",
-    borderRadius: "50%",
-  },
 };
 export default App;

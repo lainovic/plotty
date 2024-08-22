@@ -109,7 +109,7 @@ export default function CssTransitionComponent() {
   return (
     <div
       style={{
-        zIndex: 1000,
+        zIndex: 2000,
         position: "fixed",
         bottom: "10px",
         right: "10px",
@@ -160,6 +160,11 @@ export default function CssTransitionComponent() {
             <span style={fmtStyles.emphasize}>K</span>.
             <br />
             For TomTom tiles, you will need to provide an API key.
+            <h3 style={fmtStyles.header}>Ruler mode</h3>
+            Go to ruler mode by pressing the{" "}
+            <span style={fmtStyles.emphasize}>R</span> key. In ruler mode, you
+            can measure distances between points by clicking on the map to add
+            points to the ruler.
           </PopupBody>
         </CssTransition>
       </PopupWithTrigger>

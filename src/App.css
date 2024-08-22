@@ -2,6 +2,7 @@
 
 :root {
   --tt-primary-color: #1988cf;
+  --tt-secondary-color: #df1b12;
   --tt-red-color: #df1b12;
   --tt-white-color: #ffffff;
   --tt-black-color: #000000;
@@ -17,6 +18,13 @@
 .leaflet-container {
   width: 600px;
   height: 600px;
+}
+
+.leaflet-ruler-marker {
+  background-color: var(--tt-secondary-color);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
 }
 
 .loader-container {

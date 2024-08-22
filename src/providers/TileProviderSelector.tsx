@@ -151,7 +151,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: "10px",
     minHeight: "50px",
     backgroundColor: "rgba(255, 255, 255, 0.8)",
-    zIndex: 1000,
+    zIndex: 999,
     borderRadius: "15px",
     minWidth: "450px",
     fontSize: "1.0rem",

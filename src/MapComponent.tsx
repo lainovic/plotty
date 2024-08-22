@@ -16,6 +16,8 @@ import {
 import LayerPanel from "./LayerPanel";
 import { getBoundingBox } from "./utils";
 import GeoLayer from "./layers/GeoLayer";
+import Ruler from "./Ruler";
+import RulerPanel from "./RulerPanel";
 
 function MapPlaceholder() {
   return (
@@ -74,8 +76,6 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
     },
     []
   );
-
-  console.log(">>> rendering MapComponent");
 
   const visibility = React.useRef<Map<number, boolean>>(new Map());
   paths.forEach((_, index) => {
@@ -152,10 +152,33 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
 
   console.log(">>> rendering map");
 
+  const [rulerMode, setRulerMode] = React.useState<boolean>(false);
+  const [distance, setDistance] = React.useState<number>(-1);
+
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+      if (key === "r") {
+        setRulerMode((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   resetColorCounter();
 
   return (
     <>
+      {rulerMode && (
+        <div style={styles.overlay}>
+          <RulerPanel distance={distance} />
+        </div>
+      )}
       <div style={styles.container}>
         <TileProviderSelector
           onTileProviderChanged={(tileProvider) => {
@@ -178,6 +201,7 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
             attribution={tileProvider.getAttribution()}
             url={tileProvider.getUrl()}
           />
+          {rulerMode && <Ruler onDistanceChange={setDistance} />}
           <RouteLayers paths={paths} />
           <PointLayers paths={paths} />
         </MapContainer>
@@ -216,5 +240,15 @@ const styles: { [key: string]: React.CSSProperties } = {
   map: {
     width: "100vw",
     height: "90vh",
+  },
+  overlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
+    zIndex: 1002,
+    pointerEvents: "none",
   },
 };

@@ -29,9 +29,15 @@ export default class GeoPointsParser implements Parser<GeoPath[]> {
       }
     }
 
-    return Maybe.success({
-      result: [new GeoPath(points)],
-      message: { value: "Parsed as geo points" },
-    });
+    if (points.length === 0) {
+      return Maybe.failure({
+        value: "No geo points found",
+      });
+    } else {
+      return Maybe.success({
+        result: [new GeoPath(points)],
+        message: { value: "Parsed as geo points" },
+      });
+    }
   }
 }

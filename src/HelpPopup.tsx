@@ -165,6 +165,10 @@ export default function CssTransitionComponent() {
             <span style={fmtStyles.emphasize}>R</span> key. In ruler mode, you
             can measure distances between points by clicking on the map to add
             points to the ruler. You can drag the points around as well.
+            <br />
+            <br />
+            Press the <span style={fmtStyles.emphasize}>?</span> key to toggle
+            this popup.
           </PopupBody>
         </CssTransition>
       </PopupWithTrigger>
@@ -175,6 +179,18 @@ export default function CssTransitionComponent() {
 function PopupWithTrigger(props: PopupProps) {
   const [anchor, setAnchor] = React.useState<HTMLButtonElement | null>(null);
   const [open, setOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    const keyPressHandler = (e: KeyboardEvent) => {
+      if (e.key === "?") {
+        setOpen((o) => !o);
+      }
+    };
+    window.addEventListener("keydown", keyPressHandler);
+    return () => {
+      window.removeEventListener("keydown", keyPressHandler);
+    };
+  }, []);
 
   const { children, ...other } = props;
 

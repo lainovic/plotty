@@ -1,4 +1,4 @@
-// TODO: add max zoom level?
+// TODO add max zoom level?
 export class TileProvider {
   protected name: string;
   protected attribution: string;

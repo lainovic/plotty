@@ -8,6 +8,7 @@ import React from "react";
  * @param onValueChange - A callback function that is called whenever the input value changes.
  * @param style - Optional CSS styles to apply to the component.
  */
+
 export default function PasswordInput({
   label,
   value,
@@ -22,6 +23,8 @@ export default function PasswordInput({
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onValueChange(event.target.value);
   };
+
+  const [internalValue, setInternalValue] = React.useState(value);
 
   return (
     <div
@@ -43,8 +46,11 @@ export default function PasswordInput({
         }}
         id="apiKeyField"
         type="password"
-        value={value}
-        onChange={handleChange}
+        value={internalValue}
+        onChange={(e) => {
+          setInternalValue(e.target.value);
+          handleChange(e);
+        }}
       />
     </div>
   );

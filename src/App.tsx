@@ -9,6 +9,7 @@ import { Path } from "./types/paths";
 import { ParsedResult } from "./parsers/Parser";
 import GeoPointsParser from "./parsers/GeoPointsParser";
 import { tomtomBlackColor, tomtomSecondaryColor } from "./colors";
+import CssTransitionComponent from "./HelpPopup";
 
 function App() {
   const [inputData, setInputData] = React.useState<string>("");
@@ -88,7 +89,6 @@ function App() {
     <div onPaste={handlePaste}>
       <header style={styles.header}>
         Plo<span style={styles.headerSpan}>tt</span>y
-        <span style={styles.subtitleSpan}>Paste to Plot</span>
       </header>
       {isLoading && (
         <div className="loader-container">
@@ -110,6 +110,7 @@ function App() {
           textAlign: "center",
         }}
       />
+      <CssTransitionComponent></CssTransitionComponent>
     </div>
   );
 }
@@ -138,11 +139,15 @@ const styles: { [key: string]: React.CSSProperties } = {
   headerSpan: {
     color: `${tomtomSecondaryColor}`,
   },
-  subtitleSpan: {
-    fontSize: "2.0rem",
-    fontWeight: 400,
-    marginLeft: "10px",
-    color: "rgba(0, 0, 0, 0.1)",
+  helpButton: {
+    position: "fixed",
+    bottom: "10px",
+    right: "10px",
+    zIndex: 1000,
+    backgroundColor: `${tomtomSecondaryColor}`,
+    width: "64px",
+    height: "64px",
+    borderRadius: "50%",
   },
 };
 export default App;

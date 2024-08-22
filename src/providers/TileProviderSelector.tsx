@@ -10,7 +10,6 @@ import {
 
 import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import FormHelperText from "@mui/material/FormHelperText";
 import { emphasize } from "@mui/material";
 import { tomtomBlackColor, tomtomSecondaryColor } from "../colors";
 
@@ -107,10 +106,6 @@ export default function TileProviderSelector({
   return (
     <div style={styles.container}>
       <div>
-        <FormHelperText>
-          Tile provider (use <span style={styles.emphasize}>J</span> or{" "}
-          <span style={styles.emphasize}>K</span> to switch)
-        </FormHelperText>
         <Select
           value={selectedTileVendor}
           onChange={handleSelect}
@@ -118,9 +113,6 @@ export default function TileProviderSelector({
             color: `${tomtomBlackColor}`,
             "&.MuiSvgIcon-root": {
               color: `${tomtomSecondaryColor}`,
-            },
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: `${tomtomSecondaryColor}`,
             },
           }}
         >
@@ -161,7 +153,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     backgroundColor: "rgba(255, 255, 255, 0.8)",
     zIndex: 1000,
     borderRadius: "15px",
-    minWidth: "500px",
+    minWidth: "450px",
+    fontSize: "1.0rem",
   },
   emphasize: {
     color: emphasize(`${tomtomSecondaryColor}`, 0.1),

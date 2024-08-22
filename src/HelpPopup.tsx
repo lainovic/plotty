@@ -164,7 +164,7 @@ export default function CssTransitionComponent() {
             Go to ruler mode by pressing the{" "}
             <span style={fmtStyles.emphasize}>R</span> key. In ruler mode, you
             can measure distances between points by clicking on the map to add
-            points to the ruler.
+            points to the ruler. You can drag the points around as well.
           </PopupBody>
         </CssTransition>
       </PopupWithTrigger>

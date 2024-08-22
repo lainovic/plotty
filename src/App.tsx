@@ -49,7 +49,7 @@ function App() {
   };
 
   // TODO add support for dropping files
-  // add ruler mode
+  // TODO add ruler mode
 
   function handleInput() {
     if (inputData === "") {

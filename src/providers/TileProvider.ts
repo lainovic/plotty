@@ -1,10 +1,4 @@
-/**
- * Provides a base class for tile providers that can be used to fetch map tiles.
- *
- * TODO: add max zoom level?
- *
- * The `TileProvider` class encapsulates the common functionality for fetching map tiles, including the tile URL and attribution information.
- */
+// TODO: add max zoom level?
 export class TileProvider {
   protected name: string;
   protected attribution: string;
@@ -31,7 +25,12 @@ export class AuthTileProvider extends TileProvider {
   private localStorageKey: string;
   private apiKey: string | null;
 
-  constructor(name: string, attribution: string, url: string, localStorageKey: string) {
+  constructor(
+    name: string,
+    attribution: string,
+    url: string,
+    localStorageKey: string
+  ) {
     super(name, attribution, url);
     this.localStorageKey = localStorageKey;
     this.apiKey = localStorage.getItem(localStorageKey);

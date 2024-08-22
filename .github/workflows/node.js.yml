@@ -37,5 +37,5 @@ jobs:
       env:
         user_name: 'lainovic'
         user_email: '57601153+lainovic@users.noreply.github.com'
-        github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
         repository: ${{ github.repository }}

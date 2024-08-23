@@ -43,7 +43,8 @@ const RulerPanel: React.FC = ({}) => {
         <Ruler
           onDistanceChange={(distance) => {
             setDistance(distance);
-            navigator.clipboard.writeText(distance.toFixed(2));
+            if (distance !== -1)
+              navigator.clipboard.writeText(distance.toFixed(2));
           }}
         />
       </>

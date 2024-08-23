@@ -7,6 +7,8 @@ import {
 import { Button as BaseButton } from "@mui/base/Button";
 import { CssTransition } from "@mui/base/Transitions";
 import { tomtomSecondaryColor } from "./colors";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import AdsClickIcon from "@mui/icons-material/AdsClick";
 
 const styles = `
   .open {
@@ -142,8 +144,8 @@ export default function CssTransitionComponent() {
             </div>
             You can toggle the visibility of each layer by clicking on the
             checkbox in front of the layer name. You can also overview the layer
-            by clicking on the <span style={fmtStyles.emphasize}>center</span>{" "}
-            button that is right next to the layer name.
+            by clicking on the <AdsClickIcon fontSize="small" /> button that is
+            next to the layer name.
             <br />
             <h3 style={fmtStyles.header}>Points</h3>
             Navigate between points on a focused layer with the arrows in the
@@ -152,10 +154,11 @@ export default function CssTransitionComponent() {
             </span> and <span style={fmtStyles.emphasize}>L</span>.
             <br />
             You can also copy the coordinates of a point by clicking the{" "}
-            <span style={fmtStyles.emphasize}>copy</span> button in the popup.
+            <ContentCopyIcon fontSize="small" /> button in the popup.
             <br />
             You can focus the map on a point by clicking the{" "}
-            <span style={fmtStyles.emphasize}>center</span> button.
+            <AdsClickIcon fontSize="small" />
+            button.
             <br />
             <h3 style={fmtStyles.header}>Go to a location</h3>
             Press the <span style={fmtStyles.emphasize}>G</span> key to open the

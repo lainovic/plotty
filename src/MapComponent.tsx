@@ -1,9 +1,8 @@
 import React from "react";
-
 import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import TileProviderSelector from "./providers/TileProviderSelector";
-
+import { toast } from "react-toastify";
 import { TileProvider } from "./providers/TileProvider";
 import { GeoPath, Path, RoutePath } from "./types/paths";
 import { openStreetMapTileProvider } from "./providers/const";
@@ -65,6 +64,21 @@ function getNewColor() {
  */
 export default function MapComponent({ paths }: { paths: Path[] }) {
   const map = React.useRef<L.Map | null>(null);
+  const [mapReady, setMapReady] = React.useState(false);
+
+  React.useEffect(() => {
+    map.current?.on("contextmenu", (e) => {
+      const latlng = map.current!.mouseEventToLatLng(e.originalEvent);
+      const coordinates = `${latlng.lat}, ${latlng.lng}`;
+      navigator.clipboard.writeText(coordinates);
+      toast.success("Coordinate copied to clipboard!");
+    });
+
+    return () => {
+      map.current?.off("contextmenu");
+    };
+  }, [mapReady]);
+
   const [tileProvider, setTileProvider] = React.useState<TileProvider>(
     openStreetMapTileProvider
   );
@@ -178,6 +192,7 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
           scrollWheelZoom
           ref={(r) => {
             map.current = r;
+            setMapReady(true);
           }}
           placeholder={<MapPlaceholder />}
         >

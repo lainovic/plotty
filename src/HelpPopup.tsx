@@ -161,6 +161,9 @@ export default function CssTransitionComponent() {
             Press the <span style={fmtStyles.emphasize}>G</span> key to open the
             dialog to enter coordinates to navigate to.
             <br />
+            You can also copy the coordinates of the current map center by
+            right-clicking on the map.
+            <br />
             <h3 style={fmtStyles.header}>Tiles</h3>
             Switch between tile providers using the selector in the lower left
             corner, or by using the keys{" "}

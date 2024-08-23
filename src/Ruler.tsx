@@ -75,7 +75,6 @@ const Ruler: React.FC<RulerProps> = ({ onDistanceChange }) => {
     return () => {
       map.off("click", handleMapClick);
       layer.current.clearLayers();
-      onDistanceChange(-1);
     };
   }, []);
 

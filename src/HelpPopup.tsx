@@ -97,6 +97,8 @@ const PopupBody = styled("div")(
   font-family: 'Roboto', sans-serif;
   font-size: 0.875rem;
   z-index: 1;
+  max-height: 80vh;
+  overflow: auto;
 `
 );
 

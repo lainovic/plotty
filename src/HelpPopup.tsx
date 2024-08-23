@@ -142,6 +142,7 @@ export default function CssTransitionComponent() {
             checkbox in front of the layer name. You can also overview the layer
             by clicking on the <span style={fmtStyles.emphasize}>center</span>{" "}
             button that is right next to the layer name.
+            <br />
             <h3 style={fmtStyles.header}>Points</h3>
             Navigate between points on a focused layer with the arrows in the
             popup or the keys <span style={fmtStyles.emphasize}>
@@ -153,6 +154,11 @@ export default function CssTransitionComponent() {
             <br />
             You can focus the map on a point by clicking the{" "}
             <span style={fmtStyles.emphasize}>center</span> button.
+            <br />
+            <h3 style={fmtStyles.header}>Go to a location</h3>
+            Press the <span style={fmtStyles.emphasize}>G</span> key to open the
+            dialog to enter coordinates to navigate to.
+            <br />
             <h3 style={fmtStyles.header}>Tiles</h3>
             Switch between tile providers using the selector in the lower left
             corner, or by using the keys{" "}
@@ -160,15 +166,20 @@ export default function CssTransitionComponent() {
             <span style={fmtStyles.emphasize}>K</span>.
             <br />
             For TomTom tiles, you will need to provide an API key.
+            <br />
             <h3 style={fmtStyles.header}>Ruler mode</h3>
             Go to ruler mode by pressing the{" "}
             <span style={fmtStyles.emphasize}>R</span> key. In ruler mode, you
             can measure distances between points by clicking on the map to add
             points to the ruler. You can drag the points around as well.
             <br />
+            The measured distance will be displayed in the ruler panel and
+            copied to the clipboard.
             <br />
-            Press the <span style={fmtStyles.emphasize}>?</span> key to toggle
-            this popup.
+            <div style={fmtStyles.help}>
+              Press the <span style={fmtStyles.emphasize}>?</span> key to toggle
+              this popup.
+            </div>
           </PopupBody>
         </CssTransition>
       </PopupWithTrigger>
@@ -225,6 +236,5 @@ const fmtStyles: { [key: string]: React.CSSProperties } = {
     height: "3vh",
     display: "flex",
     alignItems: "center",
-    paddingLeft: "10px",
   },
 };

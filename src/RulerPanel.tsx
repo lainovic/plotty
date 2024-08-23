@@ -32,7 +32,7 @@ const RulerPanel: React.FC = ({}) => {
           </div>
           {distance === -1 ? (
             <p style={styles.message}>
-              Click on the map to measure distance and copy it to clipboard
+              Click on the map to measure distance and copy it to the clipboard
             </p>
           ) : (
             <p style={styles.message}>

@@ -17,6 +17,7 @@ import LayerPanel from "./LayerPanel";
 import { getBoundingBox } from "./utils";
 import GeoLayer from "./layers/GeoLayer";
 import RulerPanel from "./RulerPanel";
+import GotoDialog from "./GotoDialog";
 
 function MapPlaceholder() {
   return (
@@ -113,6 +114,12 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
     }
   }
 
+  function handleCoordinatesChange(lat: number, lon: number) {
+    if (map.current) {
+      map.current.flyTo([lat, lon], 15, { duration: 0.5 });
+    }
+  }
+
   const RouteLayers: React.FC<{ paths: Path[] }> = React.memo(({ paths }) => {
     console.log(">>> rendering route layers");
     return paths.map(
@@ -155,6 +162,7 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
 
   return (
     <>
+      <GotoDialog onCoordinatesChange={handleCoordinatesChange} />
       <div style={styles.container}>
         <TileProviderSelector
           onTileProviderChanged={(tileProvider) => {

@@ -176,7 +176,7 @@ export default function CssTransitionComponent() {
             For TomTom tiles, you will need to provide an API key.
             <br />
             <h3 style={fmtStyles.header}>Ruler mode</h3>
-            Go to ruler mode by pressing the{" "}
+            Toggle ruler mode by pressing the{" "}
             <span style={fmtStyles.emphasize}>R</span> key. In ruler mode, you
             can measure distances between points by clicking on the map to add
             points to the ruler. You can drag the points around as well.

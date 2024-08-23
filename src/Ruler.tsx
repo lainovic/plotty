@@ -3,7 +3,7 @@
 import L, { LatLng } from "leaflet";
 import React from "react";
 import { useMap } from "react-leaflet";
-import { tomtomSecondaryColor } from "./colors";
+import { tomtomBlackColor } from "./colors";
 
 interface RulerProps {
   onDistanceChange: (distance: number) => void;
@@ -32,7 +32,7 @@ const Ruler: React.FC<RulerProps> = ({ onDistanceChange }) => {
           polyline.current = L.polyline(
             markers.current.map((marker) => marker.getLatLng()),
             {
-              color: tomtomSecondaryColor,
+              color: tomtomBlackColor,
             }
           ).addTo(layer.current); // add polyline to map
           onDistanceChange(getDistance(polyline.current));
@@ -47,7 +47,7 @@ const Ruler: React.FC<RulerProps> = ({ onDistanceChange }) => {
       polyline.current = L.polyline(
         markers.current.map((marker) => marker.getLatLng()),
         {
-          color: tomtomSecondaryColor,
+          color: tomtomBlackColor,
         }
       ).addTo(layer.current);
       onDistanceChange(getDistance(polyline.current));

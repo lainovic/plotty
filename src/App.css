@@ -21,7 +21,7 @@
 }
 
 .leaflet-ruler-marker {
-  background-color: var(--tt-secondary-color);
+  background-color: var(--tt-black-color);
   border-radius: 50%;
   width: 20px;
   height: 20px;

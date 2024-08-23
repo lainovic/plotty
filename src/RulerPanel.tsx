@@ -1,4 +1,4 @@
-import { tomtomSecondaryColor } from "./colors";
+import { tomtomBlackColor } from "./colors";
 import StraightenIcon from "@mui/icons-material/Straighten";
 import Ruler from "./Ruler";
 import React from "react";
@@ -76,7 +76,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontFamily: "'Roboto', sans-serif",
     zIndex: 1002,
     textTransform: "lowercase",
-    color: `${tomtomSecondaryColor}`,
+    color: tomtomBlackColor,
     fontSize: "1.0rem",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     textAlign: "center",

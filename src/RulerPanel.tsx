@@ -26,41 +26,26 @@ const RulerPanel: React.FC = ({}) => {
     rulerMode && (
       <>
         <div style={styles.overlay}></div>
-        <div
-          style={{
-            position: "fixed",
-            top: "80%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            backgroundColor: "rgb(255 255 255 / 0.2)",
-            padding: "10px",
-            borderRadius: "12px",
-            fontFamily: "'Roboto', sans-serif",
-            zIndex: 1002,
-            textTransform: "lowercase",
-            color: `${tomtomSecondaryColor}`,
-            fontSize: "1.0rem",
-            width: "200px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "4px",
-            }}
-          >
+        <div style={styles.panel}>
+          <div style={styles.iconContainer}>
             <StraightenIcon />
           </div>
-          <p>
-            Distance: {`${distance === -1 ? "N/A" : `${distance.toFixed(2)}M`}`}
-          </p>
+          {distance === -1 ? (
+            <p style={styles.message}>
+              Click on the map to measure distance and copy it to clipboard
+            </p>
+          ) : (
+            <p style={styles.message}>
+              Distance: {`${distance.toFixed(2)} meters`}
+            </p>
+          )}
         </div>
-        <Ruler onDistanceChange={setDistance} />
+        <Ruler
+          onDistanceChange={(distance) => {
+            setDistance(distance);
+            navigator.clipboard.writeText(distance.toFixed(2));
+          }}
+        />
       </>
     )
   );
@@ -73,10 +58,36 @@ const styles: { [key: string]: React.CSSProperties } = {
     position: "fixed",
     top: 0,
     left: 0,
-    width: "100vw",
-    height: "100vh",
-    backgroundColor: "rgba(0, 0, 0, 0.2)",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     zIndex: 1001,
     pointerEvents: "none",
+  },
+  panel: {
+    position: "fixed",
+    top: "80%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    padding: "20px",
+    borderRadius: "12px",
+    fontFamily: "'Roboto', sans-serif",
+    zIndex: 1002,
+    textTransform: "lowercase",
+    color: `${tomtomSecondaryColor}`,
+    fontSize: "1.0rem",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    textAlign: "center",
+  },
+  iconContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "4px",
+    marginBottom: "10px",
+  },
+  message: {
+    margin: "10px 0",
   },
 };

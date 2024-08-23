@@ -130,10 +130,10 @@ export default function CssTransitionComponent() {
               It can be a route from the routing API response, or simply a
               collection of geographic coordinates.
             </div>
-            To add a new layer, paste its contents into the app. If a layer is
-            successfully loaded, a toast notification will appear and the layer
-            will be displayed on the map, along with the layer panel on the
-            right.
+            To add a new layer, paste its contents into the app, or drag and
+            drop a file containing the layer. Once the layer is successfully
+            loaded, a toast notification will appear, and the layer will be
+            displayed on the map, along with the layer panel on the right.
             <div style={fmtStyles.help}>
               The layer panel contains a list of all layers currently loaded
               into the app.

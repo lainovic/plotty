@@ -49,6 +49,17 @@ function App() {
     setInputData(pastedText);
   };
 
+  const handleDrop = (event: React.DragEvent) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      const content = reader.result as string;
+      setInputData(content);
+    };
+    reader.readAsText(file);
+  };
+
   // TODO add support for dropping files
   // TODO add ruler mode
 
@@ -86,7 +97,14 @@ function App() {
   }
 
   return (
-    <div onPaste={handlePaste}>
+    <div
+      onPaste={handlePaste}
+      onDrop={handleDrop}
+      onDragOver={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+    >
       <header style={styles.header}>
         Plo<span style={styles.headerSpan}>tt</span>y
       </header>

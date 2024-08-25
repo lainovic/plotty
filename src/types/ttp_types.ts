@@ -27,11 +27,16 @@ export interface TtpPoint extends GeoPoint {
 }
 
 /**
+ * A counter to keep track of the number of TTP paths created.
+ */
+let counter = 0;
+
+/**
  * Represents a path coming from a TTP file.
  * Can't be just Path<TtpPoint> because instanceof doesn't work with types.
  */
 export class TtpPath extends Path<TtpPoint> {
   constructor(points: TtpPoint[]) {
-    super(points);
+    super(points, `TTP Path ${++counter}`);
   }
 }

@@ -2,7 +2,7 @@ import { MaybeParsed, Parser } from "./Parser";
 import { RoutePath } from "../types/route_types";
 import { Maybe } from "../types/common";
 
-const supportedJSONVersion = "0.0.12";
+const supportedVersion = "0.0.12";
 
 /**
  * Parses a JSON string containing route data and returns the parsed routes.
@@ -31,11 +31,11 @@ export default class RoutingResponseParser implements Parser<RoutePath[]> {
 
       const { formatVersion, routes } = json;
 
-      if (formatVersion !== supportedJSONVersion) {
+      if (formatVersion !== supportedVersion) {
         return Maybe.success({
           result: [],
           message: {
-            value: `Unsupported JSON version: ${json.formatVersion}, expected ${supportedJSONVersion}`,
+            value: `Unsupported JSON version: ${json.formatVersion}, expected ${supportedVersion}`,
           },
         });
       }

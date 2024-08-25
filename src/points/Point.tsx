@@ -7,6 +7,7 @@ import { tomtomPrimaryColor } from "../colors";
 export default function Point({
   index,
   point,
+  text = "",
   color = tomtomPrimaryColor,
   onMarkerReady = () => {},
   onClick = () => {},
@@ -15,6 +16,7 @@ export default function Point({
 }: {
   index: number;
   point: GeoPoint;
+  text?: string;
   color?: string;
   onMarkerReady?: (marker: L.CircleMarker | null) => void;
   onClick?: (index: number) => void;
@@ -40,7 +42,7 @@ export default function Point({
       <Popup>
         <PointPopup
           title={`${index}`}
-          text={`${point.latitude}, ${point.longitude}`}
+          text={text !== "" ? text :`${point.latitude}, ${point.longitude}`}
           onLocateClick={() => {
             map?.flyTo([point.latitude, point.longitude], 18, {
               animate: true,

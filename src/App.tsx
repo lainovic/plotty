@@ -10,6 +10,7 @@ import { ParsedResult } from "./parsers/Parser";
 import GeoPointsParser from "./parsers/GeoPointsParser";
 import { tomtomBlackColor, tomtomSecondaryColor } from "./colors";
 import CssTransitionComponent from "./HelpPopup";
+import TtpParser from "./parsers/TtpParser";
 
 function App() {
   const [inputData, setInputData] = React.useState<string>("");
@@ -25,6 +26,7 @@ function App() {
   const [isLoading, setLoading] = React.useState<boolean>(false);
 
   const routingResponseParser = new RoutingResponseParser();
+  const ttpParser = new TtpParser();
   const geoPointsParser = new GeoPointsParser();
 
   React.useEffect(() => {
@@ -60,9 +62,6 @@ function App() {
     reader.readAsText(file);
   };
 
-  // TODO add support for dropping files
-  // TODO add ruler mode
-
   function handleInput() {
     if (inputData === "") {
       return;
@@ -70,7 +69,11 @@ function App() {
     setLoading(true);
     setTimeout(() => {
       let parseSuccess = false;
-      for (const parser of [routingResponseParser, geoPointsParser]) {
+      for (const parser of [
+        routingResponseParser,
+        ttpParser,
+        geoPointsParser,
+      ]) {
         if (parseSuccess) {
           break;
         }

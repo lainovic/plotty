@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import TileProviderSelector from "./providers/TileProviderSelector";
 import { toast } from "react-toastify";
 import { TileProvider } from "./providers/TileProvider";
-import { GeoPath, Path, RoutePath } from "./types/paths";
+import { GeoPath, Path, RoutePath, TtpPath } from "./types/paths";
 import { openStreetMapTileProvider } from "./providers/const";
 import RouteLayer from "./layers/RouteLayer";
 import {
@@ -17,6 +17,7 @@ import { getBoundingBox } from "./utils";
 import GeoLayer from "./layers/GeoLayer";
 import RulerPanel from "./RulerPanel";
 import GotoDialog from "./GotoDialog";
+import TtpLayer from "./layers/TtpLayer";
 
 function MapPlaceholder() {
   return (
@@ -170,6 +171,24 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
     );
   });
 
+  const TtpLayers: React.FC<{ paths: Path[] }> = React.memo(({ paths }) => {
+    console.log(">>> rendering TTP layers");
+    return paths.map(
+      (path, index) =>
+        path.isNotEmpty() &&
+        path instanceof TtpPath && (
+          <TtpLayer
+            key={path.name}
+            path={path}
+            onLayerReady={(group) => {
+              setLayerGroup(index, group);
+            }}
+            color={getNewColor()}
+          />
+        )
+    );
+  });
+
   console.log(">>> rendering map");
 
   resetColorCounter();
@@ -203,6 +222,7 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
           <RulerPanel />
           <RouteLayers paths={paths} />
           <PointLayers paths={paths} />
+          <TtpLayers paths={paths} />
         </MapContainer>
         <LayerPanel
           style={styles.layerPanel}

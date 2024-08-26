@@ -40,6 +40,10 @@
   background-color: rgba(0, 0, 0, 0.1);
 }
 
+.leaflet-popup-content {
+  min-width: max-content;
+}
+
 .loader-spinner {
   border: 8px solid var(--tomtom-gray-color);
   border-top: 8px solid var(--tomtom-red-color);

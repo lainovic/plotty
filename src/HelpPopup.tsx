@@ -162,7 +162,11 @@ export default function CssTransitionComponent() {
             <br />
             <h3 style={fmtStyles.header}>Go to a location</h3>
             Press the <span style={fmtStyles.emphasize}>G</span> key to open the
-            dialog to enter coordinates to navigate to.
+            dialog to enter coordinates to navigate to. You can paste the pair
+            of coordinates into the latitude field and longitude will be
+            automatically filled in. Press the{" "}
+            <span style={fmtStyles.emphasize}>Enter</span> key to navigate to
+            the specified location.
             <br />
             You can also copy the coordinates of the current map center by
             right-clicking on the map.

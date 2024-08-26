@@ -70,9 +70,9 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
   React.useEffect(() => {
     map.current?.on("contextmenu", (e) => {
       const latlng = map.current!.mouseEventToLatLng(e.originalEvent);
-      const coordinates = `${latlng.lat}, ${latlng.lng}`;
+      const coordinates = `${latlng.lat.toFixed(5)}, ${latlng.lng.toFixed(5)}`;
       navigator.clipboard.writeText(coordinates);
-      toast.success("Coordinate copied to clipboard!");
+      toast.success("Coordinates copied to clipboard!");
     });
 
     return () => {

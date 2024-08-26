@@ -17,10 +17,10 @@ import { tomtomBlackColor, tomtomSecondaryColor } from "../colors";
  * Represents the available tile vendors that can be used to fetch map tiles.
  */
 enum TileVendors {
-  TomTomMaps = "TomTom Maps",
-  GoogleMap = "Google Maps",
   TomTomOrbisMaps = "TomTom Orbis Maps",
+  TomTomMaps = "TomTom Maps",
   OpenStreetMap = "Open Street Map",
+  GoogleMap = "Google Maps",
 }
 
 export class TileVendorIterable {
@@ -60,10 +60,10 @@ export default function TileProviderSelector({
 }) {
   const tileProviders = React.useRef<TileVendorMap>(
     new Map<TileVendors, TileProvider>([
+      [TileVendors.TomTomOrbisMaps, tomTomMapsOrbisTileProvider],
+      [TileVendors.TomTomMaps, tomtomMapsGenesisTileProvider],
       [TileVendors.OpenStreetMap, openStreetMapTileProvider],
       [TileVendors.GoogleMap, googleMapsTileProvider],
-      [TileVendors.TomTomMaps, tomtomMapsGenesisTileProvider],
-      [TileVendors.TomTomOrbisMaps, tomTomMapsOrbisTileProvider],
     ])
   );
 
@@ -123,7 +123,6 @@ export default function TileProviderSelector({
           ))}
         </Select>
         {selectedTileProvider instanceof AuthTileProvider && (
-          // TODO the text input does not work as expected
           <PasswordInput
             label="API key"
             value={selectedTileProvider.getApiKey() || ""}

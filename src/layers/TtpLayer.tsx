@@ -6,6 +6,7 @@ import Destination from "../points/Destination";
 import L from "leaflet";
 import React from "react";
 import { tomtomPrimaryColor } from "../colors";
+import { TtpPoint } from "../types/ttp_types";
 
 export default function TtpLayer({
   path,
@@ -77,10 +78,10 @@ export default function TtpLayer({
           key={index + 1}
           index={index + 1} // adjust index to match the original array
           point={point}
-          text={`latitude: ${point.latitude}, longitude: ${point.longitude}, speed: ${point.speed}, heading: ${point.heading}`}
           onMarkerReady={(marker) => {
             markers.current[index + 1] = marker;
           }}
+          content={<TtpText point={point} />}
           onGoingForward={handleGoingForward}
           onGoingBackward={handleGoingBackward}
           onClick={handleClick}
@@ -116,3 +117,24 @@ export default function TtpLayer({
     </LayerGroup>
   );
 }
+
+function TtpText({ point }: { point: TtpPoint }) {
+  return (
+    <div style={styles.container}>
+      {point.latitude.toFixed(5)}, {point.longitude.toFixed(5)}
+      <br />
+      Speed: {point.speed}
+      <br />
+      Heading: {point.heading.toFixed(2)}
+    </div>
+  );
+}
+
+const styles: { [key: string]: React.CSSProperties } = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+};

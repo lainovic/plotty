@@ -4,31 +4,27 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import AdsClickIcon from "@mui/icons-material/AdsClick";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
-import { toast } from "react-toastify";
 import { tomtomSecondaryColor } from "../colors";
 
 export default function PointPopup({
   title,
-  text,
+  content,
   onLocateClick = () => {},
   onLeftArrowClick = () => {},
   onRightArrowClick = () => {},
+  onCopyContentClick = () => {},
 }: {
   title: string;
-  text: string;
+  content: React.ReactNode;
   onLocateClick?: () => void;
   onLeftArrowClick?: () => void;
   onRightArrowClick?: () => void;
+  onCopyContentClick?: () => void;
 }) {
-  const handleCopy = () => {
-    navigator.clipboard.writeText(text);
-    toast.success("Coordiate copied to clipboard!");
-  };
-
   return (
     <div style={styles.popupContent}>
       <h3 style={styles.title}>{title}</h3>
-      {text}
+      {content}
       <IconButton aria-label="left" onClick={onLeftArrowClick}>
         <KeyboardArrowLeftIcon fontSize="small" />
       </IconButton>
@@ -38,7 +34,7 @@ export default function PointPopup({
       <IconButton aria-label="center" onClick={onLocateClick}>
         <AdsClickIcon fontSize="small" />
       </IconButton>
-      <IconButton aria-label="copy" onClick={handleCopy}>
+      <IconButton aria-label="copy" onClick={onCopyContentClick}>
         <ContentCopyIcon fontSize="small" />
       </IconButton>
     </div>
@@ -50,7 +46,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-around",
     gap: "0px",
   },
   title: {

@@ -100,10 +100,15 @@ function stopsFromSource(source: Route): RouteStop[] {
 }
 
 function instructionsFromSource(source: Route): RouteInstruction[] {
-  return source.guidance.instructions.map((instruction) => ({
-    point: instruction.maneuverPoint,
-    instruction: instruction.maneuver,
-  }));
+  try {
+    return source.guidance.instructions.map((instruction) => ({
+      point: instruction.maneuverPoint,
+      instruction: instruction.maneuver,
+    }));
+  } catch (error) {
+    console.error("Error parsing instructions from source: ", error);
+    return [];
+  }
 }
 
 export interface Route {

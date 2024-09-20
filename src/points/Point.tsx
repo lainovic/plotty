@@ -10,6 +10,7 @@ export default function Point({
   point,
   content = null,
   color = tomtomPrimaryColor,
+  radius = 4,
   onMarkerReady = () => {},
   onClick = () => {},
   onCopy = () => {
@@ -25,6 +26,7 @@ export default function Point({
   point: GeoPoint;
   content?: React.ReactNode;
   color?: string;
+  radius?: number;
   onMarkerReady?: (marker: L.CircleMarker | null) => void;
   onClick?: (index: number) => void;
   onCopy?: () => void;
@@ -39,8 +41,8 @@ export default function Point({
         onMarkerReady(r);
       }}
       center={[point.latitude, point.longitude]}
-      radius={4}
-      pathOptions={{ color: color }}
+      radius={radius}
+      pathOptions={{ color: color, fillOpacity: 1 }}
       eventHandlers={{
         click: () => {
           onClick(index);

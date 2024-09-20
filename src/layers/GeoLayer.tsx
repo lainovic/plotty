@@ -78,6 +78,7 @@ export default function GeoLayer({
           onGoingBackward={handleGoingBackward}
           onClick={handleClick}
           color={color}
+          radius={8}
         />
       ))}
     </LayerGroup>

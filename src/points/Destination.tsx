@@ -35,7 +35,7 @@ export default function Destination({
       <Popup>
         <PointPopup
           title="D"
-          text={`${point.latitude}, ${point.longitude}`}
+          content={`${point.latitude}, ${point.longitude}`}
           onLocateClick={() => {
             map?.flyTo([point.latitude, point.longitude], 18, {
               animate: true,

@@ -6,7 +6,7 @@ export default class GeoPointsParser implements Parser<GeoPath[]> {
   parse(text: string): MaybeParsed<GeoPath[]> {
     const regex_raw_coordinates = /([\d.-]+)[,\s]+([\d.-]+)/g;
     const regex_raw_coordinates_with_named_args =
-      /(?:lat|latitude)\s?[=:]\s?([\d.-]+)[,\s]+(?:lon|long|lng|longitude)\s?[=:]\s?([\d.-]+)/g;
+      /(?:["']?(?:lat|latitude)["']?)\s?[=:]\s?([\d.-]+)[,\s]+(?:["']?(?:lon|long|lng|longitude)["']?)\s?[=:]\s?([\d.-]+)/g;
     const regexes = [
       regex_raw_coordinates_with_named_args,
       regex_raw_coordinates,

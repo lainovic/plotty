@@ -247,6 +247,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     position: "fixed",
     top: "50%",
     right: "10px",
+    transform: "translateY(-50%)",
     backgroundColor: "rgba(255, 255, 255, 0.8)",
     fontFamily: "'Roboto', sans-serif",
     padding: "10px",

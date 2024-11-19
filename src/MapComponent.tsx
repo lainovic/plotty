@@ -27,7 +27,6 @@ function MapPlaceholder() {
   );
 }
 
-let colorCounter = 0;
 const layerColors = [
   tomtomPrimaryColor,
   tomtomSecondaryColor,
@@ -43,19 +42,9 @@ const layerColors = [
   "#A7FFEB",
 ];
 
-function increaseColorCounter() {
-  colorCounter = (colorCounter + 1) % layerColors.length;
-}
-
-function resetColorCounter() {
-  colorCounter = 0;
-}
-
-function getNewColor() {
-  const currentColor = layerColors[colorCounter];
-  increaseColorCounter();
-  return currentColor;
-}
+type TileProviderContainer = {
+  value: TileProvider;
+};
 
 /**
  * Renders a map view with provided paths.
@@ -66,13 +55,25 @@ function getNewColor() {
 export default function MapComponent({ paths }: { paths: Path[] }) {
   const map = React.useRef<L.Map | null>(null);
   const [mapReady, setMapReady] = React.useState(false);
+  const layerColorsMap = React.useRef<Map<string, string>>(new Map());
+  const colorCounter = React.useRef(0);
+
+  const increaseColorCounter = React.useCallback(() => {
+    colorCounter.current = (colorCounter.current + 1) % layerColors.length;
+    }, [colorCounter]);
+
+  const getNewColor = React.useCallback(() => {
+    const currentColor = layerColors[colorCounter.current];
+    increaseColorCounter();
+    return currentColor;
+  }, [colorCounter, increaseColorCounter]);
 
   React.useEffect(() => {
     map.current?.on("contextmenu", (e) => {
       const latlng = map.current!.mouseEventToLatLng(e.originalEvent);
       const coordinates = `${latlng.lat.toFixed(5)}, ${latlng.lng.toFixed(5)}`;
       navigator.clipboard.writeText(coordinates);
-      toast.success("Coordinates copied to clipboard!");
+      toast.success("Coordinates copied to clipboard.");
     });
 
     return () => {
@@ -80,8 +81,10 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
     };
   }, [mapReady]);
 
-  const [tileProvider, setTileProvider] = React.useState<TileProvider>(
-    openStreetMapTileProvider
+  const [tileProvider, setTileProvider] = React.useState<TileProviderContainer>(
+    {
+      value: openStreetMapTileProvider,
+    }
   );
 
   const layerGroups = React.useRef<Map<number, L.LayerGroup | null>>(new Map());
@@ -103,9 +106,9 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
     const newVisibility = !visibility.current.get(index);
     if (map.current) {
       if (newVisibility) {
-        layerGroups.current.get(index)!.addTo(map.current);
+        layerGroups.current.get(index)?.addTo(map.current);
       } else {
-        layerGroups.current.get(index)!.removeFrom(map.current);
+        layerGroups.current.get(index)?.removeFrom(map.current);
       }
     }
     visibility.current.set(index, newVisibility);
@@ -135,6 +138,17 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
     }
   }
 
+  const assignColorToLayer = React.useCallback(
+    (layerName: string) => {
+      if (!layerColorsMap.current?.has(layerName)) {
+        const newColor = getNewColor();
+        layerColorsMap.current?.set(layerName, newColor);
+      }
+      return layerColorsMap.current?.get(layerName);
+    },
+    [layerColorsMap]
+  );
+
   const RouteLayers: React.FC<{ paths: Path[] }> = React.memo(({ paths }) => {
     console.log(">>> rendering route layers");
     return paths.map(
@@ -144,10 +158,10 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
           <RouteLayer
             key={path.name}
             path={path}
+            color={assignColorToLayer(path.name)}
             onLayerReady={(group) => {
               setLayerGroup(index, group);
             }}
-            color={getNewColor()}
           />
         )
     );
@@ -162,10 +176,10 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
           <GeoLayer
             key={path.name}
             path={path}
+            color={assignColorToLayer(path.name)}
             onLayerReady={(group) => {
               setLayerGroup(index, group);
             }}
-            color={getNewColor()}
           />
         )
     );
@@ -180,10 +194,10 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
           <TtpLayer
             key={path.name}
             path={path}
+            color={assignColorToLayer(path.name)}
             onLayerReady={(group) => {
               setLayerGroup(index, group);
             }}
-            color={getNewColor()}
           />
         )
     );
@@ -191,20 +205,18 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
 
   console.log(">>> rendering map");
 
-  resetColorCounter();
-
   return (
     <>
       <GotoDialog onCoordinatesChange={handleCoordinatesChange} />
       <div style={styles.container}>
         <TileProviderSelector
           onTileProviderChanged={(tileProvider) => {
-            setTileProvider(tileProvider);
+            setTileProvider({ value: tileProvider });
           }}
         />
         <MapContainer
           style={styles.map}
-          center={[44.7866, 20.4489]} // Belgrade
+          center={[44.82, 20.41]} // New Belgrade
           zoom={11}
           minZoom={0}
           maxZoom={18}
@@ -216,8 +228,8 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
           placeholder={<MapPlaceholder />}
         >
           <TileLayer
-            attribution={tileProvider.getAttribution()}
-            url={tileProvider.getUrl()}
+            attribution={tileProvider.value.getAttribution()}
+            url={tileProvider.value.getUrl()}
           />
           <RulerPanel />
           <RouteLayers paths={paths} />

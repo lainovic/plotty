@@ -25,13 +25,44 @@ function App() {
 
   const [isLoading, setLoading] = React.useState<boolean>(false);
 
-  const routingResponseParser = new RoutingResponseParser();
-  const ttpParser = new TtpParser();
-  const geoPointsParser = new GeoPointsParser();
-
   React.useEffect(() => {
     handleInput();
   }, [inputData]);
+
+  React.useEffect(() => {
+    const handlePaste = (event: ClipboardEvent) => {
+      event.preventDefault();
+      const pastedText = event.clipboardData?.getData("text");
+      setInputData(pastedText || "");
+    };
+
+    const handleDrop = (event: DragEvent) => {
+      event.preventDefault();
+      const file = event.dataTransfer?.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const content = reader.result as string;
+          setInputData(content);
+        };
+        reader.readAsText(file);
+      }
+    };
+
+    document.body.addEventListener("paste", handlePaste);
+    document.body.addEventListener("drop", handleDrop);
+    document.body.addEventListener("dragover", (event) =>
+      event.preventDefault()
+    );
+
+    return () => {
+      document.body.removeEventListener("paste", handlePaste);
+      document.body.removeEventListener("drop", handleDrop);
+      document.body.removeEventListener("dragover", (event) =>
+        event.preventDefault()
+      );
+    };
+  }, []);
 
   React.useEffect(() => {
     if (failureMessage && failureMessage.value !== "") {
@@ -45,23 +76,6 @@ function App() {
     }
   }, [successMessage]);
 
-  const handlePaste = (event: React.ClipboardEvent) => {
-    event.preventDefault();
-    const pastedText = event.clipboardData.getData("text");
-    setInputData(pastedText);
-  };
-
-  const handleDrop = (event: React.DragEvent) => {
-    event.preventDefault();
-    const file = event.dataTransfer.files[0];
-    const reader = new FileReader();
-    reader.onload = () => {
-      const content = reader.result as string;
-      setInputData(content);
-    };
-    reader.readAsText(file);
-  };
-
   function handleInput() {
     if (inputData === "") {
       return;
@@ -70,9 +84,9 @@ function App() {
     setTimeout(() => {
       let parseSuccess = false;
       for (const parser of [
-        routingResponseParser,
-        ttpParser,
-        geoPointsParser,
+        new RoutingResponseParser(),
+        new TtpParser(),
+        new GeoPointsParser(),
       ]) {
         if (parseSuccess) {
           break;
@@ -80,8 +94,7 @@ function App() {
         parser
           .parse(inputData)
           .ifSuccess((parsedPaths: ParsedResult<Path[]>) => {
-            console.log(`Parsed successfully with ${parser.constructor.name}!`);
-            console.log(parsedPaths);
+            console.log(`>>> parse successful with ${parser.constructor.name}!`);
             setSuccessMessage({
               value: parsedPaths.message.value,
             });
@@ -89,7 +102,7 @@ function App() {
             parseSuccess = true;
           })
           .ifFailure((error) => {
-            console.log(`Error: ${error.value}`);
+            console.log(`>>> parse error: ${error.value}`);
           });
       }
       if (!parseSuccess) {
@@ -100,14 +113,7 @@ function App() {
   }
 
   return (
-    <div
-      onPaste={handlePaste}
-      onDrop={handleDrop}
-      onDragOver={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      }}
-    >
+    <div>
       <header style={styles.header}>
         Plo<span style={styles.headerSpan}>tt</span>y
       </header>
@@ -161,4 +167,5 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: `${tomtomSecondaryColor}`,
   },
 };
+
 export default App;

@@ -14,7 +14,7 @@ export default function RouteLayer({
 }: {
   path: RoutePath;
   onLayerReady?: (layer: L.LayerGroup | null) => void;
-  color?: string;
+  color?: string
 }) {
   const origin = path.points[0];
   const destination = path.points[path.points.length - 1];

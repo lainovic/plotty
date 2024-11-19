@@ -5,13 +5,12 @@ import Origin from "../points/Origin";
 import Destination from "../points/Destination";
 import L from "leaflet";
 import React from "react";
-import { tomtomPrimaryColor } from "../colors";
 import { TtpPoint } from "../types/ttp_types";
 
 export default function TtpLayer({
   path,
   onLayerReady = () => {},
-  color = tomtomPrimaryColor,
+  color,
 }: {
   path: TtpPath;
   onLayerReady?: (layer: L.LayerGroup | null) => void;

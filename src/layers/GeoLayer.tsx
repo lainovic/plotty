@@ -1,4 +1,3 @@
-import { tomtomPrimaryColor } from "../colors";
 import { GeoPath } from "../types/geo_types";
 import Point from "../points/Point";
 import { LayerGroup, useMap } from "react-leaflet";
@@ -7,7 +6,7 @@ import React from "react";
 export default function GeoLayer({
   path,
   onLayerReady = () => {},
-  color = tomtomPrimaryColor,
+  color,
 }: {
   path: GeoPath;
   onLayerReady?: (layer: L.LayerGroup | null) => void;

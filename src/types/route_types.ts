@@ -1,13 +1,19 @@
 import { GeoPoint } from "./geo_types";
 import { Path } from "./common";
-import { dropFirst, last, dropLast, first } from "../utils";
+import {
+  dropFirst,
+  last,
+  dropLast,
+  first,
+  GooglePolylineEncodingUtil,
+} from "../utils";
 
 /**
  * Represents a geographic point along a route, with optional metadata such as speed, timestamp, and heading.
  *
- * @property {number | null} speed - The speed at the geographic point, or null if not available.
- * @property {number | null} timestamp - The timestamp at the geographic point, or null if not available.
- * @property {number | null} heading - The heading at the geographic point, or null if not available.
+ * @property {number | null} speed - The speed at the geographic point, initially null.
+ * @property {number | null} timestamp - The timestamp at the geographic point, initially null.
+ * @property {number | null} heading - The heading at the geographic point, initially null.
  */
 export interface RoutePoint extends GeoPoint {
   speed: number | null;
@@ -25,6 +31,17 @@ export interface RoutePoint extends GeoPoint {
 export type RouteStop = {
   point: GeoPoint;
   name: string | null;
+};
+
+/**
+ * Represents a leg of a route, which is a sequence of geographic points with a summary.
+ *
+ * @property {Summary} summary - The summary of the route leg.
+ * @property {GeoPoint[]} points - The geographic points that make up the route leg.
+ */
+type RouteLeg = {
+  summary: Summary;
+  points: GeoPoint[];
 };
 
 /**
@@ -51,55 +68,91 @@ let counter = 0;
  * @property {RouteInstruction[]} instructions - The guidance instructions along the route.
  */
 export class RoutePath extends Path<RoutePoint> {
+  legs: RouteLeg[];
   stops: RouteStop[];
   instructions: RouteInstruction[];
-  readonly source: Route;
+  readonly source: RouteModel;
 
-  constructor(source: Route) {
-    super(pointsFromSource(source), `Route ${++counter}`);
-    this.stops = stopsFromSource(source);
+  constructor(source: RouteModel) {
+    console.log(`source`, source);
+    super([], `Route ${++counter}`);
+    this.legs = legsFromSource(source);
+    this.points = toRoutePoints(pointsFromLegs(this.legs));
+    this.stops = stopsFromLegs(this.legs);
     this.instructions = instructionsFromSource(source);
     this.source = source;
   }
 }
 
-function pointsFromSource(source: Route): RoutePoint[] {
-  return source.legs
-    .flatMap((leg, index) => {
-      if (index > 0) {
-        return dropFirst(leg.points);
-      } else {
-        return leg.points;
-      }
-    })
-    .map((point) => ({
-      latitude: point.latitude,
-      longitude: point.longitude,
-      speed: null,
-      timestamp: null,
-      heading: null,
-    }));
+function legsFromSource(source: RouteModel): RouteLeg[] {
+  if (isEncodedPolyline(source)) {
+    return decodeRouteLegs(source);
+  } else {
+    return extractRouteLegs(source);
+  }
 }
 
-function stopsFromSource(source: Route): RouteStop[] {
+function isEncodedPolyline(source: RouteModel): boolean {
+  return source.legs.length > 0 && source.legs[0].encodedPolyline !== null;
+}
+
+function pointsFromLegs(legs: RouteLeg[]): GeoPoint[] {
+  return legs.flatMap((leg, index) => {
+    return index === 0 ? leg.points : dropFirst(leg.points);
+  });
+}
+
+function toRoutePoints(points: GeoPoint[]): RoutePoint[] {
+  return points.map((point) => ({
+    ...point,
+    speed: null,
+    timestamp: null,
+    heading: null,
+  }));
+}
+
+function decodeRouteLegs(source: RouteModel): RouteLeg[] {
+  return source.legs.map((leg) => {
+    const decodedPolyline = GooglePolylineEncodingUtil.decode(
+      leg.encodedPolyline ?? "",
+      leg.encodedPolylinePrecision ?? 5
+    );
+    return {
+      summary: leg.summary,
+      points: decodedPolyline,
+    };
+  });
+}
+
+function extractRouteLegs(source: RouteModel): RouteLeg[] {
+  return source.legs.map((leg) => ({
+    summary: leg.summary,
+    points: leg.points,
+  }));
+}
+
+function stopsFromLegs(legs: RouteLeg[]): RouteStop[] {
   const departure = {
-    point: first(first(source.legs).points),
+    point: first(first(legs).points),
     name: "Departure",
   };
+
   const destination = {
-    point: last(last(source.legs).points),
+    point: last(last(legs).points),
     name: "Destination",
   };
-  const waypoints = dropLast(source.legs.map((leg) => last(leg.points))).map(
+
+  const waypoints = dropLast(legs.map((leg) => last(leg.points))).map(
     (point) => ({
       point,
       name: "Waypoint",
     })
   );
+
   return [departure, ...waypoints, destination];
 }
 
-function instructionsFromSource(source: Route): RouteInstruction[] {
+function instructionsFromSource(source: RouteModel): RouteInstruction[] {
   try {
     return source.guidance.instructions.map((instruction) => ({
       point: instruction.maneuverPoint,
@@ -111,8 +164,10 @@ function instructionsFromSource(source: Route): RouteInstruction[] {
   }
 }
 
-export interface Route {
+export interface RouteModel {
   legs: {
+    encodedPolyline: string | null;
+    encodedPolylinePrecision: number | null;
     points: {
       latitude: number;
       longitude: number;

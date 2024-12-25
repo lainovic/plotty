@@ -1,5 +1,5 @@
 import React from "react";
-import { MapContainer, TileLayer } from "react-leaflet";
+import { MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import TileProviderSelector from "./providers/TileProviderSelector";
 import { toast } from "react-toastify";
@@ -60,7 +60,7 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
 
   const increaseColorCounter = React.useCallback(() => {
     colorCounter.current = (colorCounter.current + 1) % layerColors.length;
-    }, [colorCounter]);
+  }, [colorCounter]);
 
   const getNewColor = React.useCallback(() => {
     const currentColor = layerColors[colorCounter.current];
@@ -219,7 +219,7 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
           center={[44.82, 20.41]} // New Belgrade
           zoom={11}
           minZoom={0}
-          maxZoom={18}
+          maxZoom={tileProvider.value.getMaxZoom()}
           scrollWheelZoom
           ref={(r) => {
             map.current = r;
@@ -230,7 +230,10 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
           <TileLayer
             attribution={tileProvider.value.getAttribution()}
             url={tileProvider.value.getUrl()}
+            minZoom={0}
+            maxZoom={tileProvider.value.getMaxZoom()}
           />
+          <ZoomText />
           <RulerPanel />
           <RouteLayers paths={paths} />
           <PointLayers paths={paths} />
@@ -248,7 +251,44 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
   );
 }
 
+function ZoomText() {
+  const [text, setText] = React.useState("");
+
+  const mapEvents = useMapEvents({
+    zoomend: (e) => {
+      setText(`Zoom level ${e.target.getZoom()}`);
+    },
+  });
+
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      setText("");
+    }, 500);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [text]);
+
+  return text !== "" ? (
+    <div style={styles.zoomLevelText}>
+      <p>{text}</p>
+    </div>
+  ) : null;
+}
+
 const styles: { [key: string]: React.CSSProperties } = {
+  zoomLevelText: {
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translateY(-50%) translateX(-50%)",
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    fontFamily: "'Roboto', sans-serif",
+    padding: "8px",
+    borderRadius: "16px",
+    zIndex: 1001,
+  },
   container: {
     display: "flex",
     flexDirection: "column",
@@ -268,6 +308,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    transition: "transform 0.3s ease-in-out",
   },
   map: {
     width: "100vw",

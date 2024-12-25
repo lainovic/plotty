@@ -5,16 +5,15 @@ import Origin from "../points/Origin";
 import Destination from "../points/Destination";
 import L from "leaflet";
 import React from "react";
-import { tomtomPrimaryColor } from "../colors";
 
 export default function RouteLayer({
   path,
   onLayerReady = () => {},
-  color = tomtomPrimaryColor,
+  color,
 }: {
   path: RoutePath;
   onLayerReady?: (layer: L.LayerGroup | null) => void;
-  color?: string
+  color?: string;
 }) {
   const origin = path.points[0];
   const destination = path.points[path.points.length - 1];

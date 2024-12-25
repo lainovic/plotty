@@ -1,23 +1,30 @@
-// TODO add max zoom level?
 export class TileProvider {
   protected name: string;
   protected attribution: string;
   protected url: string;
+  protected maxZoom: number;
 
-  constructor(name: string, attribution: string, url: string) {
+  constructor(name: string, attribution: string, url: string, maxZoom: number) {
     this.name = name;
     this.attribution = attribution;
     this.url = url;
+    this.maxZoom = maxZoom;
   }
 
   getAttribution(): string {
     return this.attribution;
   }
+
   getUrl(): string {
     return this.url;
   }
+
   toString(): string {
     return this.name;
+  }
+
+  getMaxZoom(): number {
+    return this.maxZoom;
   }
 }
 
@@ -29,9 +36,10 @@ export class AuthTileProvider extends TileProvider {
     name: string,
     attribution: string,
     url: string,
-    localStorageKey: string
+    localStorageKey: string,
+    maxZoom: number
   ) {
-    super(name, attribution, url);
+    super(name, attribution, url, maxZoom);
     this.localStorageKey = localStorageKey;
     this.apiKey = localStorage.getItem(localStorageKey);
   }

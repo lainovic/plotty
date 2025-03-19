@@ -26,11 +26,14 @@ export interface RoutePoint extends GeoPoint {
  * also known as a waypoint.
  *
  * @property {GeoPoint} point - The geographic coordinates of the route stop.
+ * @property {number} index - The index in the route points array.
  * @property {string | null} name - The name of the route stop, or null if not available.
  */
 export type RouteStop = {
   point: GeoPoint;
+  index: number;
   name: string | null;
+  isChargingStation: boolean;
 };
 
 /**
@@ -74,11 +77,10 @@ export class RoutePath extends Path<RoutePoint> {
   readonly source: RouteModel;
 
   constructor(source: RouteModel) {
-    console.log(`source`, source);
     super([], `Route ${++counter}`);
     this.legs = legsFromSource(source);
     this.points = toRoutePoints(pointsFromLegs(this.legs));
-    this.stops = stopsFromLegs(this.legs);
+    this.stops = stopsFromPath(this);
     this.instructions = instructionsFromSource(source);
     this.source = source;
   }
@@ -93,7 +95,7 @@ function legsFromSource(source: RouteModel): RouteLeg[] {
 }
 
 function isEncodedPolyline(source: RouteModel): boolean {
-  return source.legs.length > 0 && source.legs[0].encodedPolyline !== null;
+  return source.legs.length > 0 && source.legs[0].encodedPolyline !== undefined;
 }
 
 function pointsFromLegs(legs: RouteLeg[]): GeoPoint[] {
@@ -131,25 +133,56 @@ function extractRouteLegs(source: RouteModel): RouteLeg[] {
   }));
 }
 
-function stopsFromLegs(legs: RouteLeg[]): RouteStop[] {
-  const departure = {
+function stopsFromPath(path: RoutePath): RouteStop[] {
+  const legs = path.legs;
+
+  const origin = {
     point: first(first(legs).points),
+    index: 0,
     name: "Departure",
+    isChargingStation: false
   };
 
   const destination = {
     point: last(last(legs).points),
+    index: path.points.length - 1,
     name: "Destination",
+    isChargingStation: false,
   };
 
-  const waypoints = dropLast(legs.map((leg) => last(leg.points))).map(
-    (point) => ({
-      point,
-      name: "Waypoint",
-    })
-  );
+  const waypoints = waypointsFromPath(path);
 
-  return [departure, ...waypoints, destination];
+  return [origin, ...waypoints, destination];
+}
+
+function waypointsFromPath(path: RoutePath): RouteStop[] {
+  let index = 0;
+
+  const seekPointIndex = (index: number, point: GeoPoint) => {
+    while (index < path.points.length && 
+      path.points[index].latitude !== point.latitude &&
+      path.points[index].longitude !== point.longitude
+    ) {
+      index++;
+    }
+    return index;
+  };
+
+  const stops = dropLast(
+      path.legs.map(
+        (leg) => ({ isCs: leg.summary.chargingInformationAtEndOfLeg !== undefined, point: last(leg.points) })
+      )
+    ).map(({ isCs,  point }) => {
+    index = seekPointIndex(index, point);
+    return {
+      point,
+      index,
+      name: "Waypoint",
+      isChargingStation: isCs
+    };
+  });
+
+  return stops;
 }
 
 function instructionsFromSource(source: RouteModel): RouteInstruction[] {
@@ -166,8 +199,8 @@ function instructionsFromSource(source: RouteModel): RouteInstruction[] {
 
 export interface RouteModel {
   legs: {
-    encodedPolyline: string | null;
-    encodedPolylinePrecision: number | null;
+    encodedPolyline?: string;
+    encodedPolylinePrecision?: number;
     points: {
       latitude: number;
       longitude: number;
@@ -185,13 +218,13 @@ export interface RouteModel {
 interface Summary {
   departureTime: string;
   arrivalTime: string;
-  historicTrafficTravelTimeInSeconds: number;
   lengthInMeters: number;
-  liveTrafficIncidentsTravelTimeInSeconds: number;
-  noTrafficTravelTimeInSeconds: number;
   trafficDelayInSeconds: number;
   trafficLengthInMeters: number;
   travelTimeInSeconds: number;
+  remainingChargeAtArrivalInkWh?: number;
+  totalChargingTimeInSeconds?: number;
+  chargingInformationAtEndOfLeg?: Record<string, unknown>
 }
 
 interface GuidanceInstruction {

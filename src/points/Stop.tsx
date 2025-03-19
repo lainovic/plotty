@@ -2,20 +2,24 @@ import { GeoPoint } from "../types/geo_types";
 import { Marker, Popup, useMap } from "react-leaflet";
 import PointPopup from "./PointPopup";
 import L from "leaflet";
-import { destinationIcon } from "../icons";
+import { waypointIcon, evWaypointIcon } from "../icons";
 
-export default function Destination({
+export default function Stop({
+  index,
   point,
+  isChargingStation = false,
   onMarkerReady = () => {},
-  onClick: onDestinationClick = () => {},
   onGoingForward = () => {},
   onGoingBackward = () => {},
+  onClick = () => {},
 }: {
+  index: number;
   point: GeoPoint;
+  isChargingStation: boolean;
   onMarkerReady?: (marker: L.Marker | null) => void;
-  onClick?: () => void;
   onGoingForward?: () => void;
   onGoingBackward?: () => void;
+  onClick?: () => void;
 }) {
   const map = useMap();
 
@@ -25,16 +29,16 @@ export default function Destination({
         onMarkerReady(r);
       }}
       position={[point.latitude, point.longitude]}
-      icon={destinationIcon}
+      icon={isChargingStation ? evWaypointIcon : waypointIcon}
       eventHandlers={{
         click: () => {
-          onDestinationClick();
+          onClick();
         },
       }}
     >
       <Popup>
         <PointPopup
-          title="D"
+          title={`${index}`}
           content={`${point.latitude}, ${point.longitude}`}
           onLocateClick={() => {
             map?.flyTo([point.latitude, point.longitude], 18, {

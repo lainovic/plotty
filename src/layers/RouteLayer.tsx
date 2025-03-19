@@ -5,6 +5,7 @@ import Origin from "../points/Origin";
 import Destination from "../points/Destination";
 import L from "leaflet";
 import React from "react";
+import Stop from "../points/Stop";
 
 export default function RouteLayer({
   path,
@@ -18,8 +19,12 @@ export default function RouteLayer({
   const origin = path.points[0];
   const destination = path.points[path.points.length - 1];
 
-  const markers = React.useRef<(L.Layer | null)[]>(
+  const pointMarkers = React.useRef<(L.Layer | null)[]>(
     new Array(path.points.length).fill(null)
+  );
+
+  const stopMarkers = React.useRef<(L.Layer | null)[]>(
+    new Array(path.stops.length).fill(null)
   );
 
   let currentFocusedIndex: number = 0;
@@ -35,16 +40,16 @@ export default function RouteLayer({
   };
 
   const handleGoingForward = () => {
-    markers.current[currentFocusedIndex]!.closePopup();
+    pointMarkers.current[currentFocusedIndex]!.closePopup();
     currentFocusedIndex = (currentFocusedIndex + 1) % path.points.length;
-    markers.current[currentFocusedIndex]!.openPopup();
+    pointMarkers.current[currentFocusedIndex]!.openPopup();
   };
 
   const handleGoingBackward = () => {
-    markers.current[currentFocusedIndex]!.closePopup();
+    pointMarkers.current[currentFocusedIndex]!.closePopup();
     currentFocusedIndex =
       (currentFocusedIndex - 1 + path.points.length) % path.points.length;
-    markers.current[currentFocusedIndex]!.openPopup();
+    pointMarkers.current[currentFocusedIndex]!.openPopup();
   };
 
   React.useEffect(() => {
@@ -77,7 +82,7 @@ export default function RouteLayer({
           key={index + 1}
           point={point}
           onMarkerReady={(marker) => {
-            markers.current[index + 1] = marker;
+            pointMarkers.current[index + 1] = marker;
           }}
           onGoingForward={handleGoingForward}
           onGoingBackward={handleGoingBackward}
@@ -85,15 +90,29 @@ export default function RouteLayer({
           color={color}
         />
       ))}
+      {path.stops.map((stop, index) => (
+        <Stop
+          key={index}
+          index={stop.index}
+          point={stop.point}
+          isChargingStation={stop.isChargingStation}
+          onGoingForward={handleGoingForward}
+          onGoingBackward={handleGoingBackward}
+          onClick={() => {
+            currentFocusedIndex = stop.index;
+            isLayerFocused.current = true;
+          }}
+        />
+      ))}
       <Origin
         key={0}
         point={origin}
         onMarkerReady={(marker) => {
-          markers.current[0] = marker;
+          pointMarkers.current[0] = marker;
         }}
         onGoingForward={handleGoingForward}
         onGoingBackward={handleGoingBackward}
-        onOriginClick={() => {
+        onClick={() => {
           currentFocusedIndex = 0;
           isLayerFocused.current = true;
         }}
@@ -102,11 +121,11 @@ export default function RouteLayer({
         key={path.points.length - 1}
         point={destination}
         onMarkerReady={(marker) => {
-          markers.current[path.points.length - 1] = marker;
+          pointMarkers.current[path.points.length - 1] = marker;
         }}
         onGoingForward={handleGoingForward}
         onGoingBackward={handleGoingBackward}
-        onDestinationClick={() => {
+        onClick={() => {
           currentFocusedIndex = path.points.length - 1;
           isLayerFocused.current = true;
         }}

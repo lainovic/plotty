@@ -254,7 +254,7 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
 function ZoomText() {
   const [text, setText] = React.useState("");
 
-  const mapEvents = useMapEvents({
+  useMapEvents({
     zoomend: (e) => {
       setText(`Zoom level ${e.target.getZoom()}`);
     },

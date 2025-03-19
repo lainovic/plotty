@@ -21,7 +21,6 @@ export class Path<T> {
   constructor(points: T[], name: string = "") {
     this.points = points;
     this.name = name;
-    console.log(`Path ${name} created with ${points.length} points`);
   }
 }
 

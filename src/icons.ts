@@ -14,6 +14,13 @@ export const waypointIcon = new Icon({
   popupAnchor: [0, -30],
 });
 
+export const evWaypointIcon = new Icon({
+  iconUrl: "icons/ev_waypoint.png",
+  iconSize: [40, 52],
+  iconAnchor: [20, 52],
+  popupAnchor: [0, -30],
+});
+
 
 export const destinationIcon = new Icon({
   iconUrl: "icons/destination.png",

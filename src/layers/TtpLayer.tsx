@@ -95,7 +95,7 @@ export default function TtpLayer({
         }}
         onGoingForward={handleGoingForward}
         onGoingBackward={handleGoingBackward}
-        onOriginClick={() => {
+        onClick={() => {
           currentFocusedIndex = 0;
           isLayerFocused.current = true;
         }}
@@ -108,7 +108,7 @@ export default function TtpLayer({
         }}
         onGoingForward={handleGoingForward}
         onGoingBackward={handleGoingBackward}
-        onDestinationClick={() => {
+        onClick={() => {
           currentFocusedIndex = path.points.length - 1;
           isLayerFocused.current = true;
         }}

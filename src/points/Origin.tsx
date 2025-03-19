@@ -7,13 +7,13 @@ import { originIcon } from "../icons";
 export default function Origin({
   point,
   onMarkerReady = () => {},
-  onOriginClick = () => {},
+  onClick: onOriginClick = () => {},
   onGoingForward = () => {},
   onGoingBackward = () => {},
 }: {
   point: GeoPoint;
   onMarkerReady?: (marker: L.Marker | null) => void;
-  onOriginClick?: () => void;
+  onClick?: () => void;
   onGoingForward?: () => void;
   onGoingBackward?: () => void;
 }) {

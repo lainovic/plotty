@@ -41,7 +41,7 @@ export default class RoutingResponseParser implements Parser<RoutePath[]> {
       }
 
       if (routes && Array.isArray(routes)) {
-        console.log(`routes`, routes);
+        console.log(`>>> routes`, routes);
         return Maybe.success({
           result: routes.map((route) => new RoutePath(route)),
           message: { value: "Parsed JSON" },

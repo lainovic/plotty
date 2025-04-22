@@ -11,6 +11,7 @@ export default function Point({
   content = null,
   color = tomtomPrimaryColor,
   radius = 4,
+  highlighted = false,
   onMarkerReady = () => {},
   onClick = () => {},
   onCopy = () => {
@@ -27,6 +28,7 @@ export default function Point({
   content?: React.ReactNode;
   color?: string;
   radius?: number;
+  highlighted?: boolean;
   onMarkerReady?: (marker: L.CircleMarker | null) => void;
   onClick?: (index: number) => void;
   onCopy?: () => void;
@@ -35,19 +37,29 @@ export default function Point({
 }) {
   const map = useMap();
 
+  const fillOpacity = highlighted ? 0.8 : 0.6;
+  const actualRadius = highlighted ? radius * 1.3 : radius;
+  const weight = highlighted ? 3 : 1;
+
   return (
     <CircleMarker
       ref={(r) => {
         onMarkerReady(r);
       }}
       center={[point.latitude, point.longitude]}
-      radius={radius}
-      pathOptions={{ color: color, fillOpacity: 1 }}
+      radius={actualRadius}
+      pathOptions={{
+        color: color,
+        fillOpacity: fillOpacity,
+        weight: weight,
+        fillColor: highlighted ? color : undefined,
+      }}
       eventHandlers={{
         click: () => {
           onClick(index);
         },
       }}
+      fillColor=""
     >
       <Popup>
         <PointPopup

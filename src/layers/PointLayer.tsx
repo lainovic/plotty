@@ -2,6 +2,8 @@ import { GeoPath } from "../types/geo_types";
 import Point from "../points/Point";
 import { LayerGroup, useMap } from "react-leaflet";
 import React from "react";
+import { useMapLayer } from "./useMapLayer";
+import { usePointFocus } from "./usePointFocus";
 
 export default function PointLayer({
   path,
@@ -14,86 +16,30 @@ export default function PointLayer({
   color?: string;
   visible?: boolean;
 }) {
-  const map = useMap();
-  const layerGroupRef = React.useRef<L.LayerGroup | null>(null);
-  const markers = React.useRef<(L.Layer | null)[]>(
-    new Array(path.points.length).fill(null)
-  );
+  const layerRef = React.useRef<L.LayerGroup | null>(null);
+  const [layerReady, setLayerReady] = React.useState(false);
 
-  const [activePointIndex, setActivePointIndex] = React.useState<number>(0);
-  const isLayerFocused = React.useRef(false);
+  useMapLayer({
+    visible,
+    onLayerReady,
+    layerRef,
+    ready: layerReady,
+  });
 
-  React.useEffect(() => {
-    const handleMapClick = () => {
-      isLayerFocused.current = false;
-    };
-
-    map.on("click", handleMapClick);
-
-    return () => {
-      map.off("click", handleMapClick);
-    };
-  }, [map]);
-
-  React.useEffect(() => {
-    if (!map) return;
-
-    if (visible) {
-      layerGroupRef.current?.addTo(map);
-    } else {
-      layerGroupRef.current?.removeFrom(map);
-    }
-  }, [visible, map]);
-
-  const handleClick = (index: number) => {
-    setActivePointIndex(index);
-    isLayerFocused.current = true;
-  };
-
-  const handleGoingForward = () => {
-    markers.current[activePointIndex]?.closePopup();
-
-    const newIndex = (activePointIndex + 1) % path.points.length;
-    setActivePointIndex(newIndex);
-
-    markers.current[newIndex]?.openPopup();
-  };
-
-  const handleGoingBackward = () => {
-    markers.current[activePointIndex]?.closePopup();
-
-    const newIndex =
-      (activePointIndex - 1 + path.points.length) % path.points.length;
-    setActivePointIndex(newIndex);
-
-    markers.current[newIndex]?.openPopup();
-  };
-
-  React.useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (!isLayerFocused.current) {
-        return;
-      }
-
-      const key = event.key.toLowerCase();
-      if (key === "l") {
-        handleGoingForward();
-      } else if (key === "h") {
-        handleGoingBackward();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
+  const {
+    activePointIndex,
+    isLayerFocused,
+    handlePointClick,
+    handleGoingForward,
+    handleGoingBackward,
+    setMarkerRef,
+  } = usePointFocus(path.points.length);
 
   return (
     <LayerGroup
       ref={(r) => {
-        layerGroupRef.current = r;
-        onLayerReady(r);
+        layerRef.current = r;
+        if (r) setLayerReady(true);
       }}
     >
       {path.points.map((point, index) => (
@@ -101,14 +47,13 @@ export default function PointLayer({
           index={index}
           key={index}
           point={point}
-          onMarkerReady={(marker) => {
-            markers.current[index] = marker;
-          }}
+          onMarkerReady={(marker) => setMarkerRef(index, marker)}
           onGoingForward={handleGoingForward}
           onGoingBackward={handleGoingBackward}
-          onClick={handleClick}
+          onClick={handlePointClick}
           color={color}
           radius={8}
+          highlighted={activePointIndex === index && isLayerFocused.current}
         />
       ))}
     </LayerGroup>

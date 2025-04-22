@@ -1,6 +1,6 @@
 import { GeoPath } from "../types/geo_types";
 import Point from "../points/Point";
-import { LayerGroup, useMap } from "react-leaflet";
+import { LayerGroup } from "react-leaflet";
 import React from "react";
 import { useMapLayer } from "./useMapLayer";
 import { usePointFocus } from "./usePointFocus";

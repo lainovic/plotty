@@ -164,6 +164,7 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
             key={path.name}
             path={path}
             color={assignColorToLayer(path.name)}
+            visible={visibility.current.get(index) || false}
             onLayerReady={(group) => {
               setLayerGroup(index, group);
             }}

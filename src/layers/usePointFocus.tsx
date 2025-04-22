@@ -3,8 +3,8 @@ import L from "leaflet";
 import React from "react";
 
 export function usePointFocus(pointCount: number) {
-  const [activePointIndex, setActivePointIndex] = React.useState<number>(0);
   const isLayerFocused = React.useRef(false);
+  const currentIndex = React.useRef<number>(0);
   const map = useMap();
   const markers = React.useRef<(L.Layer | null)[]>(
     new Array(pointCount).fill(null)
@@ -24,26 +24,30 @@ export function usePointFocus(pointCount: number) {
   }, [map]);
 
   const handlePointClick = (index: number) => {
-    setActivePointIndex(index);
     isLayerFocused.current = true;
+    currentIndex.current = index;
   };
 
   const handleGoingForward = () => {
-    markers.current[activePointIndex]?.closePopup();
+    const index = currentIndex.current;
+    markers.current[index]?.closePopup();
 
-    const newIndex = (activePointIndex + 1) % pointCount;
-    setActivePointIndex(newIndex);
-
+    const newIndex = (index + 1) % pointCount;
     markers.current[newIndex]?.openPopup();
+
+    currentIndex.current = newIndex;
+    return newIndex;
   };
 
   const handleGoingBackward = () => {
-    markers.current[activePointIndex]?.closePopup();
+    const index = currentIndex.current;
+    markers.current[index]?.closePopup();
 
-    const newIndex = (activePointIndex - 1 + pointCount) % pointCount;
-    setActivePointIndex(newIndex);
-
+    const newIndex = (index - 1 + pointCount) % pointCount;
     markers.current[newIndex]?.openPopup();
+
+    currentIndex.current = newIndex;
+    return newIndex;
   };
 
   React.useEffect(() => {
@@ -63,12 +67,12 @@ export function usePointFocus(pointCount: number) {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [activePointIndex]);
+  }, []);
 
   return {
-    activePointIndex,
     isLayerFocused,
     markers,
+    currentIndex,
     handlePointClick,
     handleGoingForward,
     handleGoingBackward,

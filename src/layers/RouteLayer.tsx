@@ -6,7 +6,7 @@ import Destination from "../points/Destination";
 import L from "leaflet";
 import React from "react";
 import Stop from "../points/Stop";
-import { useMapLayer } from "./useMapLayer";
+import { useLayerVisibility } from "./useLayerVisibility";
 import { usePointFocus } from "./usePointFocus";
 
 export default function RouteLayer({
@@ -23,14 +23,10 @@ export default function RouteLayer({
   const origin = path.points[0];
   const destination = path.points[path.points.length - 1];
 
-  const pointMarkers = React.useRef<(L.Layer | null)[]>(
-    new Array(path.points.length).fill(null)
-  );
-
   const layerRef = React.useRef<L.LayerGroup | null>(null);
   const [layerReady, setLayerReady] = React.useState(false);
 
-  useMapLayer({
+  useLayerVisibility({
     visible,
     onLayerReady,
     layerRef,
@@ -38,8 +34,8 @@ export default function RouteLayer({
   });
 
   const {
-    activePointIndex,
     isLayerFocused,
+    currentIndex,
     handlePointClick,
     handleGoingForward,
     handleGoingBackward,
@@ -51,7 +47,6 @@ export default function RouteLayer({
       ref={(r) => {
         layerRef.current = r;
         if (r) setLayerReady(true);
-        onLayerReady(r);
       }}
     >
       {path.points.slice(1, -1).map((point, index) => (
@@ -63,8 +58,8 @@ export default function RouteLayer({
           onGoingForward={handleGoingForward}
           onGoingBackward={handleGoingBackward}
           onClick={handlePointClick}
+          highlighted={currentIndex.current === index && isLayerFocused.current}
           color={color}
-          highlighted={activePointIndex === index + 1 && isLayerFocused.current}
         />
       ))}
       {path.stops.map((stop, index) => (
@@ -77,7 +72,6 @@ export default function RouteLayer({
           onGoingBackward={handleGoingBackward}
           onClick={() => {
             handlePointClick(stop.index);
-            isLayerFocused.current = true;
           }}
         />
       ))}
@@ -85,26 +79,24 @@ export default function RouteLayer({
         key={0}
         point={origin}
         onMarkerReady={(marker) => {
-          pointMarkers.current[0] = marker;
+          setMarkerRef(0, marker);
         }}
         onGoingForward={handleGoingForward}
         onGoingBackward={handleGoingBackward}
         onClick={() => {
           handlePointClick(0);
-          isLayerFocused.current = true;
         }}
       />
       <Destination
         key={path.points.length - 1}
         point={destination}
         onMarkerReady={(marker) => {
-          pointMarkers.current[path.points.length - 1] = marker;
+          setMarkerRef(path.points.length - 1, marker);
         }}
         onGoingForward={handleGoingForward}
         onGoingBackward={handleGoingBackward}
         onClick={() => {
           handlePointClick(path.points.length - 1);
-          isLayerFocused.current = true;
         }}
       />
     </LayerGroup>

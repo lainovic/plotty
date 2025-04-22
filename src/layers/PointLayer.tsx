@@ -2,7 +2,7 @@ import { GeoPath } from "../types/geo_types";
 import Point from "../points/Point";
 import { LayerGroup } from "react-leaflet";
 import React from "react";
-import { useMapLayer } from "./useMapLayer";
+import { useLayerVisibility } from "./useLayerVisibility";
 import { usePointFocus } from "./usePointFocus";
 
 export default function PointLayer({
@@ -19,7 +19,7 @@ export default function PointLayer({
   const layerRef = React.useRef<L.LayerGroup | null>(null);
   const [layerReady, setLayerReady] = React.useState(false);
 
-  useMapLayer({
+  useLayerVisibility({
     visible,
     onLayerReady,
     layerRef,
@@ -27,8 +27,8 @@ export default function PointLayer({
   });
 
   const {
-    activePointIndex,
     isLayerFocused,
+    currentIndex,
     handlePointClick,
     handleGoingForward,
     handleGoingBackward,
@@ -53,7 +53,7 @@ export default function PointLayer({
           onClick={handlePointClick}
           color={color}
           radius={8}
-          highlighted={activePointIndex === index && isLayerFocused.current}
+          highlighted={currentIndex.current === index && isLayerFocused.current}
         />
       ))}
     </LayerGroup>

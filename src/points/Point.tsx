@@ -41,6 +41,8 @@ export default function Point({
   const actualRadius = highlighted ? radius * 1.3 : radius;
   const weight = highlighted ? 3 : 1;
 
+  console.log(`Point ${index} rendered`);
+
   return (
     <CircleMarker
       ref={(r) => {

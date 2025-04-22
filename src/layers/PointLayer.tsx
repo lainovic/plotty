@@ -3,7 +3,7 @@ import Point from "../points/Point";
 import { LayerGroup, useMap } from "react-leaflet";
 import React from "react";
 
-export default function GeoLayer({
+export default function PointLayer({
   path,
   onLayerReady = () => {},
   color,

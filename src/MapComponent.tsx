@@ -14,7 +14,7 @@ import {
 } from "./colors";
 import LayerPanel from "./LayerPanel";
 import { getBoundingBox } from "./utils";
-import GeoLayer from "./layers/GeoLayer";
+import PointLayer from "./layers/PointLayer";
 import RulerPanel from "./RulerPanel";
 import GotoDialog from "./GotoDialog";
 import TtpLayer from "./layers/TtpLayer";
@@ -178,7 +178,7 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
       (path, index) =>
         path.isNotEmpty() &&
         path instanceof GeoPath && (
-          <GeoLayer
+          <PointLayer
             key={path.name}
             path={path}
             color={assignColorToLayer(path.name)}

@@ -69,6 +69,8 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
   }, [colorCounter, increaseColorCounter]);
 
   React.useEffect(() => {
+    if (!mapReady) return;
+
     map.current?.on("contextmenu", (e) => {
       const latlng = map.current!.mouseEventToLatLng(e.originalEvent);
       const coordinates = `${latlng.lat.toFixed(5)}, ${latlng.lng.toFixed(5)}`;
@@ -96,6 +98,8 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
   );
 
   const visibility = React.useRef<Map<number, boolean>>(new Map());
+
+  // Add new paths visibilities with the default value of [true].
   paths.forEach((_, index) => {
     if (!visibility.current.has(index)) {
       visibility.current.set(index, true);
@@ -103,15 +107,16 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
   });
 
   const toggleVisibility = (index: number) => {
-    const newVisibility = !visibility.current.get(index);
-    if (map.current) {
-      if (newVisibility) {
-        layerGroups.current.get(index)?.addTo(map.current);
-      } else {
-        layerGroups.current.get(index)?.removeFrom(map.current);
-      }
+    if (!map.current) return;
+    if (!visibility.current.has(index)) return;
+
+    const newValue = !visibility.current.get(index);
+    if (newValue) {
+      layerGroups.current.get(index)?.addTo(map.current);
+    } else {
+      layerGroups.current.get(index)?.removeFrom(map.current);
     }
-    visibility.current.set(index, newVisibility);
+    visibility.current.set(index, newValue);
   };
 
   /**
@@ -177,6 +182,7 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
             key={path.name}
             path={path}
             color={assignColorToLayer(path.name)}
+            visible={visibility.current.get(index) || false}
             onLayerReady={(group) => {
               setLayerGroup(index, group);
             }}

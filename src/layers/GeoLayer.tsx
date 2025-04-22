@@ -7,49 +7,79 @@ export default function GeoLayer({
   path,
   onLayerReady = () => {},
   color,
+  visible = true,
 }: {
   path: GeoPath;
   onLayerReady?: (layer: L.LayerGroup | null) => void;
   color?: string;
+  visible?: boolean;
 }) {
+  const map = useMap();
+  const layerGroupRef = React.useRef<L.LayerGroup | null>(null);
   const markers = React.useRef<(L.Layer | null)[]>(
     new Array(path.points.length).fill(null)
   );
 
-  let currentFocusedIndex: number = 0;
+  const [activePointIndex, setActivePointIndex] = React.useState<number>(0);
   const isLayerFocused = React.useRef(false);
 
-  useMap().on("click", () => {
-    isLayerFocused.current = false;
-  });
+  React.useEffect(() => {
+    const handleMapClick = () => {
+      isLayerFocused.current = false;
+    };
+
+    map.on("click", handleMapClick);
+
+    return () => {
+      map.off("click", handleMapClick);
+    };
+  }, [map]);
+
+  React.useEffect(() => {
+    if (!map) return;
+
+    if (visible) {
+      layerGroupRef.current?.addTo(map);
+    } else {
+      layerGroupRef.current?.removeFrom(map);
+    }
+  }, [visible, map]);
 
   const handleClick = (index: number) => {
-    currentFocusedIndex = index;
+    setActivePointIndex(index);
     isLayerFocused.current = true;
   };
 
   const handleGoingForward = () => {
-    markers.current[currentFocusedIndex]!.closePopup();
-    currentFocusedIndex = (currentFocusedIndex + 1) % path.points.length;
-    markers.current[currentFocusedIndex]!.openPopup();
+    markers.current[activePointIndex]?.closePopup();
+
+    const newIndex = (activePointIndex + 1) % path.points.length;
+    setActivePointIndex(newIndex);
+
+    markers.current[newIndex]?.openPopup();
   };
 
   const handleGoingBackward = () => {
-    markers.current[currentFocusedIndex]!.closePopup();
-    currentFocusedIndex =
-      (currentFocusedIndex - 1 + path.points.length) % path.points.length;
-    markers.current[currentFocusedIndex]!.openPopup();
+    markers.current[activePointIndex]?.closePopup();
+
+    const newIndex =
+      (activePointIndex - 1 + path.points.length) % path.points.length;
+    setActivePointIndex(newIndex);
+
+    markers.current[newIndex]?.openPopup();
   };
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isLayerFocused.current) {
+        return;
+      }
+
       const key = event.key.toLowerCase();
-      if (isLayerFocused.current) {
-        if (key === "l") {
-          handleGoingForward();
-        } else if (key === "h") {
-          handleGoingBackward();
-        }
+      if (key === "l") {
+        handleGoingForward();
+      } else if (key === "h") {
+        handleGoingBackward();
       }
     };
 
@@ -62,12 +92,13 @@ export default function GeoLayer({
   return (
     <LayerGroup
       ref={(r) => {
+        layerGroupRef.current = r;
         onLayerReady(r);
       }}
     >
       {path.points.map((point, index) => (
         <Point
-          index={index} // adjust index to match the original array
+          index={index}
           key={index}
           point={point}
           onMarkerReady={(marker) => {

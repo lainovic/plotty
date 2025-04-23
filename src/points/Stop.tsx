@@ -11,7 +11,7 @@ export default function Stop({
   onMarkerReady = () => {},
   onGoingForward = () => {},
   onGoingBackward = () => {},
-  onClick = () => {},
+  onStopClick = () => {},
 }: {
   index: number;
   point: GeoPoint;
@@ -19,7 +19,7 @@ export default function Stop({
   onMarkerReady?: (marker: L.Marker | null) => void;
   onGoingForward?: () => void;
   onGoingBackward?: () => void;
-  onClick?: () => void;
+  onStopClick?: () => void;
 }) {
   const map = useMap();
 
@@ -32,7 +32,7 @@ export default function Stop({
       icon={isChargingStation ? evWaypointIcon : waypointIcon}
       eventHandlers={{
         click: () => {
-          onClick();
+          onStopClick();
         },
       }}
     >

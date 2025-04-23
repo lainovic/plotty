@@ -34,8 +34,6 @@ export default function RouteLayer({
   });
 
   const {
-    isLayerFocused,
-    currentIndex,
     handlePointClick,
     handleGoingForward,
     handleGoingBackward,
@@ -57,8 +55,9 @@ export default function RouteLayer({
           onMarkerReady={(marker) => setMarkerRef(index + 1, marker)}
           onGoingForward={handleGoingForward}
           onGoingBackward={handleGoingBackward}
-          onClick={handlePointClick}
-          highlighted={currentIndex.current === index && isLayerFocused.current}
+          onPointClick={() => {
+            handlePointClick(index + 1);
+          }}
           color={color}
         />
       ))}
@@ -70,7 +69,7 @@ export default function RouteLayer({
           isChargingStation={stop.isChargingStation}
           onGoingForward={handleGoingForward}
           onGoingBackward={handleGoingBackward}
-          onClick={() => {
+          onStopClick={() => {
             handlePointClick(stop.index);
           }}
         />
@@ -83,7 +82,7 @@ export default function RouteLayer({
         }}
         onGoingForward={handleGoingForward}
         onGoingBackward={handleGoingBackward}
-        onClick={() => {
+        onOriginClick={() => {
           handlePointClick(0);
         }}
       />
@@ -95,7 +94,7 @@ export default function RouteLayer({
         }}
         onGoingForward={handleGoingForward}
         onGoingBackward={handleGoingBackward}
-        onClick={() => {
+        onDestinationClick={() => {
           handlePointClick(path.points.length - 1);
         }}
       />

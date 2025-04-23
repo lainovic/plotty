@@ -7,13 +7,13 @@ import { destinationIcon } from "../icons";
 export default function Destination({
   point,
   onMarkerReady = () => {},
-  onClick: onDestinationClick = () => {},
+  onDestinationClick = () => {},
   onGoingForward = () => {},
   onGoingBackward = () => {},
 }: {
   point: GeoPoint;
   onMarkerReady?: (marker: L.Marker | null) => void;
-  onClick?: () => void;
+  onDestinationClick?: () => void;
   onGoingForward?: () => void;
   onGoingBackward?: () => void;
 }) {

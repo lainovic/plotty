@@ -50,7 +50,9 @@ export default function PointLayer({
           onMarkerReady={(marker) => setMarkerRef(index, marker)}
           onGoingForward={handleGoingForward}
           onGoingBackward={handleGoingBackward}
-          onClick={handlePointClick}
+          onPointClick={() => {
+            handlePointClick(index);
+          }}
           color={color}
           radius={8}
           highlighted={currentIndex.current === index && isLayerFocused.current}

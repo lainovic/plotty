@@ -13,7 +13,7 @@ export default function Point({
   radius = 4,
   highlighted = false,
   onMarkerReady = () => {},
-  onClick = () => {},
+  onPointClick = () => {},
   onCopy = () => {
     navigator.clipboard.writeText(
       `${point.latitude.toFixed(5)}, ${point.longitude.toFixed(5)}`
@@ -30,7 +30,7 @@ export default function Point({
   radius?: number;
   highlighted?: boolean;
   onMarkerReady?: (marker: L.CircleMarker | null) => void;
-  onClick?: (index: number) => void;
+  onPointClick?: () => void;
   onCopy?: () => void;
   onGoingForward?: () => void;
   onGoingBackward?: () => void;
@@ -40,8 +40,6 @@ export default function Point({
   const fillOpacity = highlighted ? 0.8 : 0.6;
   const actualRadius = highlighted ? radius * 1.3 : radius;
   const weight = highlighted ? 3 : 1;
-
-  console.log(`Point ${index} rendered`);
 
   return (
     <CircleMarker
@@ -58,7 +56,7 @@ export default function Point({
       }}
       eventHandlers={{
         click: () => {
-          onClick(index);
+          onPointClick();
         },
       }}
       fillColor=""

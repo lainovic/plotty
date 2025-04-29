@@ -19,6 +19,6 @@ let counter = 0;
  */
 export class GeoPath extends Path<GeoPoint> {
   constructor(points: GeoPoint[]) {
-    super(points, `Points ${++counter}`);
+    super(points, `${points.length == 1 ? "Point" : "Points"} ${++counter}`);
   }
 }

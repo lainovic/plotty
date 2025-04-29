@@ -7,17 +7,13 @@ import { TileProvider } from "./providers/TileProvider";
 import { GeoPath, Path, RoutePath, TtpPath } from "./types/paths";
 import { openStreetMapTileProvider } from "./providers/const";
 import RouteLayer from "./layers/RouteLayer";
-import {
-  tomtomBlackColor,
-  tomtomPrimaryColor,
-  tomtomSecondaryColor,
-} from "./colors";
 import LayerPanel from "./LayerPanel";
 import { getBoundingBox } from "./utils";
 import PointLayer from "./layers/PointLayer";
 import RulerPanel from "./RulerPanel";
 import GotoDialog from "./GotoDialog";
 import TtpLayer from "./layers/TtpLayer";
+import useLayerColors from "./useLayerColors";
 
 function MapPlaceholder() {
   return (
@@ -26,21 +22,6 @@ function MapPlaceholder() {
     </p>
   );
 }
-
-const layerColors = [
-  tomtomPrimaryColor,
-  tomtomSecondaryColor,
-  tomtomBlackColor,
-  "#FF9E80",
-  "#FF80AB",
-  "#EA80FC",
-  "#B388FF",
-  "#8C9EFF",
-  "#82B1FF",
-  "#80D8FF",
-  "#84FFFF",
-  "#A7FFEB",
-];
 
 type TileProviderContainer = {
   value: TileProvider;
@@ -55,18 +36,7 @@ type TileProviderContainer = {
 export default function MapComponent({ paths }: { paths: Path[] }) {
   const map = React.useRef<L.Map | null>(null);
   const [mapReady, setMapReady] = React.useState(false);
-  const layerColorsMap = React.useRef<Map<string, string>>(new Map());
-  const colorCounter = React.useRef(0);
-
-  const increaseColorCounter = React.useCallback(() => {
-    colorCounter.current = (colorCounter.current + 1) % layerColors.length;
-  }, [colorCounter]);
-
-  const getNewColor = React.useCallback(() => {
-    const currentColor = layerColors[colorCounter.current];
-    increaseColorCounter();
-    return currentColor;
-  }, [colorCounter, increaseColorCounter]);
+  const layerColors = useLayerColors();
 
   React.useEffect(() => {
     if (!mapReady) return;
@@ -143,17 +113,6 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
     }
   }
 
-  const assignColorToLayer = React.useCallback(
-    (layerName: string) => {
-      if (!layerColorsMap.current?.has(layerName)) {
-        const newColor = getNewColor();
-        layerColorsMap.current?.set(layerName, newColor);
-      }
-      return layerColorsMap.current?.get(layerName);
-    },
-    [layerColorsMap]
-  );
-
   const RouteLayers: React.FC<{ paths: Path[] }> = React.memo(({ paths }) => {
     console.log(">>> rendering route layers");
     return paths.map(
@@ -163,7 +122,7 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
           <RouteLayer
             key={path.name}
             path={path}
-            color={assignColorToLayer(path.name)}
+            color={layerColors(path.name)}
             visible={visibility.current.get(index) || false}
             onLayerReady={(group) => {
               setLayerGroup(index, group);
@@ -182,7 +141,7 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
           <PointLayer
             key={path.name}
             path={path}
-            color={assignColorToLayer(path.name)}
+            color={layerColors(path.name)}
             visible={visibility.current.get(index) || false}
             onLayerReady={(group) => {
               setLayerGroup(index, group);
@@ -201,7 +160,7 @@ export default function MapComponent({ paths }: { paths: Path[] }) {
           <TtpLayer
             key={path.name}
             path={path}
-            color={assignColorToLayer(path.name)}
+            color={layerColors(path.name)}
             visible={visibility.current.get(index) || false}
             onLayerReady={(group) => {
               setLayerGroup(index, group);
@@ -307,16 +266,16 @@ const styles: { [key: string]: React.CSSProperties } = {
     position: "fixed",
     top: "50%",
     right: "10px",
+    paddingTop: "10px",
     transform: "translateY(-50%)",
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    backgroundColor: "hsl(0, 0%, 100%, 0.8)",
     fontFamily: "'Roboto', sans-serif",
-    padding: "10px",
-    borderRadius: "25px",
+    borderRadius: "12px",
     zIndex: 1000,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    transition: "transform 0.3s ease-in-out",
+    maxHeight: "250px",
   },
   map: {
     width: "100vw",

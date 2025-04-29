@@ -12,6 +12,18 @@ const LayerPanel: React.FC<{
   onVisibilityChange: (index: number) => void;
   onView: (path: Path) => void;
 }> = ({ style, paths, initialVisibility, onVisibilityChange, onView }) => {
+  const [isScrollable, setIsScrollable] = React.useState(false);
+
+  const layerListRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const layerList = layerListRef.current;
+    if (layerList) {
+      // Check if the content is scrollable
+      setIsScrollable(layerList.scrollHeight > layerList.clientHeight);
+    }
+  }, [paths]);
+
   // TODO current hack before trying external state management
   const [visibility, setVisibility] = React.useState<Map<number, boolean>>(
     new Map()
@@ -21,26 +33,38 @@ const LayerPanel: React.FC<{
   );
 
   return (
-    <div style={style}>
-      {paths.length > 0 && <h3 style={styles.header}>Layers</h3>}
-      {paths.map((path, index) => (
-        <LayerCheckbox
-          key={path.name}
-          index={index}
-          checked={visibility.get(index) || false}
-          onChange={() => {
-            onVisibilityChange(index);
-            setVisibility((prev) => {
-              const newVisibility = new Map(prev);
-              newVisibility.set(index, !newVisibility.get(index));
-              return newVisibility;
-            });
+    <>
+      <div style={style}>
+        {paths.length > 0 && <h3 style={styles.header}>Layers</h3>}
+        <div
+          ref={layerListRef}
+          style={{
+            ...styles.layerList,
+            boxShadow: isScrollable
+              ? "inset 0 -10px 10px -10px rgba(0, 0, 0, 0.3)"
+              : "none",
           }}
-          name={path.name}
-          onView={() => onView(path)}
-        />
-      ))}
-    </div>
+        >
+          {paths.map((path, index) => (
+            <LayerCheckbox
+              key={path.name}
+              index={index}
+              checked={visibility.get(index) || false}
+              onChange={() => {
+                onVisibilityChange(index);
+                setVisibility((prev) => {
+                  const newVisibility = new Map(prev);
+                  newVisibility.set(index, !newVisibility.get(index));
+                  return newVisibility;
+                });
+              }}
+              name={path.name}
+              onView={() => onView(path)}
+            />
+          ))}
+        </div>
+      </div>
+    </>
   );
 };
 
@@ -82,17 +106,29 @@ const LayerCheckbox: React.FC<CheckboxProps> = ({
 };
 
 const styles: { [key: string]: React.CSSProperties } = {
+  header: {
+    fontSize: "1.2em",
+    color: `${tomtomSecondaryColor}`,
+  },
   container: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     gap: "10px",
     padding: "10px",
-    margin: "5px 0",
+    width: "100%",
   },
-  header: {
-    fontSize: "1.2em",
-    color: `${tomtomSecondaryColor}`,
+  layerList: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    justifyContent: "start",
+    gap: "10px",
+    padding: "10px",
+    borderRadius: "12px",
+    overflowY: "scroll",
+    scrollbarWidth: "thin",
   },
 };
 export default LayerPanel;

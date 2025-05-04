@@ -1,0 +1,7 @@
+.layer-checkbox {
+  background-color: transparent;
+}
+
+.layer-checkbox:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}

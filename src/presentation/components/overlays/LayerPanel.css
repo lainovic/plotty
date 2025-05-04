@@ -1,0 +1,7 @@
+.layer-name {
+  background-color: transparent;
+}
+
+.layer-name:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}

@@ -5,3 +5,8 @@
 - [ ] Fix rerendering all the current route objects when adding new ones.
 - [ ] Point/Points?
 - [ ] Add renaming the layers
+- [ ] Add deleting the layers
+- [ ] Buffer events
+- [ ] add new events
+- [ ] add new exception types
+- [ ] add routing service?

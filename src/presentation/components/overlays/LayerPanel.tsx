@@ -9,17 +9,21 @@ import {
 import { ListenerId } from "../../../domain/value-objects/ListenerId";
 import L from "leaflet";
 import "./LayerPanel.css";
+import { IconButton } from "@mui/material";
+import AdsClickIcon from "@mui/icons-material/AdsClick";
 
 interface LayerPanelProps<T extends Path<any>> {
   style?: React.CSSProperties;
   layers: Layer<T>[];
   onLayerClicked: (layer: Layer<T>) => void;
+  onLayerZoomedIn: (layer: Layer<T>) => void;
 }
 
 export const LayerPanel = <T extends Path<any>>({
   style,
   layers,
   onLayerClicked,
+  onLayerZoomedIn,
 }: LayerPanelProps<T>) => {
   const [isScrollable, setIsScrollable] = React.useState(false);
   const [, setRenderTrigger] = React.useState({});
@@ -72,6 +76,7 @@ export const LayerPanel = <T extends Path<any>>({
                 }}
                 name={layer.getName()}
                 onClicked={onLayerClicked.bind(null, layer)}
+                onZoomedIn={() => onLayerZoomedIn(layer)}
               />
             ))}
           </div>
@@ -86,6 +91,7 @@ interface CheckboxProps {
   checked: boolean;
   onValueChange: (newValue: boolean) => void;
   onClicked: (e?: React.MouseEvent) => void;
+  onZoomedIn: () => void;
 }
 
 const LayerItem: React.FC<CheckboxProps> = ({
@@ -93,6 +99,7 @@ const LayerItem: React.FC<CheckboxProps> = ({
   checked,
   onValueChange,
   onClicked,
+  onZoomedIn,
 }) => {
   return (
     <div style={styles.layerItem}>
@@ -112,6 +119,9 @@ const LayerItem: React.FC<CheckboxProps> = ({
       <div className="layer-name" onClick={onClicked} style={styles.layerName}>
         {name}
       </div>
+      <IconButton aria-label="center" onClick={onZoomedIn}>
+        <AdsClickIcon fontSize="small" />
+      </IconButton>
     </div>
   );
 };
@@ -156,7 +166,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingLeft: "24px",
+    paddingLeft: "12px",
     transition: "background-color 0.4s ease",
     borderRadius: "10px",
     width: "100%",

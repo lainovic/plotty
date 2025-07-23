@@ -70,7 +70,8 @@ export const MapLayers = () => {
     };
   }, []);
 
-  const { flyToBoundingBox, flyToCoordinates } = useMapUtils();
+  const { flyToBoundingBox, zoomToBoundingBox, flyToCoordinates } =
+    useMapUtils();
 
   return (
     <>
@@ -84,6 +85,9 @@ export const MapLayers = () => {
         layers={layers}
         onLayerClicked={(layer: Layer<any>) =>
           flyToBoundingBox(layer.getPoints())
+        }
+        onLayerZoomedIn={(layer: Layer<any>) =>
+          zoomToBoundingBox(layer.getPoints())
         }
       />
       <GotoDialog

@@ -33,12 +33,47 @@ export const useMapUtils = () => {
         ],
         {
           duration: 0.5,
+          maxZoom: map.getZoom(),
         }
       );
     },
     []
   );
 
+  const zoomToBoundingBox = React.useCallback(
+    <T extends Coordinates>(points: T[]) => {
+      if (points.length == 0) return;
+
+      if (points.length === 1) {
+        const point = points[0];
+        map.flyTo([point.latitude, point.longitude], map.getMaxZoom(), {
+          duration: 0.5,
+        });
+        return;
+      }
+
+      const { minLatitude, maxLatitude, minLongitude, maxLongitude } =
+        getBoundingBox(points);
+      map.fitBounds(
+        [
+          [minLatitude, minLongitude],
+          [maxLatitude, maxLongitude],
+        ],
+        {
+          duration: 0.5,
+        }
+      );
+    },
+    []
+  );
+
+  /**
+   * Flies the map to the specified coordinates at the given zoom level.
+   * The map will smoothly animate to the new position.
+   *
+   * @param coordinates - The target coordinates to fly to
+   * @param zoomLevel - The zoom level to set (defaults to 15 if not specified)
+   */
   const flyToCoordinates = React.useCallback(
     <T extends Coordinates>(coordinates: T, zoomLevel: number = 15) => {
       map.flyTo([coordinates.latitude, coordinates.longitude], zoomLevel, {
@@ -50,6 +85,7 @@ export const useMapUtils = () => {
 
   return {
     flyToBoundingBox,
+    zoomToBoundingBox,
     flyToCoordinates,
   };
 };

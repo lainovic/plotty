@@ -23,16 +23,13 @@ export const ZoomText: React.FC = () => {
     return () => {
       clearTimeout(timeout);
     };
-  }, [text]);
+  }, [isVisible]);
 
   return (
     <div
       style={{
         ...styles.container,
         opacity: isVisible ? 1 : 0,
-        transform: `${styles.container.transform} scale(${
-          isVisible ? 1 : 0.8
-        })`,
       }}
     >
       <p style={styles.text}>{text}</p>
@@ -43,9 +40,10 @@ export const ZoomText: React.FC = () => {
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     position: "fixed",
-    bottom: "20px",
-    right: "10px",
-    backgroundColor: "hsl(0, 0%, 100%, 0.8)",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    backgroundColor: "hsl(0, 0%, 100%, 0.6)",
     padding: "5px 10px",
     borderRadius: "4px",
     fontFamily: "'Roboto', sans-serif",

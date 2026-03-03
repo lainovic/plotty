@@ -3,9 +3,9 @@ import { LayerId } from "../value-objects/LayerId";
 import { ListenerId } from "../value-objects/ListenerId";
 import { Path } from "./Path";
 
-export interface VisibilityChangeListener {
+export interface LayerChangeListener {
   readonly id: ListenerId;
-  onVisibilityChange(newVisibility: boolean): void;
+  onLayerChange(layer: Layer<any>): void;
 }
 
 export class Layer<T extends Path<any>> {
@@ -14,7 +14,7 @@ export class Layer<T extends Path<any>> {
   private color: Color;
   private visible: boolean;
   private path: T;
-  private visibilityChangeListeners: VisibilityChangeListener[] = [];
+  private visibilityChangeListeners: LayerChangeListener[] = [];
 
   constructor(name: string, color: Color, path: T) {
     this.id = new LayerId();
@@ -32,6 +32,13 @@ export class Layer<T extends Path<any>> {
     return this.name;
   }
 
+  public setName(name: string) {
+    if (this.name !== name) {
+      this.name = name;
+      this.notifyLayerChange();
+    }
+  }
+
   public getColor(): Color {
     return this.color;
   }
@@ -43,13 +50,13 @@ export class Layer<T extends Path<any>> {
   public setVisible(visible: boolean) {
     if (this.visible !== visible) {
       this.visible = visible;
-      this.notifyVisibilityChange(this.visible);
+      this.notifyLayerChange();
     }
   }
 
   public toggleVisibility() {
     this.visible = !this.visible;
-    this.notifyVisibilityChange(this.visible);
+    this.notifyLayerChange();
   }
 
   public getPath(): T {
@@ -60,19 +67,19 @@ export class Layer<T extends Path<any>> {
     return [...this.path.points];
   }
 
-  public addVisibilityChangeListener(listener: VisibilityChangeListener) {
+  public addLayerChangeListener(listener: LayerChangeListener) {
     this.visibilityChangeListeners.push(listener);
   }
 
-  public removeVisibilityChangeListener(listener: VisibilityChangeListener) {
+  public removeLayerChangeListener(listener: LayerChangeListener) {
     this.visibilityChangeListeners = this.visibilityChangeListeners.filter(
       (l) => l.id !== listener.id
     );
   }
 
-  private notifyVisibilityChange(newVisibility: boolean) {
+  private notifyLayerChange() {
     this.visibilityChangeListeners.forEach((listener) =>
-      listener.onVisibilityChange(newVisibility)
+      listener.onLayerChange(this)
     );
   }
 }

@@ -4,19 +4,21 @@ import { tomtomSecondaryColor } from "../../../shared/colors";
 import { Path } from "../../../domain/entities/Path";
 import {
   Layer,
-  VisibilityChangeListener,
+  LayerChangeListener,
 } from "../../../domain/entities/Layer";
 import { ListenerId } from "../../../domain/value-objects/ListenerId";
 import L from "leaflet";
 import "./LayerPanel.css";
 import { IconButton } from "@mui/material";
 import AdsClickIcon from "@mui/icons-material/AdsClick";
+import EditIcon from "@mui/icons-material/Edit";
 
 interface LayerPanelProps<T extends Path<any>> {
   style?: React.CSSProperties;
   layers: Layer<T>[];
   onLayerClicked: (layer: Layer<T>) => void;
   onLayerZoomedIn: (layer: Layer<T>) => void;
+  onNameChange: (layer: Layer<T>, newName: string) => void;
 }
 
 export const LayerPanel = <T extends Path<any>>({
@@ -24,6 +26,7 @@ export const LayerPanel = <T extends Path<any>>({
   layers,
   onLayerClicked,
   onLayerZoomedIn,
+  onNameChange,
 }: LayerPanelProps<T>) => {
   const [isScrollable, setIsScrollable] = React.useState(false);
   const [, setRenderTrigger] = React.useState({});
@@ -39,14 +42,14 @@ export const LayerPanel = <T extends Path<any>>({
   }, []);
 
   React.useEffect(() => {
-    const listener: VisibilityChangeListener = {
+    const listener: LayerChangeListener = {
       id: new ListenerId(),
-      onVisibilityChange: () => setRenderTrigger({}),
+      onLayerChange: () => setRenderTrigger({}),
     };
 
-    layers.forEach((layer) => layer.addVisibilityChangeListener(listener));
+    layers.forEach((layer) => layer.addLayerChangeListener(listener));
     return () =>
-      layers.forEach((layer) => layer.removeVisibilityChangeListener(listener));
+      layers.forEach((layer) => layer.removeLayerChangeListener(listener));
   }, [layers]);
 
   return (
@@ -75,6 +78,10 @@ export const LayerPanel = <T extends Path<any>>({
                   layer.setVisible(newValue);
                 }}
                 name={layer.getName()}
+                onNameChange={(newName) => {
+                  layer.setName(newName);
+                  onNameChange(layer, newName);
+                }}
                 onClicked={onLayerClicked.bind(null, layer)}
                 onZoomedIn={() => onLayerZoomedIn(layer)}
               />
@@ -90,6 +97,7 @@ interface CheckboxProps {
   name: string;
   checked: boolean;
   onValueChange: (newValue: boolean) => void;
+  onNameChange: (newName: string) => void;
   onClicked: (e?: React.MouseEvent) => void;
   onZoomedIn: () => void;
 }
@@ -98,6 +106,7 @@ const LayerItem: React.FC<CheckboxProps> = ({
   name,
   checked,
   onValueChange,
+  onNameChange,
   onClicked,
   onZoomedIn,
 }) => {
@@ -121,6 +130,17 @@ const LayerItem: React.FC<CheckboxProps> = ({
       </div>
       <IconButton aria-label="center" onClick={onZoomedIn}>
         <AdsClickIcon fontSize="small" />
+      </IconButton>
+      <IconButton
+        aria-label="edit"
+        onClick={() => {
+          const newName = prompt("Enter new name", name);
+          if (newName && newName !== name) {
+            onNameChange(newName);
+          }
+        }}
+      >
+        <EditIcon fontSize="small" />
       </IconButton>
     </div>
   );

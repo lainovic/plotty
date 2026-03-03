@@ -3,17 +3,17 @@ import L from "leaflet";
 import { useMap } from "react-leaflet";
 import { LayerId } from "../../domain/value-objects/LayerId";
 import { ListenerId } from "../../domain/value-objects/ListenerId";
-import { Layer, VisibilityChangeListener } from "../../domain/entities/Layer";
+import { Layer, LayerChangeListener } from "../../domain/entities/Layer";
 import { Path } from "../../domain/entities/Path";
 
-class LayerVisibilityChangeListener implements VisibilityChangeListener {
+class LayerVisibilityChangeListener implements LayerChangeListener {
   public readonly id: ListenerId = new ListenerId();
 
   constructor(
     private readonly setVisibility: (newVisibility: boolean) => void
   ) {}
 
-  onVisibilityChange(newVisibility: boolean): void {
+  onLayerChange(newVisibility: boolean): void {
     this.setVisibility(newVisibility);
   }
 }
@@ -44,9 +44,9 @@ export function useLayerVisibility<T extends Path<any>>(layer: Layer<T>) {
     };
     const listener = new LayerVisibilityChangeListener(setLayerVisibility);
 
-    layer.addVisibilityChangeListener(listener);
+    layer.addLayerChangeListener(listener);
     return () => {
-      layer.removeVisibilityChangeListener(listener);
+      layer.removeLayerChangeListener(listener);
     };
   }, [layer]);
 

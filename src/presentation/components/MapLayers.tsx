@@ -83,12 +83,11 @@ export const MapLayers = () => {
       <LayerPanel
         style={styles.layerPanel}
         layers={layers}
-        onLayerClicked={(layer: Layer<any>) =>
-          flyToBoundingBox(layer.getPoints())
-        }
-        onLayerZoomedIn={(layer: Layer<any>) =>
-          zoomToBoundingBox(layer.getPoints())
-        }
+        onLayerClicked={(layer: Layer<any>) => flyToBoundingBox(layer.getPoints())}
+        onLayerZoomedIn={(layer: Layer<any>) => zoomToBoundingBox(layer.getPoints())}
+        onNameChange={function (layer: Layer<any>, newName: string): void {
+          throw new Error("Function not implemented.");
+        }}
       />
       <GotoDialog
         onCoordinatesChange={(coordinates: Coordinates) => {

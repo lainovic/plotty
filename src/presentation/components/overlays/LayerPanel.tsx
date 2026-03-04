@@ -1,4 +1,3 @@
-import Checkbox from "@mui/material/Checkbox";
 import React from "react";
 import { tomtomSecondaryColor } from "../../../shared/colors";
 import { Path } from "../../../domain/entities/Path";
@@ -9,9 +8,7 @@ import {
 import { ListenerId } from "../../../domain/value-objects/ListenerId";
 import L from "leaflet";
 import "./LayerPanel.css";
-import { IconButton } from "@mui/material";
-import AdsClickIcon from "@mui/icons-material/AdsClick";
-import EditIcon from "@mui/icons-material/Edit";
+import LayerItem from "./LayerItem";
 
 interface LayerPanelProps<T extends Path<any>> {
   style?: React.CSSProperties;
@@ -74,7 +71,7 @@ export const LayerPanel = <T extends Path<any>>({
               <LayerItem
                 key={layer.id.toString()}
                 checked={layer.isVisible()}
-                onValueChange={(newValue) => {
+                onVisibilityChange={(newValue) => {
                   layer.setVisible(newValue);
                 }}
                 name={layer.getName()}
@@ -93,59 +90,6 @@ export const LayerPanel = <T extends Path<any>>({
   );
 };
 
-interface CheckboxProps {
-  name: string;
-  checked: boolean;
-  onValueChange: (newValue: boolean) => void;
-  onNameChange: (newName: string) => void;
-  onClicked: (e?: React.MouseEvent) => void;
-  onZoomedIn: () => void;
-}
-
-const LayerItem: React.FC<CheckboxProps> = ({
-  name,
-  checked,
-  onValueChange,
-  onNameChange,
-  onClicked,
-  onZoomedIn,
-}) => {
-  return (
-    <div style={styles.layerItem}>
-      <Checkbox
-        sx={{
-          color: `${tomtomSecondaryColor}`,
-          "&.Mui-checked": {
-            color: `${tomtomSecondaryColor}`,
-          },
-        }}
-        checked={checked}
-        onChange={(event) => {
-          onValueChange(event.target.checked);
-        }}
-        inputProps={{ "aria-label": "controlled" }}
-      />
-      <div className="layer-name" onClick={onClicked} style={styles.layerName}>
-        {name}
-      </div>
-      <IconButton aria-label="center" onClick={onZoomedIn}>
-        <AdsClickIcon fontSize="small" />
-      </IconButton>
-      <IconButton
-        aria-label="edit"
-        onClick={() => {
-          const newName = prompt("Enter new name", name);
-          if (newName && newName !== name) {
-            onNameChange(newName);
-          }
-        }}
-      >
-        <EditIcon fontSize="small" />
-      </IconButton>
-    </div>
-  );
-};
-
 const styles: { [key: string]: React.CSSProperties } = {
   header: {
     fontSize: "1.1rem",
@@ -157,18 +101,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     textAlign: "center",
     userSelect: "none",
     fontWeight: 600,
-  },
-  layerItem: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "stretch",
-    justifyContent: "flex-start",
-    padding: "12px",
-    borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontSize: "0.95rem",
-    width: "100%",
   },
   layerList: {
     display: "flex",

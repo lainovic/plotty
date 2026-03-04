@@ -13,8 +13,8 @@ class LayerVisibilityChangeListener implements LayerChangeListener {
     private readonly setVisibility: (newVisibility: boolean) => void
   ) {}
 
-  onLayerChange(newVisibility: boolean): void {
-    this.setVisibility(newVisibility);
+  onLayerChange(layer: Layer<any>): void {
+    this.setVisibility(layer.isVisible());
   }
 }
 
@@ -31,7 +31,7 @@ export function useLayerVisibility<T extends Path<any>>(layer: Layer<T>) {
         layerGroup?.removeFrom(map);
       }
     },
-    []
+    [map]
   );
 
   const setLayerGroup = React.useCallback((layerGroup: L.LayerGroup) => {
@@ -45,6 +45,8 @@ export function useLayerVisibility<T extends Path<any>>(layer: Layer<T>) {
     const listener = new LayerVisibilityChangeListener(setLayerVisibility);
 
     layer.addLayerChangeListener(listener);
+    setLayerVisibility(layer.isVisible());
+
     return () => {
       layer.removeLayerChangeListener(listener);
     };

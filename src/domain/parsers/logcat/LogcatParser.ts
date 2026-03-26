@@ -14,13 +14,14 @@ export class LogcatParser implements Parser<LogPath> {
 
       lines.forEach((line: string, lineNumber: number) => {
         try {
-          LogcatEntryParser.parse(line).ifSome((entry) => {
-            LogcatMessageParser.parse(entry).ifSome((message) => {
-              LogcatPointParser.parse(entry, message, lineNumber).ifSome(
-                (point) => points.push(point)
-              );
-            });
-          });
+          const entry = LogcatEntryParser.parse(line);
+          if (entry !== null) {
+            const message = LogcatMessageParser.parse(entry);
+            if (message !== null) {
+              const point = LogcatPointParser.parse(entry, message, lineNumber);
+              if (point !== null) points.push(point);
+            }
+          }
         } catch (error: any) {
           console.error(`Error parsing a Logcat point: ${error.message}`);
         }

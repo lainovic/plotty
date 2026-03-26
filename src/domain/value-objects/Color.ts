@@ -1,5 +1,3 @@
-import { ColorException } from "../exceptions/ColorException";
-
 export class Color {
   public readonly hue: number; // Hue (0-360)
   public readonly saturation: number; // Saturation (0-100)
@@ -16,7 +14,7 @@ export class Color {
   public static fromHex(hexColor: string): Color {
     const hex = hexColor.replace("#", "");
     if (!/^[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$/.test(hex)) {
-      throw new ColorException(`Invalid hex color format: ${hexColor}`);
+      throw new Error(`Invalid hex color format: ${hexColor}`);
     }
 
     const r = parseInt(hex.slice(0, 2), 16) / 255;
@@ -59,7 +57,7 @@ export class Color {
 
   private validateHue(h: number): number {
     if (h < 0 || h > 360) {
-      throw new ColorException(`Hue must be between 0 and 360, but it's ${h}`);
+      throw new Error(`Hue must be between 0 and 360, but it's ${h}`);
     }
 
     return h;
@@ -67,7 +65,7 @@ export class Color {
 
   private validatePercentage(value: number): number {
     if (value < 0 || value > 100) {
-      throw new ColorException(
+      throw new Error(
         `Percentage must be between 0 and 100, but it's ${value}`
       );
     }
@@ -77,7 +75,7 @@ export class Color {
 
   private validateAlpha(a: number): number {
     if (a < 0 || a > 1) {
-      throw new ColorException(`Alpha must be between 0 and 1, but it's ${a}`);
+      throw new Error(`Alpha must be between 0 and 1, but it's ${a}`);
     }
 
     return a;

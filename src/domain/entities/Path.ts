@@ -1,13 +1,13 @@
 import { Coordinates } from "../value-objects/Coordinates";
-import { PathId } from "../value-objects/PathId";
+import { v4 as uuid } from "uuid";
 
 export class Path<T extends Coordinates> {
-  readonly id: PathId;
+  readonly id: string;
   private name: string;
   points: T[];
 
   constructor(points: T[], name: string = "") {
-    this.id = new PathId();
+    this.id = uuid();
     this.points = points;
     this.name = name;
   }

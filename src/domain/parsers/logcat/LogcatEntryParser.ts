@@ -1,4 +1,3 @@
-import { Optional } from "../../../shared/Optional";
 import { LogcatEntry } from "../../value-objects/LogcatEntry";
 
 interface LogcatFormat {
@@ -85,20 +84,15 @@ export class LogcatEntryParser {
     },
   ];
 
-  static parse(line: string): Optional<LogcatEntry> {
-    if (!line.trim()) {
-      return Optional.none();
-    }
+  static parse(line: string): LogcatEntry | null {
+    if (!line.trim()) return null;
 
     for (const fmt of LogcatEntryParser.logcatFormats) {
       const match = line.match(fmt.regex);
-      if (match) {
-        const entry = fmt.createFromMatch(match);
-        return Optional.some(entry);
-      }
+      if (match) return fmt.createFromMatch(match);
     }
 
-    return Optional.none();
+    return null;
   }
 
   private static createLogcatEntry(

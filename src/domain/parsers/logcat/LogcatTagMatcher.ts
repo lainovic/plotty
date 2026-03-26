@@ -1,5 +1,3 @@
-import { Optional } from "../../../shared/Optional";
-
 export const supportedTags = [
   "MapMatcher",
   "TomTomNavigation",
@@ -14,31 +12,21 @@ export class LogcatTagMatcher {
     return supportedTags.some((supportedTag) => tag.includes(supportedTag));
   }
 
-  static getMatchingTag(tag: string): Optional<SupportedTag> {
-    const matchingTag = supportedTags.find((supportedTag) =>
-      tag.includes(supportedTag)
-    );
-    return matchingTag ? Optional.some(matchingTag) : Optional.none();
+  static getMatchingTag(tag: string): SupportedTag | null {
+    return supportedTags.find((supportedTag) => tag.includes(supportedTag)) ?? null;
   }
 
   static isRoutePlanner(tag: string): boolean {
-    return this.getMatchingTag(tag)
-      .map((t) => t === "RoutePlanner")
-      .getOrValue(false);
+    return this.getMatchingTag(tag) === "RoutePlanner";
   }
 
   static isMapMatcher(tag: string): boolean {
-    return this.getMatchingTag(tag)
-      .map((t) => t === "MapMatcher")
-      .getOrValue(false);
+    return this.getMatchingTag(tag) === "MapMatcher";
   }
 
   static isNavigation(tag: string): boolean {
-    return this.getMatchingTag(tag)
-      .map(
-        (t) => t === "TomTomNavigation" || t === "DistanceAlongRouteCalculator"
-      )
-      .getOrValue(false);
+    const t = this.getMatchingTag(tag);
+    return t === "TomTomNavigation" || t === "DistanceAlongRouteCalculator";
   }
 
   // Predicate functions

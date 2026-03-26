@@ -1,5 +1,3 @@
-import { CoordinatesException } from "../exceptions/CoordinatesException";
-
 /**
  * Represents a geographic position with latitude and longitude coordinates.
  */
@@ -14,7 +12,7 @@ export class Coordinates {
 
   private validateLatitude(latitude: number): number {
     if (latitude < -90 || latitude > 90) {
-      throw new CoordinatesException(
+      throw new Error(
         `Latitude must be between -90 and 90 degrees, and it's ${latitude}`
       );
     }
@@ -23,7 +21,7 @@ export class Coordinates {
 
   private validateLongitude(longitude: number): number {
     if (longitude < -180 || longitude > 180) {
-      throw new CoordinatesException(
+      throw new Error(
         `Longitude must be between -180 and 180 degrees, and it's ${longitude}`
       );
     }

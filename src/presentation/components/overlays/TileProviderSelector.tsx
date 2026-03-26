@@ -12,8 +12,6 @@ import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { emphasize } from "@mui/material";
 import { tomtomBlackColor, tomtomSecondaryColor } from "../../../shared/colors";
-import { useMapContext } from "../../contexts/useMapContext";
-import { ApiKeyChangedEvent } from "../../../domain/events/ApiKeyChangedEvent";
 import { Z_INDEX } from "../../constants/zIndex";
 
 /**
@@ -72,8 +70,6 @@ export const TileProviderSelector: React.FC<TileProviderSelectorProps> = ({
     ])
   );
 
-  const { eventPublisher } = useMapContext();
-
   const tileVendorIterable = new TileVendorIterable();
 
   const [selectedTileVendor, setSelectedTileVendor] =
@@ -82,14 +78,6 @@ export const TileProviderSelector: React.FC<TileProviderSelectorProps> = ({
   function handleSelect(e: SelectChangeEvent<TileVendors>) {
     setSelectedTileVendor(e.target.value as TileVendors);
   }
-
-  const postApiKeyChangedEvent = React.useCallback(
-    (key: string) => {
-      const event = new ApiKeyChangedEvent(key);
-      eventPublisher.publish(event);
-    },
-    [eventPublisher]
-  );
 
   React.useEffect(() => {
     const tileProvider = tileProviders.current.get(selectedTileVendor)!;
@@ -142,7 +130,6 @@ export const TileProviderSelector: React.FC<TileProviderSelectorProps> = ({
           initialValue={selectedTileProvider.getApiKey() || ""}
           onValueChange={(key) => {
             selectedTileProvider.setApiKey(key);
-            postApiKeyChangedEvent(key);
             onTileProviderChanged(selectedTileProvider);
           }}
           style={{ marginLeft: "10px", color: `${tomtomBlackColor}` }}

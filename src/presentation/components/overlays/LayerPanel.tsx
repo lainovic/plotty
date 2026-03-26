@@ -1,11 +1,7 @@
 import React from "react";
 import { tomtomSecondaryColor } from "../../../shared/colors";
 import { Path } from "../../../domain/entities/Path";
-import {
-  Layer,
-  LayerChangeListener,
-} from "../../../domain/entities/Layer";
-import { ListenerId } from "../../../domain/value-objects/ListenerId";
+import { Layer } from "../../../domain/entities/Layer";
 import L from "leaflet";
 import "./LayerPanel.css";
 import LayerItem from "./LayerItem";
@@ -15,6 +11,7 @@ interface LayerPanelProps<T extends Path<any>> {
   layers: Layer<T>[];
   onLayerClicked: (layer: Layer<T>) => void;
   onLayerZoomedIn: (layer: Layer<T>) => void;
+  onVisibilityChange: (layer: Layer<T>) => void;
   onNameChange: (layer: Layer<T>, newName: string) => void;
 }
 
@@ -23,10 +20,10 @@ export const LayerPanel = <T extends Path<any>>({
   layers,
   onLayerClicked,
   onLayerZoomedIn,
+  onVisibilityChange,
   onNameChange,
 }: LayerPanelProps<T>) => {
   const [isScrollable, setIsScrollable] = React.useState(false);
-  const [, setRenderTrigger] = React.useState({});
   const panelRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -37,17 +34,6 @@ export const LayerPanel = <T extends Path<any>>({
     L.DomEvent.disableScrollPropagation(panel);
     L.DomEvent.disableClickPropagation(panel);
   }, []);
-
-  React.useEffect(() => {
-    const listener: LayerChangeListener = {
-      id: new ListenerId(),
-      onLayerChange: () => setRenderTrigger({}),
-    };
-
-    layers.forEach((layer) => layer.addLayerChangeListener(listener));
-    return () =>
-      layers.forEach((layer) => layer.removeLayerChangeListener(listener));
-  }, [layers]);
 
   return (
     <div ref={panelRef}>
@@ -69,16 +55,11 @@ export const LayerPanel = <T extends Path<any>>({
           >
             {layers.map((layer) => (
               <LayerItem
-                key={layer.id.toString()}
-                checked={layer.isVisible()}
-                onVisibilityChange={(newValue) => {
-                  layer.setVisible(newValue);
-                }}
-                name={layer.getName()}
-                onNameChange={(newName) => {
-                  layer.setName(newName);
-                  onNameChange(layer, newName);
-                }}
+                key={layer.id}
+                checked={layer.visible}
+                onVisibilityChange={() => onVisibilityChange(layer)}
+                name={layer.name}
+                onNameChange={(newName) => onNameChange(layer, newName)}
                 onClicked={onLayerClicked.bind(null, layer)}
                 onZoomedIn={() => onLayerZoomedIn(layer)}
               />
@@ -95,7 +76,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "1.1rem",
     color: `${tomtomSecondaryColor}`,
     padding: "0 10px 10px",
-    // marginBottom: "16px",
     borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
     width: "100%",
     textAlign: "center",
@@ -112,15 +92,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     maxHeight: "250px",
     scrollbarWidth: "thin",
     scrollbarColor: `${tomtomSecondaryColor}CC transparent`,
-    width: "100%",
-  },
-  layerName: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    paddingLeft: "12px",
-    transition: "background-color 0.4s ease",
-    borderRadius: "10px",
     width: "100%",
   },
 };

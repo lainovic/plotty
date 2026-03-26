@@ -2,7 +2,6 @@ import React from "react";
 import { LayerGroup } from "react-leaflet";
 import { Point } from "./points/Point";
 import { usePointFocus } from "../hooks/usePointFocus";
-import { useLayerVisibility } from "../hooks/useLayerVisibility";
 import { PathComponentProps } from "../shared/PathComponentsProps";
 import { LogPath } from "../../domain/entities/LogPath";
 import { LogPointPopup } from "./points/LogPointPopup";
@@ -30,24 +29,17 @@ const getPointStyle = (point: LogPoint) => {
 
 export const LogPathLayer: React.FC<PathComponentProps<LogPath>> = React.memo(
   ({ layer }) => {
-    const logPath = layer.getPath();
-    const points = logPath.points;
-
-    const { setLayerGroup } = useLayerVisibility(layer);
+    const points = layer.path.points;
 
     const {
       handlePointClick,
       handleGoingForward,
       handleGoingBackward,
       handlePointReady: setMarker,
-    } = usePointFocus(points.length, layer.id.toString());
+    } = usePointFocus(points.length, layer.id);
 
     return (
-      <LayerGroup
-        ref={(r) => {
-          if (r) setLayerGroup(r);
-        }}
-      >
+      <LayerGroup>
         {points.map((point, index) => {
           const style = getPointStyle(point);
           return (

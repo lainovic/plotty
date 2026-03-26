@@ -4,7 +4,6 @@ import { Point } from "./points/Point";
 import { Origin } from "./points/Origin";
 import { Destination } from "./points/Destination";
 import { TtpPath } from "../../domain/entities/TtpPath";
-import { useLayerVisibility } from "../hooks/useLayerVisibility";
 import { usePointFocus } from "../hooks/usePointFocus";
 import { TtpPoint } from "../../domain/value-objects/TtpPoint";
 import { PathComponentProps } from "../shared/PathComponentsProps";
@@ -12,26 +11,19 @@ import { PathComponentProps } from "../shared/PathComponentsProps";
 export const TtpPathLayer: React.FC<PathComponentProps<TtpPath>> = ({
   layer,
 }) => {
-  const ttpPath = layer.getPath();
-  const points = ttpPath.points;
+  const points = layer.path.points;
   const origin = points[0];
   const destination = points[points.length - 1];
-
-  const { setLayerGroup } = useLayerVisibility(layer);
 
   const {
     handlePointClick,
     handleGoingForward,
     handleGoingBackward,
     handlePointReady: setMarker,
-  } = usePointFocus(points.length, layer.id.toString());
+  } = usePointFocus(points.length, layer.id);
 
   return (
-    <LayerGroup
-      ref={(r) => {
-        if (r) setLayerGroup(r);
-      }}
-    >
+    <LayerGroup>
       <Origin
         key={0}
         point={origin}
@@ -59,7 +51,7 @@ export const TtpPathLayer: React.FC<PathComponentProps<TtpPath>> = ({
           onClick={() => {
             handlePointClick(index + 1);
           }}
-          color={layer.getColor().toHex()}
+          color={layer.color.toHex()}
           radius={8}
         />
       ))}

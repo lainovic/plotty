@@ -7,7 +7,6 @@ import { Destination } from "./points/Destination";
 import { Route } from "../../domain/entities/Route";
 import { Coordinates } from "../../domain/value-objects/Coordinates";
 import { usePointFocus } from "../hooks/usePointFocus";
-import { useLayerVisibility } from "../hooks/useLayerVisibility";
 import { PathComponentProps } from "../shared/PathComponentsProps";
 import { tomtomBlackColor } from "../../shared/colors";
 import { RouteInstruction } from "../../domain/value-objects/RouteInstruction";
@@ -145,20 +144,13 @@ const RouteInstructions: React.FC<RouteComponentProps> = ({ route }) => {
 
 export const RouteLayer: React.FC<PathComponentProps<Route>> = React.memo(
   ({ layer }) => {
-    const route = layer.getPath();
-    const { setLayerGroup } = useLayerVisibility(layer);
-
     const props: RouteComponentProps = {
-      route,
-      color: layer.getColor().toHex(),
+      route: layer.path,
+      color: layer.color.toHex(),
     };
 
     return (
-      <LayerGroup
-        ref={(r) => {
-          if (r) setLayerGroup(r);
-        }}
-      >
+      <LayerGroup>
         <RoutePoints {...props} />
         <RouteWaypoints {...props} />
         <RouteInstructions {...props} color={tomtomBlackColor} />

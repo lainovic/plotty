@@ -1,6 +1,5 @@
 import React from "react";
 import { LayerGroup } from "react-leaflet";
-import { useLayerVisibility } from "../hooks/useLayerVisibility";
 import { usePointFocus } from "../hooks/usePointFocus";
 import { Point } from "./points/Point";
 import { GeoPath } from "../../domain/entities/GeoPath";
@@ -9,24 +8,17 @@ import { PathComponentProps } from "../shared/PathComponentsProps";
 export const GeoPathLayer: React.FC<PathComponentProps<GeoPath>> = ({
   layer,
 }) => {
-  const geoPath = layer.getPath();
-  const points = geoPath.points;
-
-  const { setLayerGroup } = useLayerVisibility(layer);
+  const points = layer.path.points;
 
   const {
     handlePointClick,
     handleGoingForward,
     handleGoingBackward,
     handlePointReady,
-  } = usePointFocus(points.length, layer.id.toString());
+  } = usePointFocus(points.length, layer.id);
 
   return (
-    <LayerGroup
-      ref={(r) => {
-        if (r) setLayerGroup(r);
-      }}
-    >
+    <LayerGroup>
       {points.map((point, index) => (
         <Point
           key={index}
@@ -38,7 +30,7 @@ export const GeoPathLayer: React.FC<PathComponentProps<GeoPath>> = ({
           onClick={() => {
             handlePointClick(index);
           }}
-          color={layer.getColor().toHex()}
+          color={layer.color.toHex()}
           radius={8}
         />
       ))}

@@ -13,11 +13,11 @@ export function filterPaths<T extends Coordinates, U extends Path<any>>(
 }
 
 export function filterLayers<T extends Path<any>>(
-  layers: Layer<T>[],
+  layers: Layer<any>[],
   type: new (...args: any[]) => T
 ): Layer<T>[] {
   return layers.filter(
-    (layer): layer is Layer<T> => layer.getPath() instanceof type
+    (layer): layer is Layer<T> => layer.path instanceof type
   );
 }
 
@@ -28,11 +28,8 @@ export function areLayersEqual<T extends Path<any>>(
   if (prevLayers.length !== nextLayers.length) return false;
 
   return prevLayers.every((prevLayer, index) => {
-    const nextLayer = prevLayers[index];
-    return (
-      prevLayer.id === nextLayer.id &&
-      prevLayer.isVisible === nextLayer.isVisible
-    );
+    const nextLayer = nextLayers[index];
+    return prevLayer.id === nextLayer.id && prevLayer.visible === nextLayer.visible;
   });
 }
 

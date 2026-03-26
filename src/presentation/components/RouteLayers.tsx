@@ -11,9 +11,9 @@ export const RouteLayers: React.FC<PathComponentsProps<Route>> = React.memo(
   ({ layers }) => {
     useRenderTime("RouteLayers", onlyInDevelopment);
 
-    return layers.map((layer) => (
-      <RouteLayer key={layer.id.toString()} layer={layer} />
-    ));
+    return layers
+      .filter((layer) => layer.visible)
+      .map((layer) => <RouteLayer key={layer.id} layer={layer} />);
   },
   arePathComponentsPropsEqual
 );

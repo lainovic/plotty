@@ -11,9 +11,9 @@ export const GeoPathLayers: React.FC<PathComponentsProps<GeoPath>> = React.memo(
   ({ layers }) => {
     useRenderTime("GeoPathLayers", onlyInDevelopment);
 
-    return layers.map((layer) => (
-      <GeoPathLayer key={layer.id.toString()} layer={layer} />
-    ));
+    return layers
+      .filter((layer) => layer.visible)
+      .map((layer) => <GeoPathLayer key={layer.id} layer={layer} />);
   },
   arePathComponentsPropsEqual
 );

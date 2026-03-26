@@ -11,9 +11,9 @@ export const LogPathLayers: React.FC<PathComponentsProps<LogPath>> = React.memo(
   ({ layers }) => {
     useRenderTime("LogPathLayers", onlyInDevelopment);
 
-    return layers.map((layer) => (
-      <LogPathLayer key={layer.id.toString()} layer={layer} />
-    ));
+    return layers
+      .filter((layer) => layer.visible)
+      .map((layer) => <LogPathLayer key={layer.id} layer={layer} />);
   },
   arePathComponentsPropsEqual
 );

@@ -7,8 +7,7 @@ import { GotoDialog } from "./overlays/GotoDialog";
 import { Route } from "../../domain/entities/Route";
 import { RouteLayers } from "./RouteLayers";
 import { filterLayers } from "../../domain/utils/utils";
-import { useMapContext } from "../contexts/useMapContext";
-import { Layer } from "../../domain/entities/Layer";
+import { Layer, createLayer } from "../../domain/entities/Layer";
 import { GeoPathLayers } from "./GeoPathLayers";
 import { GeoPath } from "../../domain/entities/GeoPath";
 import { TtpPathLayers } from "./TtpPathLayers";
@@ -30,21 +29,13 @@ export const MapLayers = () => {
   useRenderTime("MapLayers", onlyInDevelopment);
 
   const map = useMap();
-  const { layerService } = useMapContext();
-
   const [layers, setLayers] = React.useState<Layer<any>[]>([]);
   const { getNextColor } = useColors();
 
   const { importing } = usePathImport({
-    onPathsImported: async (paths: Path<any>[]) => {
-      const newLayers = await Promise.all(
-        paths.map((path) =>
-          layerService.createLayer(
-            path.getName(),
-            Color.fromHex(getNextColor()),
-            path
-          )
-        )
+    onPathsImported: (paths: Path<any>[]) => {
+      const newLayers = paths.map((path) =>
+        createLayer(path.getName(), Color.fromHex(getNextColor()), path)
       );
       setLayers((prev) => [...prev, ...newLayers]);
     },
@@ -73,6 +64,18 @@ export const MapLayers = () => {
   const { flyToBoundingBox, zoomToBoundingBox, flyToCoordinates } =
     useMapUtils();
 
+  const toggleVisibility = (id: string) => {
+    setLayers((prev) =>
+      prev.map((l) => (l.id === id ? { ...l, visible: !l.visible } : l))
+    );
+  };
+
+  const renameLayer = (id: string, newName: string) => {
+    setLayers((prev) =>
+      prev.map((l) => (l.id === id ? { ...l, name: newName } : l))
+    );
+  };
+
   return (
     <>
       {importing && (
@@ -83,11 +86,14 @@ export const MapLayers = () => {
       <LayerPanel
         style={styles.layerPanel}
         layers={layers}
-        onLayerClicked={(layer: Layer<any>) => flyToBoundingBox(layer.getPoints())}
-        onLayerZoomedIn={(layer: Layer<any>) => zoomToBoundingBox(layer.getPoints())}
-        onNameChange={function (layer: Layer<any>, newName: string): void {
-          throw new Error("Function not implemented.");
-        }}
+        onLayerClicked={(layer: Layer<any>) =>
+          flyToBoundingBox([...layer.path.points])
+        }
+        onLayerZoomedIn={(layer: Layer<any>) =>
+          zoomToBoundingBox([...layer.path.points])
+        }
+        onVisibilityChange={(layer) => toggleVisibility(layer.id)}
+        onNameChange={(layer, newName) => renameLayer(layer.id, newName)}
       />
       <GotoDialog
         onCoordinatesChange={(coordinates: Coordinates) => {

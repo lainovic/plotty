@@ -11,9 +11,9 @@ export const TtpPathLayers: React.FC<PathComponentsProps<TtpPath>> = React.memo(
   ({ layers }) => {
     useRenderTime("TtpPathLayers", onlyInDevelopment);
 
-    return layers.map((layer) => (
-      <TtpPathLayer key={layer.id.toString()} layer={layer} />
-    ));
+    return layers
+      .filter((layer) => layer.visible)
+      .map((layer) => <TtpPathLayer key={layer.id} layer={layer} />);
   },
   arePathComponentsPropsEqual
 );

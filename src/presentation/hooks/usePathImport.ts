@@ -1,8 +1,9 @@
 import React from "react";
 import { Path } from "../../domain/entities/Path";
-import { useMapContext } from "../contexts/useMapContext";
-import { ImportMessage } from "../../application/services/PathImportService";
+import { ParseService } from "../../domain/services/ParseService";
 import { toast } from "react-toastify";
+
+const parseService = new ParseService();
 
 type UsePathImportProps<T extends Path<any>> = {
   onPathsImported: (paths: T[]) => void;
@@ -11,18 +12,7 @@ type UsePathImportProps<T extends Path<any>> = {
 export function usePathImport<T extends Path<any>>({
   onPathsImported,
 }: UsePathImportProps<T>) {
-  const { pathImportService: importService } = useMapContext();
-  const [message, setMessage] = React.useState<ImportMessage | null>(null);
   const [importing, setImporting] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!message || message.text === "") return;
-    if (message.type === "success") {
-      toast.success(message.text);
-    } else {
-      toast.error(message.text);
-    }
-  }, [message]);
 
   const parseNonBlocking = async (content: string) => {
     setImporting(true);
@@ -30,11 +20,13 @@ export function usePathImport<T extends Path<any>>({
       // Ensure the importing state is rendered before heavy processing.
       await new Promise((resolve) => setTimeout(resolve, 50));
 
-      const result = importService.importFromText<T>(content);
-      setMessage(result.message);
-      if (result.message.type === "success" && result.paths.length > 0) {
+      const result = parseService.parse<T>(content);
+      toast.success(result.message);
+      if (result.paths.length > 0) {
         onPathsImported(result.paths);
       }
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : String(error));
     } finally {
       setImporting(false);
     }
@@ -42,28 +34,23 @@ export function usePathImport<T extends Path<any>>({
 
   React.useEffect(() => {
     const handlePaste = async (event: ClipboardEvent) => {
-      // Don't handle paste if we're in a text input
       if (
         event.target instanceof HTMLInputElement ||
         event.target instanceof HTMLTextAreaElement
       ) {
         return;
       }
-
       event.preventDefault();
-      const content = event.clipboardData?.getData("text");
-      await parseNonBlocking(content || "");
+      await parseNonBlocking(event.clipboardData?.getData("text") || "");
     };
 
     const handleDrop = async (event: DragEvent) => {
-      // Don't handle drop if we're in a text input
       if (
         event.target instanceof HTMLInputElement ||
         event.target instanceof HTMLTextAreaElement
       ) {
         return;
       }
-
       event.preventDefault();
       const file = event.dataTransfer?.files[0];
       if (file) {
@@ -76,9 +63,7 @@ export function usePathImport<T extends Path<any>>({
       }
     };
 
-    const preventDefault = (event: Event) => {
-      event.preventDefault();
-    };
+    const preventDefault = (event: Event) => event.preventDefault();
 
     document.body.addEventListener("paste", handlePaste);
     document.body.addEventListener("drop", handleDrop);
@@ -91,8 +76,5 @@ export function usePathImport<T extends Path<any>>({
     };
   }, [onPathsImported]);
 
-  return {
-    message,
-    importing,
-  };
+  return { importing };
 }

@@ -10,6 +10,8 @@ export interface PathComponentsProps<T extends Path<any>> {
   layers: Layer<T>[];
 }
 
+// Intentionally only compares id and visible — layer name changes do not
+// affect rendering in *Layer components, so they don't trigger a re-render.
 export function arePathComponentsPropsEqual<T extends Path<any>>(
   prevProps: PathComponentsProps<T>,
   nextProps: PathComponentsProps<T>

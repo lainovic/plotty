@@ -20,12 +20,12 @@ export class PathImportService {
     if (Maybe.isSuccess(result)) {
       return {
         paths: result.value.paths,
-        message: { type: "success", text: result.value.message.value },
+        message: { type: "success", text: result.value.message },
       };
     } else {
       return {
         paths: [],
-        message: { type: "error", text: result.error!.value },
+        message: { type: "error", text: result.error },
       };
     }
   }

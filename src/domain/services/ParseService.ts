@@ -19,7 +19,7 @@ export class ParseService {
     if (input === "") {
       return Maybe.success({
         paths: [],
-        message: { value: "The input is empty." },
+        message: "The input is empty.",
       });
     }
 
@@ -33,7 +33,7 @@ export class ParseService {
       } else {
         errorMessage = `${error}`;
       }
-      return Maybe.failure({ value: errorMessage });
+      return Maybe.failure(errorMessage);
     }
   }
 
@@ -44,7 +44,7 @@ export class ParseService {
       if (Maybe.isSuccess(result)) {
         return result.value;
       }
-      errors.push(result.error.value);
+      errors.push(result.error);
     }
     // If we got here, then no parser succeeded.
     throw new ParsingError(
@@ -57,8 +57,4 @@ class ParsingError extends Error {
   constructor(message: string) {
     super(message);
   }
-}
-
-function countLines(text: string): number {
-  return (text.match(/\n/g) || []).length + 1;
 }

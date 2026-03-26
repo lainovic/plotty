@@ -10,13 +10,9 @@ import {
 
 import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { emphasize } from "@mui/material";
 import { tomtomBlackColor, tomtomSecondaryColor } from "../../../shared/colors";
 import { Z_INDEX } from "../../constants/zIndex";
 
-/**
- * Represents the available tile vendors that can be used to fetch map tiles.
- */
 enum TileVendors {
   TomTomOrbisMaps = "TomTom Orbis Maps",
   TomTomMaps = "TomTom Maps",
@@ -24,113 +20,69 @@ enum TileVendors {
   GoogleMap = "Google Maps",
 }
 
-export class TileVendorIterable {
-  private vendors = Object.values(TileVendors);
-  private index: number = 0;
+const vendors = Object.values(TileVendors);
 
-  next(): IteratorResult<TileVendors> {
-    if (this.index < this.vendors.length - 1) {
-      this.index++;
-      return { done: false, value: this.vendors[this.index] };
-    } else {
-      return { done: true, value: undefined };
-    }
-  }
-
-  prev(): IteratorResult<TileVendors> {
-    if (this.index > 0) {
-      this.index--;
-      return { done: false, value: this.vendors[this.index] };
-    } else {
-      return { done: true, value: undefined };
-    }
-  }
-}
-
-type TileVendorMap = Map<TileVendors, TileProvider>;
+const tileProviderMap: Map<TileVendors, TileProvider> = new Map([
+  [TileVendors.TomTomOrbisMaps, tomTomMapsOrbisTileProvider],
+  [TileVendors.TomTomMaps, tomtomMapsGenesisTileProvider],
+  [TileVendors.OpenStreetMap, openStreetMapTileProvider],
+  [TileVendors.GoogleMap, googleMapsTileProvider],
+]);
 
 interface TileProviderSelectorProps {
   onTileProviderChanged: (tileProvider: TileProvider) => void;
 }
 
-/**
- * A React component that allows the user to select a tile provider from a list of available options.
- *
- * @param onTileProviderChanged - A callback function that is called whenever the selected tile provider changes.
- */
 export const TileProviderSelector: React.FC<TileProviderSelectorProps> = ({
   onTileProviderChanged,
 }) => {
-  const tileProviders = React.useRef<TileVendorMap>(
-    new Map<TileVendors, TileProvider>([
-      [TileVendors.TomTomOrbisMaps, tomTomMapsOrbisTileProvider],
-      [TileVendors.TomTomMaps, tomtomMapsGenesisTileProvider],
-      [TileVendors.OpenStreetMap, openStreetMapTileProvider],
-      [TileVendors.GoogleMap, googleMapsTileProvider],
-    ])
-  );
-
-  const tileVendorIterable = new TileVendorIterable();
-
-  const [selectedTileVendor, setSelectedTileVendor] =
-    React.useState<TileVendors>(Object.values(TileVendors)[0]);
-
-  function handleSelect(e: SelectChangeEvent<TileVendors>) {
-    setSelectedTileVendor(e.target.value as TileVendors);
-  }
+  const [selectedVendor, setSelectedVendor] = React.useState<TileVendors>(vendors[0]);
 
   React.useEffect(() => {
-    const tileProvider = tileProviders.current.get(selectedTileVendor)!;
-    onTileProviderChanged(tileProvider);
-  }, [selectedTileVendor]);
+    onTileProviderChanged(tileProviderMap.get(selectedVendor)!);
+  }, [selectedVendor]);
 
   React.useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      if (event.key === "j" || event.key === "J") {
-        const nextTileVendor = tileVendorIterable.next();
-        if (!nextTileVendor.done) {
-          setSelectedTileVendor(nextTileVendor.value);
-        }
-      } else if (event.key === "k" || event.key === "K") {
-        const prevTileVendor = tileVendorIterable.prev();
-        if (!prevTileVendor.done) {
-          setSelectedTileVendor(prevTileVendor.value);
-        }
-      }
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+      if (key !== "j" && key !== "k") return;
+      setSelectedVendor((prev) => {
+        const index = vendors.indexOf(prev);
+        const next = key === "j" ? index + 1 : index - 1;
+        return vendors[next] ?? prev;
+      });
     };
-    document.addEventListener("keydown", handleKeyPress);
-    return () => {
-      document.removeEventListener("keydown", handleKeyPress);
-    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const selectedTileProvider = tileProviders.current.get(selectedTileVendor);
+  const selectedProvider = tileProviderMap.get(selectedVendor);
 
   return (
     <div style={styles.container}>
       <Select
-        value={selectedTileVendor}
-        onChange={handleSelect}
+        value={selectedVendor}
+        onChange={(e: SelectChangeEvent<TileVendors>) =>
+          setSelectedVendor(e.target.value as TileVendors)
+        }
         sx={{
           color: `${tomtomBlackColor}`,
-          "&.MuiSvgIcon-root": {
-            color: `${tomtomSecondaryColor}`,
-          },
+          "&.MuiSvgIcon-root": { color: `${tomtomSecondaryColor}` },
         }}
       >
-        {[...tileProviders.current.keys()].map((provider) => (
-          <MenuItem key={provider} value={provider}>
-            {provider}
+        {vendors.map((vendor) => (
+          <MenuItem key={vendor} value={vendor}>
+            {vendor}
           </MenuItem>
         ))}
       </Select>
-      {selectedTileProvider instanceof AuthTileProvider && (
+      {selectedProvider instanceof AuthTileProvider && (
         <PasswordInput
           label="API key"
-          initialValue={selectedTileProvider.getApiKey() || ""}
+          initialValue={selectedProvider.getApiKey() || ""}
           onValueChange={(key) => {
-            selectedTileProvider.setApiKey(key);
-            onTileProviderChanged(selectedTileProvider);
+            selectedProvider.setApiKey(key);
+            onTileProviderChanged(selectedProvider);
           }}
           style={{ marginLeft: "10px", color: `${tomtomBlackColor}` }}
         />
@@ -155,8 +107,5 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: "12px",
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
     zIndex: Z_INDEX.TILE_PROVIDER,
-  },
-  emphasize: {
-    color: emphasize(`${tomtomSecondaryColor}`, 0.1),
   },
 };

@@ -8,6 +8,7 @@ import { Route } from "../../domain/entities/Route";
 import { RouteLayers } from "./RouteLayers";
 import { filterLayers } from "../../domain/utils/utils";
 import { Layer, createLayer } from "../../domain/entities/Layer";
+import { FocusProvider } from "../contexts/useFocusContext";
 import { GeoPathLayers } from "./GeoPathLayers";
 import { GeoPath } from "../../domain/entities/GeoPath";
 import { TtpPathLayers } from "./TtpPathLayers";
@@ -30,6 +31,7 @@ export const MapLayers = () => {
 
   const map = useMap();
   const [layers, setLayers] = React.useState<Layer<any>[]>([]);
+  const [focusedLayerId, setFocusedLayerId] = React.useState<string | null>(null);
   const { getNextColor } = useColors();
 
   const { importing } = usePathImport({
@@ -77,7 +79,7 @@ export const MapLayers = () => {
   };
 
   return (
-    <>
+    <FocusProvider focusedLayerId={focusedLayerId} setFocusedLayerId={setFocusedLayerId}>
       {importing && (
         <div style={styles.overlay}>
           <div style={styles.spinner}>Importing...</div>
@@ -106,7 +108,7 @@ export const MapLayers = () => {
       <GeoPathLayers layers={geoPathLayers} />
       <TtpPathLayers layers={ttpPathLayers} />
       <LogPathLayers layers={logPathLayers} />
-    </>
+    </FocusProvider>
   );
 };
 

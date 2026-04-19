@@ -27,31 +27,29 @@ export default class RouteParser implements Parser<Route> {
   parse(text: string): MaybeParsed<Route> {
     try {
       const json = JSON.parse(text);
-      if (!json) return Maybe.failure({ value: "Empty JSON" });
+      if (!json) return Maybe.failure("Empty JSON");
 
       const { formatVersion, routes } = json;
 
       if (formatVersion !== supportedVersion) {
-        return Maybe.failure({
-          value: `Unsupported JSON version: ${json.formatVersion}, expected ${supportedVersion}`,
-        });
+        return Maybe.failure(
+          `Unsupported JSON version: ${json.formatVersion}, expected ${supportedVersion}`
+        );
       }
 
       if (routes && Array.isArray(routes)) {
         return Maybe.success({
           paths: routes.map((route) => new Route(route)),
-          message: { value: "Parsed JSON successfully." },
+          message: "Parsed JSON successfully.",
         });
       } else {
         return Maybe.success({
           paths: [],
-          message: { value: "No routes found in the given JSON." },
+          message: "No routes found in the given JSON.",
         });
       }
     } catch (error: any) {
-      return Maybe.failure({
-        value: `Error parsing as JSON: ${error.message}`,
-      });
+      return Maybe.failure(`Error parsing as JSON: ${error.message}`);
     }
   }
 }

@@ -31,18 +31,16 @@ export default class TtpParser implements Parser<TtpPath> {
       if (points.length === 0) {
         return Maybe.success({
           paths: [],
-          message: { value: "No routes found in the given TTP." },
+          message: "No routes found in the given TTP.",
         });
       }
 
       return Maybe.success({
         paths: [new TtpPath(points)],
-        message: { value: message },
+        message,
       });
     } catch (error: any) {
-      return Maybe.failure({
-        value: `Error parsing as TTP: ${error.message}`,
-      });
+      return Maybe.failure(`Error parsing as TTP: ${error.message}`);
     }
   }
 

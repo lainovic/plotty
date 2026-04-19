@@ -28,15 +28,12 @@ export default class GeoPointsParser implements Parser<GeoPath> {
     }
 
     if (points.length === 0) {
-      return Maybe.success({
-        paths: [],
-        message: { value: "No coordinates found." },
-      });
-    } else {
-      return Maybe.success({
-        paths: [new GeoPath(points)],
-        message: { value: "Parsed as coordinates." },
-      });
+      return Maybe.failure("No coordinates found.");
     }
+
+    return Maybe.success({
+      paths: [new GeoPath(points)],
+      message: "Parsed as coordinates.",
+    });
   }
 }

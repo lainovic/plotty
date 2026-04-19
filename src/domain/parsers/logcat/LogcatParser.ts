@@ -28,17 +28,15 @@ export class LogcatParser implements Parser<LogPath> {
       });
 
       if (points.length === 0) {
-        return Maybe.failure({ value: "No routes found in the given logcat." });
+        return Maybe.failure("No routes found in the given logcat.");
       }
 
       return Maybe.success({
         paths: [new LogPath(points)],
-        message: { value: "Parsed Logcat successfully." },
+        message: "Parsed Logcat successfully.",
       });
     } catch (error: any) {
-      return Maybe.failure({
-        value: `Error parsing as logcat: ${error.message}`,
-      });
+      return Maybe.failure(`Error parsing as logcat: ${error.message}`);
     }
   }
 }

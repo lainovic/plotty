@@ -81,9 +81,8 @@ export default class TtpParser implements Parser<TtpPath> {
         );
         points.push(point);
         seenTimestaps.add(reception_timestamp);
-      } catch (error: any) {
-        console.error(`error parsing a TTP point: ${error}`);
-        // Just continue.
+      } catch {
+        // skip malformed points
       }
     });
     return points;

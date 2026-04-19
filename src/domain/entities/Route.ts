@@ -158,8 +158,7 @@ export class Route extends Path<RoutePoint> {
             instruction.maneuver
           )
       );
-    } catch (error) {
-      console.error("Error parsing instructions from source: ", error);
+    } catch {
       return [];
     }
   }

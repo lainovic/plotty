@@ -66,7 +66,6 @@ class RoutePlannerParser implements MessageParser {
       /origin=ItineraryPoint\(.*?coordinate=GeoPoint\(latitude=([-\d.]+),\s*longitude=([-\d.]+)\).*?destination=ItineraryPoint\(.*?coordinate=GeoPoint\(latitude=([-\d.]+),\s*longitude=([-\d.]+)\)/;
     const match = message.match(regex);
     if (match) {
-      console.log(`RoutePlannerParser match found!`, match);
       const [, originLat, originLon, destLat, destLon] = match;
       extra.set("planning origin", `${originLat}, ${originLon}`);
       extra.set("planning destination", `${destLat}, ${destLon}`);

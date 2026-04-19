@@ -22,8 +22,8 @@ export class LogcatParser implements Parser<LogPath> {
               if (point !== null) points.push(point);
             }
           }
-        } catch (error: any) {
-          console.error(`Error parsing a Logcat point: ${error.message}`);
+        } catch {
+          // skip malformed entries
         }
       });
 

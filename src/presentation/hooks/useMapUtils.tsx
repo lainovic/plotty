@@ -37,7 +37,7 @@ export const useMapUtils = () => {
         }
       );
     },
-    []
+    [map]
   );
 
   const zoomToBoundingBox = React.useCallback(
@@ -64,7 +64,7 @@ export const useMapUtils = () => {
         }
       );
     },
-    []
+    [map]
   );
 
   /**
@@ -80,7 +80,7 @@ export const useMapUtils = () => {
         duration: 0.5,
       });
     },
-    []
+    [map]
   );
 
   return {

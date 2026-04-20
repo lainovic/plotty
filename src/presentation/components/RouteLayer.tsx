@@ -24,6 +24,7 @@ const RoutePoints: React.FC<RouteComponentProps> = ({ route, color }) => {
     handleGoingForward: gotoNextPoint,
     handleGoingBackward: gotoPreviousPoint,
     handlePointReady,
+    focusedPointIndex,
   } = usePointFocus(points.length, `${route.id.toString()}_points`);
 
   return (
@@ -33,6 +34,7 @@ const RoutePoints: React.FC<RouteComponentProps> = ({ route, color }) => {
           key={`${index}-${point.latitude},${point.longitude}`}
           title={`${index}`}
           point={point}
+          highlighted={index === focusedPointIndex}
           onReady={(marker) => handlePointReady(index, marker)}
           onRight={gotoNextPoint}
           onLeft={gotoPreviousPoint}

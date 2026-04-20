@@ -36,6 +36,7 @@ export const LogPathLayer: React.FC<PathComponentProps<LogPath>> = React.memo(
       handleGoingForward,
       handleGoingBackward,
       handlePointReady: setMarker,
+      focusedPointIndex,
     } = usePointFocus(points.length, layer.id);
 
     return (
@@ -47,6 +48,7 @@ export const LogPathLayer: React.FC<PathComponentProps<LogPath>> = React.memo(
               key={point.line}
               title={`${point.line}`}
               point={point}
+              highlighted={index === focusedPointIndex}
               radius={style.radius}
               color={style.color}
               content={<LogPointPopup point={point} />}

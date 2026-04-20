@@ -20,6 +20,7 @@ export const TtpPathLayer: React.FC<PathComponentProps<TtpPath>> = ({
     handleGoingForward,
     handleGoingBackward,
     handlePointReady: setMarker,
+    focusedPointIndex,
   } = usePointFocus(points.length, layer.id);
 
   return (
@@ -51,6 +52,7 @@ export const TtpPathLayer: React.FC<PathComponentProps<TtpPath>> = ({
           onClick={() => {
             handlePointClick(index + 1);
           }}
+          highlighted={index + 1 === focusedPointIndex}
           color={layer.color.toHex()}
           radius={8}
         />

@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { tomtomBlackColor, tomtomSecondaryColor } from "../shared/colors";
 import { MapComponent } from "./components/MapComponent";
 import { HelpPopup } from "./components/overlays/HelpPopup";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 function App() {
   return (
@@ -13,7 +14,9 @@ function App() {
         Plo<span style={styles.headerSpan}>tt</span>y
       </header>
       <main style={styles.container}>
-        <MapComponent />
+        <ErrorBoundary>
+          <MapComponent />
+        </ErrorBoundary>
       </main>
       <ToastContainer
         position="top-center"

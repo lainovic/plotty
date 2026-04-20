@@ -15,6 +15,7 @@ export const GeoPathLayer: React.FC<PathComponentProps<GeoPath>> = ({
     handleGoingForward,
     handleGoingBackward,
     handlePointReady,
+    focusedPointIndex,
   } = usePointFocus(points.length, layer.id);
 
   return (
@@ -30,6 +31,7 @@ export const GeoPathLayer: React.FC<PathComponentProps<GeoPath>> = ({
           onClick={() => {
             handlePointClick(index);
           }}
+          highlighted={index === focusedPointIndex}
           color={layer.color.toHex()}
           radius={8}
         />

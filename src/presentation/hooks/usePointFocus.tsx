@@ -8,6 +8,7 @@ export interface PointFocusHookReturnType {
   handleGoingForward: () => number;
   handleGoingBackward: () => number;
   handlePointReady: (index: number, marker: L.Layer | null) => void;
+  focusedPointIndex: number | null;
 }
 
 export function usePointFocus(
@@ -26,14 +27,17 @@ export function usePointFocus(
     new Array(pointCount).fill(null)
   );
 
+  const [focusedPointIndex, setFocusedPointIndex] = React.useState<number | null>(null);
+
   React.useEffect(() => { isFocusedRef.current = isFocused; }, [isFocused]);
   React.useEffect(() => { pointCountRef.current = pointCount; }, [pointCount]);
   React.useEffect(() => { layerIdRef.current = layerId; }, [layerId]);
 
-  // Close popups when this layer loses focus
+  // Close popups and clear highlight when this layer loses focus
   React.useEffect(() => {
     if (!isFocused) {
       markers.current.forEach((marker) => marker?.closePopup());
+      setFocusedPointIndex(null);
     }
   }, [isFocused]);
 
@@ -59,6 +63,7 @@ export function usePointFocus(
   const handlePointClick = React.useCallback((index: number) => {
     setFocusedLayerId(layerIdRef.current);
     currentIndex.current = index;
+    setFocusedPointIndex(index);
   }, [setFocusedLayerId]);
 
   const handleGoingForward = React.useCallback(() => {
@@ -68,6 +73,7 @@ export function usePointFocus(
     const newIndex = (index + 1) % pointCountRef.current;
     markers.current[newIndex]?.openPopup();
     currentIndex.current = newIndex;
+    setFocusedPointIndex(newIndex);
     return newIndex;
   }, []);
 
@@ -78,6 +84,7 @@ export function usePointFocus(
     const newIndex = (index - 1 + pointCountRef.current) % pointCountRef.current;
     markers.current[newIndex]?.openPopup();
     currentIndex.current = newIndex;
+    setFocusedPointIndex(newIndex);
     return newIndex;
   }, []);
 
@@ -93,5 +100,6 @@ export function usePointFocus(
     handleGoingForward,
     handleGoingBackward,
     handlePointReady,
+    focusedPointIndex,
   } as PointFocusHookReturnType;
 }

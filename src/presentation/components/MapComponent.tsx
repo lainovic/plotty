@@ -2,7 +2,6 @@ import React from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { TileProviderSelector } from "./overlays/TileProviderSelector";
-import { TileProvider } from "../providers/TileProvider";
 import { openStreetMapTileProvider } from "../providers/const";
 import { MapLayers } from "./MapLayers";
 import { onlyInDevelopment, useRenderTime } from "../hooks/useRenderTime";
@@ -18,8 +17,11 @@ function MapPlaceholder() {
 export const MapComponent = () => {
   useRenderTime("MapComponent", onlyInDevelopment);
 
-  const [selectedTileProvider, selectTileProvider] =
-    React.useState<TileProvider>(openStreetMapTileProvider);
+  const [tileConfig, setTileConfig] = React.useState(() => ({
+    url: openStreetMapTileProvider.getUrl(),
+    attribution: openStreetMapTileProvider.getAttribution(),
+    maxZoom: openStreetMapTileProvider.getMaxZoom(),
+  }));
 
   return (
     <>
@@ -29,21 +31,25 @@ export const MapComponent = () => {
           center={[44.82, 20.41]} // New Belgrade
           zoom={11}
           minZoom={0}
-          maxZoom={selectedTileProvider.getMaxZoom()}
+          maxZoom={tileConfig.maxZoom}
           scrollWheelZoom
           placeholder={<MapPlaceholder />}
         >
           <TileLayer
-            attribution={selectedTileProvider.getAttribution()}
-            url={selectedTileProvider.getUrl()}
+            attribution={tileConfig.attribution}
+            url={tileConfig.url}
             minZoom={0}
-            maxZoom={selectedTileProvider.getMaxZoom()}
+            maxZoom={tileConfig.maxZoom}
           />
           <MapLayers />
         </MapContainer>
         <TileProviderSelector
-          onTileProviderChanged={(tileProvider) => {
-            selectTileProvider(tileProvider);
+          onTileProviderChanged={(p) => {
+            setTileConfig({
+              url: p.getUrl(),
+              attribution: p.getAttribution(),
+              maxZoom: p.getMaxZoom(),
+            });
           }}
         />
       </div>

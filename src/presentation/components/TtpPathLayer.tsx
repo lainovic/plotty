@@ -39,7 +39,7 @@ export const TtpPathLayer: React.FC<PathComponentProps<TtpPath>> = ({
 
       {points.slice(1, -1).map((point, index) => (
         <Point
-          key={index + 1}
+          key={`${index + 1}-${point.latitude},${point.longitude}`}
           title={`${index + 1}`}
           point={point}
           onReady={(marker) => {

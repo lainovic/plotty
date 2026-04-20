@@ -21,7 +21,7 @@ export const GeoPathLayer: React.FC<PathComponentProps<GeoPath>> = ({
     <LayerGroup>
       {points.map((point, index) => (
         <Point
-          key={index}
+          key={`${index}-${point.latitude},${point.longitude}`}
           title={`${index}`}
           point={point}
           onReady={(marker) => handlePointReady(index, marker)}

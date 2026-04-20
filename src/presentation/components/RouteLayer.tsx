@@ -30,7 +30,7 @@ const RoutePoints: React.FC<RouteComponentProps> = ({ route, color }) => {
     <>
       {points.map((point, index) => (
         <Point
-          key={index}
+          key={`${index}-${point.latitude},${point.longitude}`}
           title={`${index}`}
           point={point}
           onReady={(marker) => handlePointReady(index, marker)}
@@ -123,7 +123,7 @@ const RouteInstructions: React.FC<RouteComponentProps> = ({ route }) => {
         const { instruction: text, point } = i;
         return (
           <Point
-            key={index}
+            key={`${index}-${point.latitude},${point.longitude}`}
             title={text}
             point={new Coordinates(point.latitude, point.longitude)}
             radius={12}

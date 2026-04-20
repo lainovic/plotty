@@ -44,7 +44,7 @@ export const LogPathLayer: React.FC<PathComponentProps<LogPath>> = React.memo(
           const style = getPointStyle(point);
           return (
             <Point
-              key={index}
+              key={point.line}
               title={`${point.line}`}
               point={point}
               radius={style.radius}

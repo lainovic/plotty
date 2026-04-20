@@ -17,6 +17,7 @@ import { usePathImport } from "../hooks/usePathImport";
 import { Path } from "../../domain/entities/Path";
 import { Color } from "../../domain/value-objects/Color";
 import { useColors } from "../hooks/useLayerColors";
+import { usePersistedLayers } from "../hooks/usePersistedLayers";
 import { onlyInDevelopment, useRenderTime } from "../hooks/useRenderTime";
 import { Z_INDEX } from "../constants/zIndex";
 import { Coordinates } from "../../domain/value-objects/Coordinates";
@@ -26,7 +27,7 @@ export const MapLayers = () => {
   useRenderTime("MapLayers", onlyInDevelopment);
 
   const map = useMap();
-  const [layers, setLayers] = React.useState<Layer<any>[]>([]);
+  const [layers, setLayers] = usePersistedLayers();
   const [focusedLayerId, setFocusedLayerId] = React.useState<string | null>(null);
   const { getNextColor } = useColors();
 

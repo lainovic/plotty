@@ -40,6 +40,7 @@ export const LogPathLayer: React.FC<PathComponentProps<LogPath>> = React.memo(
               highlighted={index === focusedPointIndex}
               radius={style.radius}
               color={style.color}
+              showCopyButton={false}
               content={<LogPointPopup point={point} />}
               onReady={(marker) => setMarker(index, marker)}
               onRight={handleGoingForward}

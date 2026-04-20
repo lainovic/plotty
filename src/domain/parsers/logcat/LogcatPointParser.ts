@@ -12,7 +12,7 @@ export class LogcatPointParser {
     try {
       const logLevel = LogcatPointParser.extractLogLevel(entry.level);
       const { latitude, longitude, extra } = result;
-      return new LogPoint(latitude, longitude, logLevel, entry.tag, lineNumber, extra);
+      return new LogPoint(latitude, longitude, logLevel, entry.tag, lineNumber, extra, entry.timestamp);
     } catch {
       return null;
     }

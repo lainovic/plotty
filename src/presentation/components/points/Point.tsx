@@ -19,6 +19,7 @@ interface PointProps {
   onCopy?: () => void;
   onLeft?: () => void;
   onRight?: () => void;
+  showCopyButton?: boolean;
 }
 
 function arePropsEqual(prev: PointProps, next: PointProps): boolean {
@@ -51,6 +52,7 @@ export const Point: React.FC<PointProps> = React.memo(({
   },
   onLeft = () => {},
   onRight = () => {},
+  showCopyButton = true,
 }) => {
   const map = useMap();
 
@@ -92,6 +94,7 @@ export const Point: React.FC<PointProps> = React.memo(({
           onLeftArrowClick={onLeft}
           onRightArrowClick={onRight}
           onCopyContentClick={onCopy}
+          showCopyButton={showCopyButton}
         />
       </Popup>
     </CircleMarker>

@@ -13,6 +13,7 @@ export default function PointPopup({
   onLeftArrowClick = () => {},
   onRightArrowClick = () => {},
   onCopyContentClick = () => {},
+  showCopyButton = true,
 }: {
   title: string;
   content: React.ReactNode;
@@ -20,6 +21,7 @@ export default function PointPopup({
   onLeftArrowClick?: () => void;
   onRightArrowClick?: () => void;
   onCopyContentClick?: () => void;
+  showCopyButton?: boolean;
 }) {
   return (
     <div style={styles.container}>
@@ -34,9 +36,11 @@ export default function PointPopup({
       <IconButton aria-label="locate on map" onClick={onLocateClick}>
         <AdsClickIcon fontSize="small" />
       </IconButton>
-      <IconButton aria-label="copy coordinates" onClick={onCopyContentClick}>
-        <ContentCopyIcon fontSize="small" />
-      </IconButton>
+      {showCopyButton && (
+        <IconButton aria-label="copy coordinates" onClick={onCopyContentClick}>
+          <ContentCopyIcon fontSize="small" />
+        </IconButton>
+      )}
     </div>
   );
 }

@@ -25,22 +25,26 @@ export default function PointPopup({
 }) {
   return (
     <div style={styles.container}>
-      <h3 style={styles.title}>{title}</h3>
-      {content}
-      <IconButton aria-label="previous point" onClick={onLeftArrowClick}>
-        <KeyboardArrowLeftIcon fontSize="small" />
-      </IconButton>
-      <IconButton aria-label="next point" onClick={onRightArrowClick}>
-        <KeyboardArrowRightIcon fontSize="small" />
-      </IconButton>
-      <IconButton aria-label="locate on map" onClick={onLocateClick}>
-        <AdsClickIcon fontSize="small" />
-      </IconButton>
-      {showCopyButton && (
-        <IconButton aria-label="copy coordinates" onClick={onCopyContentClick}>
-          <ContentCopyIcon fontSize="small" />
-        </IconButton>
-      )}
+      <div style={styles.content}>{content}</div>
+      <div style={styles.footer}>
+        <span style={styles.title}>{title}</span>
+        <div style={styles.actions}>
+          <IconButton aria-label="previous point" onClick={onLeftArrowClick}>
+            <KeyboardArrowLeftIcon fontSize="small" />
+          </IconButton>
+          <IconButton aria-label="next point" onClick={onRightArrowClick}>
+            <KeyboardArrowRightIcon fontSize="small" />
+          </IconButton>
+          <IconButton aria-label="locate on map" onClick={onLocateClick}>
+            <AdsClickIcon fontSize="small" />
+          </IconButton>
+          {showCopyButton && (
+            <IconButton aria-label="copy coordinates" onClick={onCopyContentClick}>
+              <ContentCopyIcon fontSize="small" />
+            </IconButton>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -48,13 +52,30 @@ export default function PointPopup({
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     display: "flex",
+    flexDirection: "column",
+    minWidth: "180px",
+  },
+  content: {
+    paddingBottom: "4px",
+  },
+  footer: {
+    display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    gap: "0px",
+    justifyContent: "space-between",
+    borderTop: "1px solid rgba(0,0,0,0.08)",
+    paddingTop: "2px",
+    marginTop: "4px",
   },
   title: {
-    fontSize: "1.0rem",
-    color: `${tomtomSecondaryColor}`,
-    marginRight: "10px",
+    fontSize: "0.75rem",
+    color: tomtomSecondaryColor,
+    fontWeight: 600,
+    paddingLeft: "4px",
+  },
+  actions: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
   },
 };

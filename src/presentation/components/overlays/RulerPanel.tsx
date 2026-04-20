@@ -3,6 +3,7 @@ import StraightenIcon from "@mui/icons-material/Straighten";
 import Ruler from "./Ruler";
 import { tomtomBlackColor } from "../../../shared/colors";
 import { Z_INDEX } from "../../constants/zIndex";
+import { isTypingInInput } from "../../utils/keyboardUtils";
 
 export const RulerPanel: React.FC = () => {
   const [distance, setDistance] = React.useState<number>(-1);
@@ -10,9 +11,11 @@ export const RulerPanel: React.FC = () => {
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (isTypingInInput(event)) return;
       const key = event.key.toLowerCase();
       if (key === "r") {
         setRulerMode((prev: boolean) => !prev);
+        setDistance(-1);
       }
     };
 
@@ -28,6 +31,13 @@ export const RulerPanel: React.FC = () => {
       <>
         <div style={styles.overlay}></div>
         <div style={styles.panel}>
+          <button
+            style={styles.closeBtn}
+            onClick={() => setRulerMode(false)}
+            aria-label="close ruler"
+          >
+            ×
+          </button>
           <div style={styles.iconContainer}>
             <StraightenIcon />
           </div>
@@ -40,6 +50,7 @@ export const RulerPanel: React.FC = () => {
               Distance: {`${distance.toFixed(2)} meters`}
             </p>
           )}
+          <p style={styles.hint}>press R to toggle</p>
         </div>
         <Ruler
           onDistanceChange={(distance, shouldCopy) => {
@@ -89,5 +100,25 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   message: {
     margin: "10px 0",
+  },
+  hint: {
+    margin: "4px 0 0",
+    fontSize: "0.65rem",
+    color: "rgba(0,0,0,0.35)",
+    textTransform: "lowercase",
+    letterSpacing: "0.02em",
+  },
+  closeBtn: {
+    position: "absolute",
+    top: "8px",
+    right: "10px",
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "1.4rem",
+    lineHeight: 1,
+    color: "rgba(0,0,0,0.4)",
+    padding: "2px 4px",
+    borderRadius: "4px",
   },
 };

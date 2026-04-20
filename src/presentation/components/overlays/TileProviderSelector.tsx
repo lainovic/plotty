@@ -12,6 +12,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { tomtomBlackColor, tomtomSecondaryColor } from "../../../shared/colors";
 import { Z_INDEX } from "../../constants/zIndex";
+import { isTypingInInput } from "../../utils/keyboardUtils";
 
 enum TileVendors {
   TomTomOrbisMaps = "TomTom Orbis Maps",
@@ -36,7 +37,7 @@ interface TileProviderSelectorProps {
 export const TileProviderSelector: React.FC<TileProviderSelectorProps> = ({
   onTileProviderChanged,
 }) => {
-  const [selectedVendor, setSelectedVendor] = React.useState<TileVendors>(vendors[0]);
+  const [selectedVendor, setSelectedVendor] = React.useState<TileVendors>(TileVendors.OpenStreetMap);
 
   React.useEffect(() => {
     onTileProviderChanged(tileProviderMap.get(selectedVendor)!);
@@ -44,6 +45,7 @@ export const TileProviderSelector: React.FC<TileProviderSelectorProps> = ({
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (isTypingInInput(event)) return;
       const key = event.key.toLowerCase();
       if (key !== "j" && key !== "k") return;
       setSelectedVendor((prev) => {

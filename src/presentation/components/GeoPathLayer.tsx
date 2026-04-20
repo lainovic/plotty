@@ -5,7 +5,7 @@ import { Point } from "./points/Point";
 import { GeoPath } from "../../domain/entities/GeoPath";
 import { PathComponentProps } from "../shared/PathComponentsProps";
 
-export const GeoPathLayer: React.FC<PathComponentProps<GeoPath>> = ({
+export const GeoPathLayer: React.FC<PathComponentProps<GeoPath>> = React.memo(({
   layer,
 }) => {
   const points = layer.path.points;
@@ -38,4 +38,4 @@ export const GeoPathLayer: React.FC<PathComponentProps<GeoPath>> = ({
       ))}
     </LayerGroup>
   );
-};
+});

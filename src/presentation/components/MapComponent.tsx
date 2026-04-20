@@ -66,6 +66,6 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   map: {
     width: "100vw",
-    height: "calc(100vh - 32px)",
+    height: "100vh",
   },
 };

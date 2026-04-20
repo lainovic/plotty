@@ -35,7 +35,15 @@ const LayerItem: React.FC<LayerItemProps> = ({
   const [editing, setEditing] = React.useState(false);
   const [hovered, setHovered] = React.useState(false);
   const [draft, setDraft] = React.useState(name);
+  const [localColor, setLocalColor] = React.useState(color);
+  const colorDebounce = React.useRef<ReturnType<typeof setTimeout>>();
   const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleColorChange = (hex: string) => {
+    setLocalColor(hex);
+    clearTimeout(colorDebounce.current);
+    colorDebounce.current = setTimeout(() => onColorChange(hex), 150);
+  };
 
   const startEditing = () => {
     setDraft(name);
@@ -70,13 +78,13 @@ const LayerItem: React.FC<LayerItemProps> = ({
       />
       {showColorPicker && (
         <label
-          style={{ ...styles.colorSwatch, background: color }}
+          style={{ ...styles.colorSwatch, background: localColor }}
           title="Change layer color"
         >
           <input
             type="color"
-            value={color}
-            onChange={(e) => onColorChange(e.target.value)}
+            value={localColor}
+            onChange={(e) => handleColorChange(e.target.value)}
             style={styles.colorInput}
             aria-label="Layer color"
           />
@@ -103,18 +111,18 @@ const LayerItem: React.FC<LayerItemProps> = ({
         {(hovered || editing) && (
           <div style={styles.actionsOverlay}>
             {editing ? (
-              <IconButton aria-label="confirm rename" onClick={commitEdit}>
+              <IconButton aria-label="confirm rename" size="small" onClick={commitEdit}>
                 <CheckIcon fontSize="small" />
               </IconButton>
             ) : (
               <>
-                <IconButton aria-label="locate layer on map" onClick={onClicked}>
+                <IconButton aria-label="locate layer on map" size="small" onClick={onClicked}>
                   <AdsClickIcon fontSize="small" />
                 </IconButton>
-                <IconButton aria-label="rename layer" onClick={startEditing}>
+                <IconButton aria-label="rename layer" size="small" onClick={startEditing}>
                   <EditIcon fontSize="small" />
                 </IconButton>
-                <IconButton aria-label="delete layer" onClick={onDelete}>
+                <IconButton aria-label="delete layer" size="small" onClick={onDelete}>
                   <DeleteIcon fontSize="small" />
                 </IconButton>
               </>
@@ -168,20 +176,17 @@ const styles: { [key: string]: React.CSSProperties } = {
   actionsOverlay: {
     position: "absolute",
     right: 0,
-    top: "50%",
-    transform: "translateY(-50%)",
+    top: 0,
+    bottom: 0,
     display: "flex",
     alignItems: "center",
-    background: "hsla(0, 0%, 100%, 0.85)",
-    borderRadius: "8px",
+    background: "linear-gradient(to right, transparent, hsla(0,0%,100%,0.97) 16px)",
+    paddingLeft: "16px",
   },
   layerName: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-start",
+    display: "block",
     paddingLeft: "12px",
     borderRadius: "10px",
-    width: "100%",
     background: "none",
     border: "none",
     cursor: "pointer",
@@ -191,6 +196,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
+    width: "100%",
   },
   nameInput: {
     flex: 1,

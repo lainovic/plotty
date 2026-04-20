@@ -11,6 +11,7 @@ import React from "react";
 import { tomtomSecondaryColor } from "../../../shared/colors";
 import Spacer from "../../shared/Spacer";
 import { Coordinates } from "../../../domain/value-objects/Coordinates";
+import { isTypingInInput } from "../../utils/keyboardUtils";
 
 interface GotoDialogProps {
   onCoordinatesChange: (coordinates: Coordinates) => void;
@@ -26,9 +27,10 @@ export const GotoDialog: React.FC<GotoDialogProps> = ({
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (isTypingInInput(event)) return;
       const key = event.key.toLowerCase();
       if (key === "g") {
-        onOpen();
+        setOpen((prev) => !prev);
       }
     };
 
@@ -37,10 +39,6 @@ export const GotoDialog: React.FC<GotoDialogProps> = ({
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-
-  const onOpen = () => {
-    setOpen(true);
-  };
 
   const onClose = () => {
     setOpen(false);

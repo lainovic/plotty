@@ -2,6 +2,7 @@ import { useMap } from "react-leaflet";
 import L from "leaflet";
 import React from "react";
 import { useFocusContext } from "../contexts/useFocusContext";
+import { isTypingInInput } from "../utils/keyboardUtils";
 
 export interface PointFocusHookReturnType {
   handlePointClick: (index: number) => void;
@@ -51,7 +52,7 @@ export function usePointFocus(
   // Keyboard navigation
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!isFocusedRef.current) return;
+      if (!isFocusedRef.current || isTypingInInput(event)) return;
       const key = event.key.toLowerCase();
       if (key === "l") { event.preventDefault(); handleGoingForward(); }
       else if (key === "h") { event.preventDefault(); handleGoingBackward(); }

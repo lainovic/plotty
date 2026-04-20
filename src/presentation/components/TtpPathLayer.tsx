@@ -10,7 +10,7 @@ import { PathComponentProps } from "../shared/PathComponentsProps";
 import { CoordContent } from "./points/CoordContent";
 import { CopyBtn } from "./points/CopyBtn";
 
-export const TtpPathLayer: React.FC<PathComponentProps<TtpPath>> = ({
+export const TtpPathLayer: React.FC<PathComponentProps<TtpPath>> = React.memo(({
   layer,
 }) => {
   const points = layer.path.points;
@@ -74,7 +74,7 @@ export const TtpPathLayer: React.FC<PathComponentProps<TtpPath>> = ({
       />
     </LayerGroup>
   );
-};
+});
 
 function TtpText({ point, color }: { point: TtpPoint; color: string }) {
   const isIncoming = point.type === TtpPointType.Incoming;

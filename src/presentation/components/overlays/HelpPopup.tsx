@@ -10,6 +10,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import AdsClickIcon from "@mui/icons-material/AdsClick";
 import { tomtomSecondaryColor } from "../../../shared/colors";
 import { Z_INDEX } from "../../constants/zIndex";
+import { isTypingInInput } from "../../utils/keyboardUtils";
 
 const cssStyles = `
   .open {
@@ -40,7 +41,7 @@ const grey = {
 
 const Button = styled(BaseButton)(
   ({ theme }) => `
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-weight: 600;
   font-size: 0.875rem;
   line-height: 1.5;
@@ -114,9 +115,14 @@ export function HelpPopup() {
         position: "fixed",
         bottom: "10px",
         right: "10px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-end",
+        gap: "4px",
       }}
     >
       <style>{cssStyles}</style>
+      <div style={fmtStyles.shortcutHint}>? · G · R · J K · H L</div>
       <PopupWithTrigger>
         <CssTransition
           enterClassName="open"
@@ -201,6 +207,7 @@ function PopupWithTrigger(props: PopupProps) {
 
   React.useEffect(() => {
     const keyPressHandler = (e: KeyboardEvent) => {
+      if (isTypingInInput(e)) return;
       if (e.key === "?") {
         setOpen((o) => !o);
       }
@@ -226,6 +233,14 @@ function PopupWithTrigger(props: PopupProps) {
 }
 
 const fmtStyles: { [key: string]: React.CSSProperties } = {
+  shortcutHint: {
+    fontSize: "0.65rem",
+    color: "rgba(0,0,0,0.35)",
+    fontFamily: "'Roboto', sans-serif",
+    letterSpacing: "0.08em",
+    userSelect: "none",
+    paddingRight: "4px",
+  },
   emphasize: {
     color: tomtomSecondaryColor,
   },

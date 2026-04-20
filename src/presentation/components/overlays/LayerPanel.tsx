@@ -8,6 +8,7 @@ import LayerItem from "./LayerItem";
 import { LogPath } from "../../../domain/entities/LogPath";
 import { IconButton } from "@mui/material";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
+import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 
 interface LayerPanelProps<T extends Path<any>> {
   style?: React.CSSProperties;
@@ -43,7 +44,14 @@ export const LayerPanel = <T extends Path<any>>({
 
   return (
     <div ref={panelRef}>
-      {layers.length > 0 && (
+      {layers.length === 0 ? (
+        <div style={style}>
+          <div style={styles.emptyState}>
+            <FileUploadOutlinedIcon style={styles.emptyIcon} />
+            <p style={styles.emptyText}>Drop a file or paste JSON to add a layer</p>
+          </div>
+        </div>
+      ) : (
         <div style={style}>
           <div style={styles.header}>
             <h3 style={styles.title}>Layers</h3>
@@ -105,6 +113,26 @@ const styles: { [key: string]: React.CSSProperties } = {
     userSelect: "none",
     fontWeight: 600,
     margin: 0,
+  },
+  emptyState: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "20px 16px",
+    gap: "8px",
+    textAlign: "center",
+  },
+  emptyIcon: {
+    fontSize: "2rem",
+    color: "rgba(0,0,0,0.2)",
+  },
+  emptyText: {
+    margin: 0,
+    fontSize: "0.78rem",
+    color: "rgba(0,0,0,0.4)",
+    lineHeight: 1.4,
+    maxWidth: "160px",
   },
   layerList: {
     display: "flex",

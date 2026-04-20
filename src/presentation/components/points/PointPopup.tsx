@@ -4,7 +4,6 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import AdsClickIcon from "@mui/icons-material/AdsClick";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
-import { tomtomSecondaryColor } from "../../../shared/colors";
 
 export default function PointPopup({
   title,
@@ -68,10 +67,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     marginTop: "4px",
   },
   title: {
-    fontSize: "0.75rem",
-    color: tomtomSecondaryColor,
-    fontWeight: 600,
+    fontSize: "0.68rem",
+    color: "rgba(0,0,0,0.35)",
+    fontWeight: 500,
     paddingLeft: "4px",
+    fontFamily: "monospace",
   },
   actions: {
     display: "flex",

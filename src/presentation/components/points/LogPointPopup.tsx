@@ -2,7 +2,6 @@ import React from "react";
 import { LogPoint } from "../../../domain/value-objects/LogPoint";
 import { LogLevel } from "../../../domain/value-objects/LogLevel";
 import { getLogTagColor } from "../../utils/logTagColors";
-import { IconButton } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { toast } from "react-toastify";
 
@@ -28,50 +27,68 @@ function formatTimestamp(ms: number): string {
   return `${hh}:${mm}:${ss}.${ms3}`;
 }
 
+function CopyButton({ value, label }: { value: string; label: string }) {
+  return (
+    <button
+      style={styles.copyBtn}
+      aria-label={label}
+      onClick={() => {
+        navigator.clipboard.writeText(value);
+        toast.success("Copied to clipboard");
+      }}
+    >
+      <ContentCopyIcon style={{ fontSize: "11px" }} />
+    </button>
+  );
+}
+
 export const LogPointPopup: React.FC<LogPointPopupProps> = ({ point }) => {
   const extraEntries = Array.from(point.extra.entries());
   const levelStyle = levelColors[point.level] ?? levelColors[LogLevel.Debug];
   const tagColor = getLogTagColor(point.tag);
-
-  const onCopyContentClick = (value: string) => {
-    navigator.clipboard.writeText(value);
-    toast.success("Copied to clipboard");
-  };
+  const coords = `${point.latitude.toFixed(5)}, ${point.longitude.toFixed(5)}`;
 
   return (
     <div style={styles.container}>
-      <div style={styles.header}>
-        <span style={{ ...styles.levelBadge, background: levelStyle.bg, color: levelStyle.text }}>
-          {point.level}
-        </span>
-        <span style={{ ...styles.tag, color: tagColor.tag }}>{point.tag}</span>
-      </div>
-      {point.timestamp !== null && (
-        <div style={styles.timestamp}>{formatTimestamp(point.timestamp)}</div>
-      )}
-      <div style={styles.coordinates}>
-        <span>{point.latitude.toFixed(5)}, {point.longitude.toFixed(5)}</span>
-        <IconButton
-          aria-label="copy coordinates"
-          size="small"
-          onClick={() => onCopyContentClick(`${point.latitude.toFixed(5)}, ${point.longitude.toFixed(5)}`)}
-        >
-          <ContentCopyIcon style={{ fontSize: "0.75rem" }} />
-        </IconButton>
-      </div>
-      {extraEntries.length > 0 && (
-        <div style={styles.extraContainer}>
-          {extraEntries.map(([key, value]) => (
-            <div key={key} style={styles.entry}>
-              <span style={styles.key}>{key}:</span>
-              <span style={styles.value}>{value}</span>
-              <IconButton aria-label="copy" onClick={() => onCopyContentClick(value)}>
-                <ContentCopyIcon fontSize="small" />
-              </IconButton>
-            </div>
-          ))}
+      <div style={{ ...styles.accent, background: tagColor.point }} />
+      <div style={styles.body}>
+
+        <div style={styles.header}>
+          <span style={{ ...styles.badge, background: levelStyle.bg, color: levelStyle.text }}>
+            {point.level}
+          </span>
+          <span style={{ ...styles.tag, color: tagColor.tag }} title={point.tag}>
+            {point.tag}
+          </span>
         </div>
-      )}
+
+        {point.timestamp !== null && (
+          <div style={styles.timestamp}>{formatTimestamp(point.timestamp)}</div>
+        )}
+
+        <div style={styles.divider} />
+
+        <div style={styles.coordRow}>
+          <span style={styles.coordText}>{coords}</span>
+          <CopyButton value={coords} label="copy coordinates" />
+        </div>
+
+        {extraEntries.length > 0 && (
+          <>
+            <div style={styles.divider} />
+            <div style={styles.entries}>
+              {extraEntries.map(([key, value]) => (
+                <React.Fragment key={key}>
+                  <span style={styles.entryKey}>{key}</span>
+                  <span style={styles.entryValue} title={value}>{value}</span>
+                  <CopyButton value={value} label={`copy ${key}`} />
+                </React.Fragment>
+              ))}
+            </div>
+          </>
+        )}
+
+      </div>
     </div>
   );
 };
@@ -79,62 +96,96 @@ export const LogPointPopup: React.FC<LogPointPopupProps> = ({ point }) => {
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     display: "flex",
+    flexDirection: "row",
+    minWidth: "210px",
+    maxWidth: "300px",
+  },
+  accent: {
+    width: "3px",
+    borderRadius: "2px 0 0 2px",
+    flexShrink: 0,
+    alignSelf: "stretch",
+  },
+  body: {
+    display: "flex",
     flexDirection: "column",
-    gap: "6px",
-    padding: "4px",
-    fontSize: "0.8rem",
-    minWidth: "160px",
+    gap: "5px",
+    padding: "8px 10px",
+    flex: 1,
+    minWidth: 0,
   },
   header: {
     display: "flex",
     alignItems: "center",
     gap: "6px",
   },
-  levelBadge: {
-    padding: "1px 6px",
-    borderRadius: "4px",
-    fontSize: "0.7rem",
+  badge: {
+    padding: "1px 5px",
+    borderRadius: "3px",
+    fontSize: "0.65rem",
     fontWeight: 700,
+    letterSpacing: "0.03em",
     flexShrink: 0,
+    textTransform: "uppercase",
   },
   tag: {
-    fontWeight: 700,
+    fontWeight: 600,
+    fontSize: "0.8rem",
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
   },
   timestamp: {
-    color: "rgba(0,0,0,0.45)",
+    fontFamily: "monospace",
+    fontSize: "0.68rem",
+    color: "rgba(0,0,0,0.38)",
+    letterSpacing: "0.02em",
+  },
+  divider: {
+    height: "1px",
+    background: "rgba(0,0,0,0.07)",
+    margin: "1px 0",
+  },
+  coordRow: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "6px",
+  },
+  coordText: {
+    fontFamily: "monospace",
     fontSize: "0.72rem",
-    fontFamily: "monospace",
-  },
-  coordinates: {
-    display: "flex",
-    alignItems: "center",
-    gap: "2px",
     color: "rgba(0,0,0,0.6)",
-    fontFamily: "monospace",
-    fontSize: "0.75rem",
   },
-  extraContainer: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "4px",
-    borderTop: `1px solid rgba(0,0,0,0.1)`,
-    paddingTop: "6px",
-  },
-  entry: {
-    display: "flex",
-    gap: "8px",
+  entries: {
+    display: "grid",
+    gridTemplateColumns: "auto 1fr auto",
+    gap: "4px 8px",
     alignItems: "center",
   },
-  key: {
-    color: "#555",
-    fontWeight: "bold",
-    flexShrink: 0,
+  entryKey: {
+    fontSize: "0.7rem",
+    color: "rgba(0,0,0,0.45)",
+    fontWeight: 600,
+    whiteSpace: "nowrap",
   },
-  value: {
-    color: "black",
-    wordBreak: "break-all",
+  entryValue: {
+    fontSize: "0.75rem",
+    color: "rgba(0,0,0,0.85)",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+  },
+  copyBtn: {
+    background: "none",
+    border: "none",
+    padding: "3px",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "rgba(0,0,0,0.3)",
+    borderRadius: "3px",
+    lineHeight: 1,
   },
 };

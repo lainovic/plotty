@@ -15,7 +15,6 @@ function App() {
       <main style={styles.container}>
         <MapComponent />
       </main>
-      <footer style={styles.footer}></footer>
       <ToastContainer
         position="top-center"
         hideProgressBar
@@ -40,18 +39,15 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: "center",
   },
   header: {
-    fontSize: "1.0rem",
+    fontSize: "0.85rem",
     color: `${tomtomBlackColor}`,
     fontFamily: "'Roboto', sans-serif",
     textTransform: "uppercase",
     fontWeight: 700,
-    height: "5vh",
+    height: "32px",
     display: "flex",
     alignItems: "center",
     paddingLeft: "10px",
-  },
-  footer: {
-    height: "5vh",
   },
   headerSpan: {
     color: `${tomtomSecondaryColor}`,

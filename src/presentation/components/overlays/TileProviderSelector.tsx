@@ -49,7 +49,7 @@ export const TileProviderSelector: React.FC<TileProviderSelectorProps> = ({
       setSelectedVendor((prev) => {
         const index = vendors.indexOf(prev);
         const next = key === "j" ? index + 1 : index - 1;
-        return vendors[next] ?? prev;
+        return vendors[(next + vendors.length) % vendors.length];
       });
     };
     document.addEventListener("keydown", handleKeyDown);

@@ -42,9 +42,9 @@ export const RulerPanel: React.FC = () => {
           )}
         </div>
         <Ruler
-          onDistanceChange={(distance) => {
+          onDistanceChange={(distance, shouldCopy) => {
             setDistance(distance);
-            if (distance !== -1)
+            if (shouldCopy && distance !== -1)
               navigator.clipboard.writeText(distance.toFixed(2));
           }}
         />

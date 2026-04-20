@@ -12,7 +12,6 @@ import { TtpPath } from "../../domain/entities/TtpPath";
 import { Route } from "../../domain/entities/Route";
 import { LogPath } from "../../domain/entities/LogPath";
 import { useMapUtils } from "../hooks/useMapUtils";
-import { ZoomText } from "./overlays/ZoomText";
 import { RulerPanel } from "./overlays/RulerPanel";
 import { usePathImport } from "../hooks/usePathImport";
 import { Path } from "../../domain/entities/Path";
@@ -75,6 +74,11 @@ export const MapLayers = () => {
     );
   };
 
+  const deleteLayer = (id: string) => {
+    setLayers((prev) => prev.filter((l) => l.id !== id));
+    if (focusedLayerId === id) setFocusedLayerId(null);
+  };
+
   return (
     <FocusProvider focusedLayerId={focusedLayerId} setFocusedLayerId={setFocusedLayerId}>
       {importing && (
@@ -93,13 +97,14 @@ export const MapLayers = () => {
         }
         onVisibilityChange={(layer) => toggleVisibility(layer.id)}
         onNameChange={(layer, newName) => renameLayer(layer.id, newName)}
+        onDelete={(layer) => deleteLayer(layer.id)}
+        onClearAll={() => { setLayers([]); setFocusedLayerId(null); }}
       />
       <GotoDialog
         onCoordinatesChange={(coordinates: Coordinates) => {
           flyToCoordinates(coordinates, map.getZoom());
         }}
       />
-      <ZoomText />
       <RulerPanel />
       <RouteLayers layers={routeLayers} />
       <GeoPathLayers layers={geoPathLayers} />

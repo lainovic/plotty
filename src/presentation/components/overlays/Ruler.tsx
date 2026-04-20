@@ -4,7 +4,7 @@ import { useMap } from "react-leaflet";
 import { tomtomBlackColor } from "../../../shared/colors";
 
 interface RulerProps {
-  onDistanceChange: (distance: number) => void;
+  onDistanceChange: (distance: number, shouldCopy: boolean) => void;
 }
 
 // a Ruler class that is used to measure distances between points on the map.
@@ -30,26 +30,25 @@ const Ruler: React.FC<RulerProps> = ({ onDistanceChange }) => {
           layer.current.removeLayer(polyline.current);
           polyline.current = L.polyline(
             markers.current.map((marker) => marker.getLatLng()),
-            {
-              color: tomtomBlackColor,
-            }
-          ).addTo(layer.current); // add polyline to map
-          onDistanceChange(getDistance(polyline.current));
+            { color: tomtomBlackColor }
+          ).addTo(layer.current);
+          onDistanceChange(getDistance(polyline.current), false);
         })
-        .addTo(layer.current) // add marker to map
+        .on("dragend", () => {
+          onDistanceChange(getDistance(polyline.current), true);
+        })
+        .addTo(layer.current)
     );
 
     if (markers.current.length === 1) {
-      onDistanceChange(0);
+      onDistanceChange(0, false);
     } else if (markers.current.length > 1) {
       layer.current.removeLayer(polyline.current);
       polyline.current = L.polyline(
         markers.current.map((marker) => marker.getLatLng()),
-        {
-          color: tomtomBlackColor,
-        }
+        { color: tomtomBlackColor }
       ).addTo(layer.current);
-      onDistanceChange(getDistance(polyline.current));
+      onDistanceChange(getDistance(polyline.current), true);
     }
   }, [point]);
 
@@ -74,7 +73,7 @@ const Ruler: React.FC<RulerProps> = ({ onDistanceChange }) => {
     return () => {
       map.off("click", handleMapClick);
       layer.current.clearLayers();
-      onDistanceChange(-1);
+      onDistanceChange(-1, false);
     };
   }, []);
 

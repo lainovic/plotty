@@ -5,6 +5,8 @@ import { Layer } from "../../../domain/entities/Layer";
 import L from "leaflet";
 import "./LayerPanel.css";
 import LayerItem from "./LayerItem";
+import { IconButton } from "@mui/material";
+import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 
 interface LayerPanelProps<T extends Path<any>> {
   style?: React.CSSProperties;
@@ -13,6 +15,8 @@ interface LayerPanelProps<T extends Path<any>> {
   onLayerZoomedIn: (layer: Layer<T>) => void;
   onVisibilityChange: (layer: Layer<T>) => void;
   onNameChange: (layer: Layer<T>, newName: string) => void;
+  onDelete: (layer: Layer<T>) => void;
+  onClearAll: () => void;
 }
 
 export const LayerPanel = <T extends Path<any>>({
@@ -22,6 +26,8 @@ export const LayerPanel = <T extends Path<any>>({
   onLayerZoomedIn,
   onVisibilityChange,
   onNameChange,
+  onDelete,
+  onClearAll,
 }: LayerPanelProps<T>) => {
   const [isScrollable, setIsScrollable] = React.useState(false);
   const panelRef = React.useRef<HTMLDivElement>(null);
@@ -30,7 +36,6 @@ export const LayerPanel = <T extends Path<any>>({
     const panel = panelRef.current;
     if (!panel) return;
 
-    // Prevent Leaflet from reacting to scroll and click events
     L.DomEvent.disableScrollPropagation(panel);
     L.DomEvent.disableClickPropagation(panel);
   }, []);
@@ -39,7 +44,16 @@ export const LayerPanel = <T extends Path<any>>({
     <div ref={panelRef}>
       {layers.length > 0 && (
         <div style={style}>
-          <h3 style={styles.header}>Layers</h3>
+          <div style={styles.header}>
+            <h3 style={styles.title}>Layers</h3>
+            <IconButton
+              aria-label="clear all layers"
+              size="small"
+              onClick={onClearAll}
+            >
+              <DeleteSweepIcon fontSize="small" />
+            </IconButton>
+          </div>
           <div
             ref={(ref) => {
               if (ref) {
@@ -57,11 +71,13 @@ export const LayerPanel = <T extends Path<any>>({
               <LayerItem
                 key={layer.id}
                 checked={layer.visible}
+                pointCount={layer.path.points.length}
                 onVisibilityChange={() => onVisibilityChange(layer)}
                 name={layer.name}
                 onNameChange={(newName) => onNameChange(layer, newName)}
                 onClicked={onLayerClicked.bind(null, layer)}
                 onZoomedIn={() => onLayerZoomedIn(layer)}
+                onDelete={() => onDelete(layer)}
               />
             ))}
           </div>
@@ -73,14 +89,19 @@ export const LayerPanel = <T extends Path<any>>({
 
 const styles: { [key: string]: React.CSSProperties } = {
   header: {
-    fontSize: "1.1rem",
-    color: `${tomtomSecondaryColor}`,
-    padding: "0 10px 10px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "0 8px 10px 10px",
     borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
     width: "100%",
-    textAlign: "center",
+  },
+  title: {
+    fontSize: "1.1rem",
+    color: `${tomtomSecondaryColor}`,
     userSelect: "none",
     fontWeight: 600,
+    margin: 0,
   },
   layerList: {
     display: "flex",

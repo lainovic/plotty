@@ -1,7 +1,7 @@
 import React from "react";
 import { LogPoint } from "../../../domain/value-objects/LogPoint";
 import { LogLevel } from "../../../domain/value-objects/LogLevel";
-import { tomtomSecondaryColor } from "../../../shared/colors";
+import { getLogTagColor } from "../../utils/logTagColors";
 import { IconButton } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { toast } from "react-toastify";
@@ -31,6 +31,7 @@ function formatTimestamp(ms: number): string {
 export const LogPointPopup: React.FC<LogPointPopupProps> = ({ point }) => {
   const extraEntries = Array.from(point.extra.entries());
   const levelStyle = levelColors[point.level] ?? levelColors[LogLevel.Debug];
+  const tagColor = getLogTagColor(point.tag);
 
   const onCopyContentClick = (value: string) => {
     navigator.clipboard.writeText(value);
@@ -43,7 +44,7 @@ export const LogPointPopup: React.FC<LogPointPopupProps> = ({ point }) => {
         <span style={{ ...styles.levelBadge, background: levelStyle.bg, color: levelStyle.text }}>
           {point.level}
         </span>
-        <span style={styles.tag}>{point.tag}</span>
+        <span style={{ ...styles.tag, color: tagColor.tag }}>{point.tag}</span>
       </div>
       {point.timestamp !== null && (
         <div style={styles.timestamp}>{formatTimestamp(point.timestamp)}</div>
@@ -97,7 +98,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexShrink: 0,
   },
   tag: {
-    color: tomtomSecondaryColor,
     fontWeight: 700,
     overflow: "hidden",
     textOverflow: "ellipsis",
@@ -129,7 +129,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: "center",
   },
   key: {
-    color: tomtomSecondaryColor,
+    color: "#555",
     fontWeight: "bold",
     flexShrink: 0,
   },

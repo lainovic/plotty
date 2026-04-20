@@ -5,25 +5,14 @@ import { usePointFocus } from "../hooks/usePointFocus";
 import { PathComponentProps } from "../shared/PathComponentsProps";
 import { LogPath } from "../../domain/entities/LogPath";
 import { LogPointPopup } from "./points/LogPointPopup";
-import { LogcatTagMatcher } from "../../domain/parsers/logcat/LogcatTagMatcher";
-import {
-  defaultColors,
-  tomtomPrimaryColor,
-  tomtomSecondaryColor,
-} from "../../shared/colors";
 import { LogPoint } from "../../domain/value-objects/LogPoint";
+import { getLogTagColor } from "../utils/logTagColors";
 
 const getPointStyle = (point: LogPoint) => {
-  const tag = point.tag;
-  const isRoutePlanner = LogcatTagMatcher.isRoutePlanner(tag);
-  const isMapMatcher = LogcatTagMatcher.isMapMatcher(tag);
+  const { point: color, category } = getLogTagColor(point.tag);
   return {
-    radius: isRoutePlanner ? 12 : isMapMatcher ? 4 : 4,
-    color: isRoutePlanner
-      ? tomtomSecondaryColor
-      : isMapMatcher
-      ? defaultColors[4]
-      : tomtomPrimaryColor,
+    radius: category === "routing" ? 12 : 4,
+    color,
   };
 };
 

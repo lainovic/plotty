@@ -106,7 +106,7 @@ const LayerItem: React.FC<LayerItemProps> = ({
               </IconButton>
             ) : (
               <>
-                <IconButton aria-label="locate layer on map" onClick={onZoomedIn}>
+                <IconButton aria-label="locate layer on map" onClick={onClicked}>
                   <AdsClickIcon fontSize="small" />
                 </IconButton>
                 <IconButton aria-label="rename layer" onClick={startEditing}>

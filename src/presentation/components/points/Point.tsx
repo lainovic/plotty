@@ -1,3 +1,4 @@
+import React from "react";
 import { CircleMarker, Popup, useMap } from "react-leaflet";
 import PointPopup from "./PointPopup";
 import L from "leaflet";
@@ -20,7 +21,19 @@ interface PointProps {
   onRight?: () => void;
 }
 
-export const Point: React.FC<PointProps> = ({
+function arePropsEqual(prev: PointProps, next: PointProps): boolean {
+  return (
+    prev.point === next.point &&
+    prev.color === next.color &&
+    prev.radius === next.radius &&
+    prev.highlighted === next.highlighted &&
+    prev.fillOpacity === next.fillOpacity &&
+    prev.title === next.title &&
+    prev.content === next.content
+  );
+}
+
+export const Point: React.FC<PointProps> = React.memo(({
   point,
   title,
   content = null,
@@ -83,4 +96,4 @@ export const Point: React.FC<PointProps> = ({
       </Popup>
     </CircleMarker>
   );
-};
+}, arePropsEqual);

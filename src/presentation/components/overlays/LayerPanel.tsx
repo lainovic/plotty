@@ -19,6 +19,7 @@ interface LayerPanelProps<T extends Path<any>> {
   onDelete: (layer: Layer<T>) => void;
   onClearAll: () => void;
   onColorChange: (layer: Layer<T>, hex: string) => void;
+  onReorder: (fromIndex: number, toIndex: number) => void;
 }
 
 export const LayerPanel = <T extends Path<any>>({
@@ -30,9 +31,12 @@ export const LayerPanel = <T extends Path<any>>({
   onDelete,
   onClearAll,
   onColorChange,
+  onReorder,
 }: LayerPanelProps<T>) => {
   const [isScrollable, setIsScrollable] = React.useState(false);
   const panelRef = React.useRef<HTMLDivElement>(null);
+  const [dragIndex, setDragIndex] = React.useState<number | null>(null);
+  const [overIndex, setOverIndex] = React.useState<number | null>(null);
 
   React.useEffect(() => {
     const panel = panelRef.current;
@@ -76,20 +80,39 @@ export const LayerPanel = <T extends Path<any>>({
                 : "none",
             }}
           >
-            {layers.map((layer) => (
-              <LayerItem
+            {layers.map((layer, i) => (
+              <div
                 key={layer.id}
-                checked={layer.visible}
-                color={layer.color.toHex().slice(0, 7)}
-                pointCount={layer.path.points.length}
-                onVisibilityChange={() => onVisibilityChange(layer)}
-                name={layer.name}
-                onNameChange={(newName) => onNameChange(layer, newName)}
-                onClicked={onLayerClicked.bind(null, layer)}
-                onDelete={() => onDelete(layer)}
-                onColorChange={(hex) => onColorChange(layer, hex)}
-                showColorPicker={!(layer.path instanceof LogPath)}
-              />
+                draggable
+                onDragStart={() => setDragIndex(i)}
+                onDragOver={(e) => { e.preventDefault(); setOverIndex(i); }}
+                onDrop={() => {
+                  if (dragIndex !== null && dragIndex !== i) onReorder(dragIndex, i);
+                  setDragIndex(null);
+                  setOverIndex(null);
+                }}
+                onDragEnd={() => { setDragIndex(null); setOverIndex(null); }}
+                style={{
+                  width: "100%",
+                  opacity: dragIndex === i ? 0.4 : 1,
+                  borderTop: overIndex === i && dragIndex !== i
+                    ? `2px solid ${tomtomSecondaryColor}`
+                    : "2px solid transparent",
+                }}
+              >
+                <LayerItem
+                  checked={layer.visible}
+                  color={layer.color.toHex().slice(0, 7)}
+                  pointCount={layer.path.points.length}
+                  onVisibilityChange={() => onVisibilityChange(layer)}
+                  name={layer.name}
+                  onNameChange={(newName) => onNameChange(layer, newName)}
+                  onClicked={onLayerClicked.bind(null, layer)}
+                  onDelete={() => onDelete(layer)}
+                  onColorChange={(hex) => onColorChange(layer, hex)}
+                  showColorPicker={!(layer.path instanceof LogPath)}
+                />
+              </div>
             ))}
           </div>
         </div>

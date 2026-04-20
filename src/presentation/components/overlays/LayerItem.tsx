@@ -4,6 +4,7 @@ import { Checkbox, IconButton } from "@mui/material";
 import { tomtomSecondaryColor } from "../../../shared/colors";
 import AdsClickIcon from "@mui/icons-material/AdsClick";
 import AndroidIcon from "@mui/icons-material/Android";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -68,6 +69,7 @@ const LayerItem: React.FC<LayerItemProps> = ({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
+      <DragIndicatorIcon style={{ ...styles.dragHandle, opacity: hovered ? 0.35 : 0.12 }} />
       <Checkbox
         sx={{
           color: `${tomtomSecondaryColor}`,
@@ -148,6 +150,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: "8px",
     fontSize: "0.95rem",
     width: "100%",
+  },
+  dragHandle: {
+    fontSize: "16px",
+    flexShrink: 0,
+    cursor: "grab",
+    color: "rgba(0,0,0,1)",
+    marginLeft: "-4px",
   },
   androidIcon: {
     width: "16px",

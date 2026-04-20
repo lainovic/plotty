@@ -86,6 +86,15 @@ export const MapLayers = () => {
     );
   };
 
+  const reorderLayers = (fromIndex: number, toIndex: number) => {
+    setLayers((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+      return next;
+    });
+  };
+
   return (
     <FocusProvider focusedLayerId={focusedLayerId} setFocusedLayerId={setFocusedLayerId}>
       {importing && (
@@ -104,6 +113,7 @@ export const MapLayers = () => {
         onDelete={(layer) => deleteLayer(layer.id)}
         onClearAll={() => { setLayers([]); setFocusedLayerId(null); }}
         onColorChange={(layer, hex) => recolorLayer(layer.id, hex)}
+        onReorder={reorderLayers}
       />
       <GotoDialog
         onCoordinatesChange={(coordinates: Coordinates) => {

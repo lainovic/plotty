@@ -1,5 +1,6 @@
 import React from "react";
 import { CircleMarker, Popup, useMap } from "react-leaflet";
+import { CoordContent } from "./CoordContent";
 import PointPopup from "./PointPopup";
 import L from "leaflet";
 import { toast } from "react-toastify";
@@ -84,7 +85,7 @@ export const Point: React.FC<PointProps> = React.memo(({
       <Popup>
         <PointPopup
           title={title}
-          content={content ? content : `${point.latitude}, ${point.longitude}`}
+          content={content ?? <CoordContent lat={point.latitude} lng={point.longitude} accentColor={color} />}
           onLocateClick={() => {
             map?.flyTo([point.latitude, point.longitude], 18, {
               animate: true,

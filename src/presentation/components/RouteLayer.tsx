@@ -9,6 +9,7 @@ import { Coordinates } from "../../domain/value-objects/Coordinates";
 import { usePointFocus } from "../hooks/usePointFocus";
 import { PathComponentProps } from "../shared/PathComponentsProps";
 import { tomtomBlackColor } from "../../shared/colors";
+import { CoordContent } from "./points/CoordContent";
 import { RouteInstruction } from "../../domain/value-objects/RouteInstruction";
 
 interface RouteComponentProps {
@@ -162,19 +163,32 @@ export const RouteLayer: React.FC<PathComponentProps<Route>> = React.memo(
 );
 
 function InstructionText({ instruction }: { instruction: RouteInstruction }) {
-  const { point } = instruction;
+  const { point, instruction: text } = instruction;
   return (
-    <div style={styles.container}>
-      {point.latitude.toFixed(5)}, {point.longitude.toFixed(5)}
+    <div style={styles.root}>
+      <div style={styles.maneuver}>{text}</div>
+      <div style={styles.divider} />
+      <CoordContent lat={point.latitude} lng={point.longitude} accentColor={tomtomBlackColor} />
     </div>
   );
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
-  container: {
+  root: {
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
+    minWidth: "200px",
+    gap: "6px",
+  },
+  maneuver: {
+    fontSize: "0.82rem",
+    fontWeight: 600,
+    color: "rgba(0,0,0,0.75)",
+    borderTop: `3px solid ${tomtomBlackColor}`,
+    paddingTop: "8px",
+  },
+  divider: {
+    height: "1px",
+    background: "rgba(0,0,0,0.07)",
   },
 };

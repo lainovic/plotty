@@ -1,5 +1,6 @@
 import { Marker, Popup, useMap } from "react-leaflet";
 import PointPopup from "./PointPopup";
+import { CoordContent } from "./CoordContent";
 import L from "leaflet";
 import { Coordinates } from "../../../domain/value-objects/Coordinates";
 import { evWaypointIcon, waypointIcon } from "../../shared/icons";
@@ -41,7 +42,7 @@ export const Stop: React.FC<StopProps> = ({
       <Popup>
         <PointPopup
           title={title}
-          content={`${point.latitude}, ${point.longitude}`}
+          content={<CoordContent lat={point.latitude} lng={point.longitude} label={isChargingStation ? "Charging stop" : "Waypoint"} accentColor={isChargingStation ? "#27ae60" : "#e67e22"} />}
           onLocateClick={() => {
             map?.flyTo([point.latitude, point.longitude], 18, {
               animate: true,

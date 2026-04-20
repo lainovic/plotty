@@ -5,8 +5,10 @@ import { Origin } from "./points/Origin";
 import { Destination } from "./points/Destination";
 import { TtpPath } from "../../domain/entities/TtpPath";
 import { usePointFocus } from "../hooks/usePointFocus";
-import { TtpPoint } from "../../domain/value-objects/TtpPoint";
+import { TtpPoint, TtpPointType } from "../../domain/value-objects/TtpPoint";
 import { PathComponentProps } from "../shared/PathComponentsProps";
+import { CoordContent } from "./points/CoordContent";
+import { CopyBtn } from "./points/CopyBtn";
 
 export const TtpPathLayer: React.FC<PathComponentProps<TtpPath>> = ({
   layer,
@@ -46,7 +48,7 @@ export const TtpPathLayer: React.FC<PathComponentProps<TtpPath>> = ({
           onReady={(marker) => {
             setMarker(index + 1, marker);
           }}
-          content={<TtpText point={point} />}
+          content={<TtpText point={point} color={layer.color.toHex()} />}
           onRight={handleGoingForward}
           onLeft={handleGoingBackward}
           onClick={() => {
@@ -74,23 +76,62 @@ export const TtpPathLayer: React.FC<PathComponentProps<TtpPath>> = ({
   );
 };
 
-function TtpText({ point }: { point: TtpPoint }) {
+function TtpText({ point, color }: { point: TtpPoint; color: string }) {
+  const isIncoming = point.type === TtpPointType.Incoming;
+  const coords = `${point.latitude.toFixed(5)}, ${point.longitude.toFixed(5)}`;
   return (
-    <div style={styles.container}>
-      {point.latitude.toFixed(5)}, {point.longitude.toFixed(5)}
-      <br />
-      Speed: {point.speed}
-      <br />
-      Heading: {point.heading?.toFixed(2)}
+    <div style={styles.root}>
+      <CoordContent lat={point.latitude} lng={point.longitude} accentColor={color} />
+      <div style={styles.divider} />
+      <div style={styles.grid}>
+        <span style={styles.key}>type</span>
+        <span style={{ ...styles.val, color: isIncoming ? "#2980b9" : "#e67e22", fontWeight: 600 }}>
+          {isIncoming ? "incoming" : "outgoing"}
+        </span>
+        <span />
+        {point.speed !== null && <>
+          <span style={styles.key}>speed</span>
+          <span style={styles.val}>{point.speed}</span>
+          <CopyBtn value={String(point.speed)} label="copy speed" />
+        </>}
+        {point.heading !== null && <>
+          <span style={styles.key}>heading</span>
+          <span style={styles.val}>{point.heading?.toFixed(2)}°</span>
+          <CopyBtn value={String(point.heading?.toFixed(2))} label="copy heading" />
+        </>}
+        <span style={styles.key}>coords</span>
+        <span style={{ ...styles.val, fontFamily: "monospace", fontSize: "0.7rem" }}>{coords}</span>
+        <CopyBtn value={coords} label="copy coordinates" />
+      </div>
     </div>
   );
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
-  container: {
+  root: {
     display: "flex",
     flexDirection: "column",
+    minWidth: "200px",
+    gap: "5px",
+  },
+  divider: {
+    height: "1px",
+    background: "rgba(0,0,0,0.07)",
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "auto 1fr auto",
+    gap: "4px 8px",
     alignItems: "center",
-    justifyContent: "center",
+  },
+  key: {
+    fontSize: "0.7rem",
+    color: "rgba(0,0,0,0.4)",
+    fontWeight: 600,
+    whiteSpace: "nowrap",
+  },
+  val: {
+    fontSize: "0.75rem",
+    color: "rgba(0,0,0,0.8)",
   },
 };

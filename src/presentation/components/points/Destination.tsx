@@ -1,5 +1,6 @@
 import { Marker, Popup, useMap } from "react-leaflet";
 import PointPopup from "./PointPopup";
+import { CoordContent } from "./CoordContent";
 import L from "leaflet";
 import { Coordinates } from "../../../domain/value-objects/Coordinates";
 import { destinationIcon } from "../../shared/icons";
@@ -37,7 +38,7 @@ export const Destination: React.FC<DestinationProps> = ({
       <Popup>
         <PointPopup
           title="D"
-          content={`${point.latitude}, ${point.longitude}`}
+          content={<CoordContent lat={point.latitude} lng={point.longitude} label="Destination" accentColor="#e74c3c" />}
           onLocateClick={() => {
             map?.flyTo([point.latitude, point.longitude], 18, {
               animate: true,

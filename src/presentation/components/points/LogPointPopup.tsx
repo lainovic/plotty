@@ -2,8 +2,7 @@ import React from "react";
 import { LogPoint } from "../../../domain/value-objects/LogPoint";
 import { LogLevel } from "../../../domain/value-objects/LogLevel";
 import { getLogTagColor } from "../../utils/logTagColors";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { toast } from "react-toastify";
+import { CopyBtn } from "./CopyBtn";
 
 interface LogPointPopupProps {
   point: LogPoint;
@@ -25,24 +24,6 @@ function formatTimestamp(ms: number): string {
   const ss = String(d.getUTCSeconds()).padStart(2, "0");
   const ms3 = String(d.getUTCMilliseconds()).padStart(3, "0");
   return `${hh}:${mm}:${ss}.${ms3}`;
-}
-
-function CopyBtn({ value, label }: { value: string; label: string }) {
-  const [hovered, setHovered] = React.useState(false);
-  return (
-    <button
-      aria-label={label}
-      style={{ ...styles.copyBtn, opacity: hovered ? 0.7 : 0.3 }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onClick={() => {
-        navigator.clipboard.writeText(value);
-        toast.success("Copied to clipboard");
-      }}
-    >
-      <ContentCopyIcon style={{ fontSize: "11px" }} />
-    </button>
-  );
 }
 
 export const LogPointPopup: React.FC<LogPointPopupProps> = ({ point }) => {

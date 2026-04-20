@@ -21,7 +21,7 @@ function createLayersComponent<T extends Path<any>>(
     ({ layers }: PathComponentsProps<T>) =>
       layers
         .filter((l) => l.visible)
-        .map((l) => <LayerComponent key={l.id} layer={l} />),
+        .map((l) => <LayerComponent key={`${l.id}-${l.color.toHex()}`} layer={l} />),
     arePathComponentsPropsEqual
   ) as React.FC<PathComponentsProps<T>>;
 }

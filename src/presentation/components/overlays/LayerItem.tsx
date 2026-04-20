@@ -122,7 +122,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexDirection: "column",
     flex: 1,
     minWidth: 0,
-    alignItems: "center",
   },
   actions: {
     display: "flex",
@@ -133,7 +132,8 @@ const styles: { [key: string]: React.CSSProperties } = {
   layerName: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
+    paddingLeft: "12px",
     borderRadius: "10px",
     width: "100%",
     background: "none",
@@ -141,7 +141,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     cursor: "pointer",
     fontSize: "inherit",
     fontFamily: "inherit",
-    textAlign: "center",
+    textAlign: "left",
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",

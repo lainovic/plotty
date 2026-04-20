@@ -49,7 +49,14 @@ export const LogPointPopup: React.FC<LogPointPopupProps> = ({ point }) => {
         <div style={styles.timestamp}>{formatTimestamp(point.timestamp)}</div>
       )}
       <div style={styles.coordinates}>
-        {point.latitude.toFixed(5)}, {point.longitude.toFixed(5)}
+        <span>{point.latitude.toFixed(5)}, {point.longitude.toFixed(5)}</span>
+        <IconButton
+          aria-label="copy coordinates"
+          size="small"
+          onClick={() => onCopyContentClick(`${point.latitude.toFixed(5)}, ${point.longitude.toFixed(5)}`)}
+        >
+          <ContentCopyIcon style={{ fontSize: "0.75rem" }} />
+        </IconButton>
       </div>
       {extraEntries.length > 0 && (
         <div style={styles.extraContainer}>
@@ -102,6 +109,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontFamily: "monospace",
   },
   coordinates: {
+    display: "flex",
+    alignItems: "center",
+    gap: "2px",
     color: "rgba(0,0,0,0.6)",
     fontFamily: "monospace",
     fontSize: "0.75rem",

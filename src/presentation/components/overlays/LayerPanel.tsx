@@ -5,6 +5,7 @@ import { Layer } from "../../../domain/entities/Layer";
 import L from "leaflet";
 import "./LayerPanel.css";
 import LayerItem from "./LayerItem";
+import { LogPath } from "../../../domain/entities/LogPath";
 import { IconButton } from "@mui/material";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 
@@ -79,6 +80,7 @@ export const LayerPanel = <T extends Path<any>>({
                 onClicked={onLayerClicked.bind(null, layer)}
                 onDelete={() => onDelete(layer)}
                 onColorChange={(hex) => onColorChange(layer, hex)}
+                showColorPicker={!(layer.path instanceof LogPath)}
               />
             ))}
           </div>

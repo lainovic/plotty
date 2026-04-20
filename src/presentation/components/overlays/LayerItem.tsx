@@ -17,6 +17,7 @@ interface LayerItemProps {
   onColorChange: (hex: string) => void;
   onClicked: (e?: React.MouseEvent) => void;
   onDelete: () => void;
+  showColorPicker?: boolean;
 }
 
 const LayerItem: React.FC<LayerItemProps> = ({
@@ -29,6 +30,7 @@ const LayerItem: React.FC<LayerItemProps> = ({
   onColorChange,
   onClicked,
   onDelete,
+  showColorPicker = true,
 }) => {
   const [editing, setEditing] = React.useState(false);
   const [hovered, setHovered] = React.useState(false);
@@ -66,18 +68,20 @@ const LayerItem: React.FC<LayerItemProps> = ({
         onChange={(event) => onVisibilityChange(event.target.checked)}
         inputProps={{ "aria-label": "Toggle layer visibility" }}
       />
-      <label
-        style={{ ...styles.colorSwatch, background: color }}
-        title="Change layer color"
-      >
-        <input
-          type="color"
-          value={color}
-          onChange={(e) => onColorChange(e.target.value)}
-          style={styles.colorInput}
-          aria-label="Layer color"
-        />
-      </label>
+      {showColorPicker && (
+        <label
+          style={{ ...styles.colorSwatch, background: color }}
+          title="Change layer color"
+        >
+          <input
+            type="color"
+            value={color}
+            onChange={(e) => onColorChange(e.target.value)}
+            style={styles.colorInput}
+            aria-label="Layer color"
+          />
+        </label>
+      )}
       <div style={styles.nameColumn}>
         {editing ? (
           <input

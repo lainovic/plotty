@@ -80,43 +80,46 @@ const LayerItem: React.FC<LayerItemProps> = ({
           aria-label="Layer color"
         />
       </label>
-      {hovered || editing ? (
-        <div style={styles.actions}>
-          {editing ? (
-            <input
-              ref={inputRef}
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={handleKeyDown}
-              onBlur={commitEdit}
-              style={styles.nameInput}
-            />
-          ) : (
-            <IconButton aria-label="locate layer on map" onClick={onZoomedIn}>
-              <AdsClickIcon fontSize="small" />
-            </IconButton>
-          )}
-          {editing ? (
-            <IconButton aria-label="confirm rename" onClick={commitEdit}>
-              <CheckIcon fontSize="small" />
-            </IconButton>
-          ) : (
-            <IconButton aria-label="rename layer" onClick={startEditing}>
-              <EditIcon fontSize="small" />
-            </IconButton>
-          )}
-          <IconButton aria-label="delete layer" onClick={onDelete}>
-            <DeleteIcon fontSize="small" />
-          </IconButton>
-        </div>
-      ) : (
-        <div style={styles.nameColumn}>
-          <button style={styles.layerName} onClick={onClicked}>
-            {name}
-          </button>
-          <span style={styles.pointCount}>{pointCount} pts</span>
-        </div>
-      )}
+      <div style={styles.nameColumn}>
+        {editing ? (
+          <input
+            ref={inputRef}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onBlur={commitEdit}
+            style={styles.nameInput}
+          />
+        ) : (
+          <>
+            <button style={styles.layerName} onClick={onClicked}>
+              {name}
+            </button>
+            <span style={styles.pointCount}>{pointCount} pts</span>
+          </>
+        )}
+        {(hovered || editing) && (
+          <div style={styles.actionsOverlay}>
+            {editing ? (
+              <IconButton aria-label="confirm rename" onClick={commitEdit}>
+                <CheckIcon fontSize="small" />
+              </IconButton>
+            ) : (
+              <>
+                <IconButton aria-label="locate layer on map" onClick={onZoomedIn}>
+                  <AdsClickIcon fontSize="small" />
+                </IconButton>
+                <IconButton aria-label="rename layer" onClick={startEditing}>
+                  <EditIcon fontSize="small" />
+                </IconButton>
+                <IconButton aria-label="delete layer" onClick={onDelete}>
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -154,16 +157,21 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: "none",
   },
   nameColumn: {
+    position: "relative",
     display: "flex",
     flexDirection: "column",
     flex: 1,
     minWidth: 0,
   },
-  actions: {
+  actionsOverlay: {
+    position: "absolute",
+    right: 0,
+    top: "50%",
+    transform: "translateY(-50%)",
     display: "flex",
-    flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    background: "hsla(0, 0%, 100%, 0.85)",
+    borderRadius: "8px",
   },
   layerName: {
     display: "flex",

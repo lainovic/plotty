@@ -29,6 +29,7 @@ const LayerItem: React.FC<LayerItemProps> = ({
   onDelete,
 }) => {
   const [editing, setEditing] = React.useState(false);
+  const [hovered, setHovered] = React.useState(false);
   const [draft, setDraft] = React.useState(name);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -49,7 +50,11 @@ const LayerItem: React.FC<LayerItemProps> = ({
   };
 
   return (
-    <div style={styles.layerItem}>
+    <div
+      style={styles.layerItem}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
       <Checkbox
         sx={{
           color: `${tomtomSecondaryColor}`,
@@ -76,21 +81,25 @@ const LayerItem: React.FC<LayerItemProps> = ({
         )}
         <span style={styles.pointCount}>{pointCount} pts</span>
       </div>
-      <IconButton aria-label="locate layer on map" onClick={onZoomedIn}>
-        <AdsClickIcon fontSize="small" />
-      </IconButton>
-      {editing ? (
-        <IconButton aria-label="confirm rename" onClick={commitEdit}>
-          <CheckIcon fontSize="small" />
-        </IconButton>
-      ) : (
-        <IconButton aria-label="rename layer" onClick={startEditing}>
-          <EditIcon fontSize="small" />
-        </IconButton>
+      {(hovered || editing) && (
+        <>
+          <IconButton aria-label="locate layer on map" onClick={onZoomedIn}>
+            <AdsClickIcon fontSize="small" />
+          </IconButton>
+          {editing ? (
+            <IconButton aria-label="confirm rename" onClick={commitEdit}>
+              <CheckIcon fontSize="small" />
+            </IconButton>
+          ) : (
+            <IconButton aria-label="rename layer" onClick={startEditing}>
+              <EditIcon fontSize="small" />
+            </IconButton>
+          )}
+          <IconButton aria-label="delete layer" onClick={onDelete}>
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </>
       )}
-      <IconButton aria-label="delete layer" onClick={onDelete}>
-        <DeleteIcon fontSize="small" />
-      </IconButton>
     </div>
   );
 };

@@ -64,28 +64,22 @@ const LayerItem: React.FC<LayerItemProps> = ({
         onChange={(event) => onVisibilityChange(event.target.checked)}
         inputProps={{ "aria-label": "Toggle layer visibility" }}
       />
-      <div style={styles.nameColumn}>
-        {editing ? (
-          <input
-            ref={inputRef}
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onBlur={commitEdit}
-            style={styles.nameInput}
-          />
-        ) : (
-          <button style={styles.layerName} onClick={onClicked}>
-            {name}
-          </button>
-        )}
-        <span style={styles.pointCount}>{pointCount} pts</span>
-      </div>
-      {(hovered || editing) && (
-        <>
-          <IconButton aria-label="locate layer on map" onClick={onZoomedIn}>
-            <AdsClickIcon fontSize="small" />
-          </IconButton>
+      {hovered || editing ? (
+        <div style={styles.actions}>
+          {editing ? (
+            <input
+              ref={inputRef}
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onBlur={commitEdit}
+              style={styles.nameInput}
+            />
+          ) : (
+            <IconButton aria-label="locate layer on map" onClick={onZoomedIn}>
+              <AdsClickIcon fontSize="small" />
+            </IconButton>
+          )}
           {editing ? (
             <IconButton aria-label="confirm rename" onClick={commitEdit}>
               <CheckIcon fontSize="small" />
@@ -98,7 +92,14 @@ const LayerItem: React.FC<LayerItemProps> = ({
           <IconButton aria-label="delete layer" onClick={onDelete}>
             <DeleteIcon fontSize="small" />
           </IconButton>
-        </>
+        </div>
+      ) : (
+        <div style={styles.nameColumn}>
+          <button style={styles.layerName} onClick={onClicked}>
+            {name}
+          </button>
+          <span style={styles.pointCount}>{pointCount} pts</span>
+        </div>
       )}
     </div>
   );
@@ -121,6 +122,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexDirection: "column",
     flex: 1,
     minWidth: 0,
+  },
+  actions: {
+    display: "flex",
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "flex-end",
   },
   layerName: {
     display: "flex",

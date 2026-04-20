@@ -127,7 +127,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     flex: 1,
     alignItems: "center",
-    justifyContent: "flex-end",
+    justifyContent: "center",
   },
   layerName: {
     display: "flex",

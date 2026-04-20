@@ -27,11 +27,14 @@ function formatTimestamp(ms: number): string {
   return `${hh}:${mm}:${ss}.${ms3}`;
 }
 
-function CopyButton({ value, label }: { value: string; label: string }) {
+function CopyBtn({ value, label }: { value: string; label: string }) {
+  const [hovered, setHovered] = React.useState(false);
   return (
     <button
-      style={styles.copyBtn}
       aria-label={label}
+      style={{ ...styles.copyBtn, opacity: hovered ? 0.7 : 0.3 }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       onClick={() => {
         navigator.clipboard.writeText(value);
         toast.success("Copied to clipboard");
@@ -49,129 +52,125 @@ export const LogPointPopup: React.FC<LogPointPopupProps> = ({ point }) => {
   const coords = `${point.latitude.toFixed(5)}, ${point.longitude.toFixed(5)}`;
 
   return (
-    <div style={styles.container}>
-      <div style={{ ...styles.accent, background: tagColor.point }} />
-      <div style={styles.body}>
+    <div style={styles.root}>
 
-        <div style={styles.header}>
+      {/* Header */}
+      <div style={{ ...styles.header, borderTopColor: tagColor.point }}>
+        <span style={{ ...styles.tagName, color: tagColor.tag }} title={point.tag}>
+          {point.tag}
+        </span>
+        <div style={styles.meta}>
           <span style={{ ...styles.badge, background: levelStyle.bg, color: levelStyle.text }}>
             {point.level}
           </span>
-          <span style={{ ...styles.tag, color: tagColor.tag }} title={point.tag}>
-            {point.tag}
-          </span>
+          {point.timestamp !== null && (
+            <>
+              <span style={styles.dot}>·</span>
+              <span style={styles.timestamp}>{formatTimestamp(point.timestamp)}</span>
+            </>
+          )}
         </div>
-
-        {point.timestamp !== null && (
-          <div style={styles.timestamp}>{formatTimestamp(point.timestamp)}</div>
-        )}
-
-        <div style={styles.divider} />
-
-        <div style={styles.coordRow}>
-          <span style={styles.coordText}>{coords}</span>
-          <CopyButton value={coords} label="copy coordinates" />
-        </div>
-
-        {extraEntries.length > 0 && (
-          <>
-            <div style={styles.divider} />
-            <div style={styles.entries}>
-              {extraEntries.map(([key, value]) => (
-                <React.Fragment key={key}>
-                  <span style={styles.entryKey}>{key}</span>
-                  <span style={styles.entryValue} title={value}>{value}</span>
-                  <CopyButton value={value} label={`copy ${key}`} />
-                </React.Fragment>
-              ))}
-            </div>
-          </>
-        )}
-
       </div>
+
+      {/* Coordinates */}
+      <div style={styles.section}>
+        <span style={styles.mono}>{coords}</span>
+        <CopyBtn value={coords} label="copy coordinates" />
+      </div>
+
+      {/* Extra entries */}
+      {extraEntries.length > 0 && (
+        <div style={{ ...styles.section, ...styles.grid }}>
+          {extraEntries.map(([key, value]) => (
+            <React.Fragment key={key}>
+              <span style={styles.entryKey}>{key}</span>
+              <span style={styles.entryValue} title={value}>{value}</span>
+              <CopyBtn value={value} label={`copy ${key}`} />
+            </React.Fragment>
+          ))}
+        </div>
+      )}
+
     </div>
   );
 };
 
 const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    display: "flex",
-    flexDirection: "row",
-    minWidth: "210px",
-    maxWidth: "300px",
-  },
-  accent: {
-    width: "3px",
-    borderRadius: "2px 0 0 2px",
-    flexShrink: 0,
-    alignSelf: "stretch",
-  },
-  body: {
+  root: {
     display: "flex",
     flexDirection: "column",
-    gap: "5px",
-    padding: "8px 10px",
-    flex: 1,
-    minWidth: 0,
+    minWidth: "220px",
+    maxWidth: "300px",
+    fontSize: "0.78rem",
+    fontFamily: "'Roboto', sans-serif",
   },
   header: {
+    padding: "10px 12px 8px",
+    borderTop: "3px solid",
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+  },
+  tagName: {
+    fontWeight: 700,
+    fontSize: "0.85rem",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    lineHeight: 1.2,
+  },
+  meta: {
     display: "flex",
     alignItems: "center",
-    gap: "6px",
+    gap: "5px",
   },
   badge: {
     padding: "1px 5px",
     borderRadius: "3px",
-    fontSize: "0.65rem",
+    fontSize: "0.62rem",
     fontWeight: 700,
-    letterSpacing: "0.03em",
-    flexShrink: 0,
+    letterSpacing: "0.04em",
     textTransform: "uppercase",
+    flexShrink: 0,
   },
-  tag: {
-    fontWeight: 600,
-    fontSize: "0.8rem",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
+  dot: {
+    color: "rgba(0,0,0,0.25)",
+    fontSize: "0.75rem",
   },
   timestamp: {
     fontFamily: "monospace",
     fontSize: "0.68rem",
-    color: "rgba(0,0,0,0.38)",
-    letterSpacing: "0.02em",
+    color: "rgba(0,0,0,0.4)",
+    letterSpacing: "0.01em",
   },
-  divider: {
-    height: "1px",
-    background: "rgba(0,0,0,0.07)",
-    margin: "1px 0",
-  },
-  coordRow: {
+  section: {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: "6px",
+    gap: "8px",
+    padding: "6px 12px",
+    borderTop: "1px solid rgba(0,0,0,0.06)",
   },
-  coordText: {
+  mono: {
     fontFamily: "monospace",
     fontSize: "0.72rem",
     color: "rgba(0,0,0,0.6)",
   },
-  entries: {
+  grid: {
     display: "grid",
     gridTemplateColumns: "auto 1fr auto",
-    gap: "4px 8px",
     alignItems: "center",
+    gap: "4px 8px",
+    justifyContent: undefined,
   },
   entryKey: {
-    fontSize: "0.7rem",
-    color: "rgba(0,0,0,0.45)",
+    color: "rgba(0,0,0,0.4)",
     fontWeight: 600,
     whiteSpace: "nowrap",
+    fontSize: "0.7rem",
   },
   entryValue: {
-    fontSize: "0.75rem",
-    color: "rgba(0,0,0,0.85)",
+    color: "rgba(0,0,0,0.8)",
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
@@ -179,13 +178,13 @@ const styles: { [key: string]: React.CSSProperties } = {
   copyBtn: {
     background: "none",
     border: "none",
-    padding: "3px",
+    padding: "2px 3px",
     cursor: "pointer",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
-    color: "rgba(0,0,0,0.3)",
+    color: "rgba(0,0,0,0.8)",
     borderRadius: "3px",
     lineHeight: 1,
+    transition: "opacity 0.1s",
   },
 };

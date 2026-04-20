@@ -35,15 +35,25 @@ export const LayerPanel = <T extends Path<any>>({
 }: LayerPanelProps<T>) => {
   const [isScrollable, setIsScrollable] = React.useState(false);
   const panelRef = React.useRef<HTMLDivElement>(null);
+  const scrollListRef = React.useRef<HTMLDivElement>(null);
   const [dragIndex, setDragIndex] = React.useState<number | null>(null);
   const [overIndex, setOverIndex] = React.useState<number | null>(null);
 
   React.useEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
-
     L.DomEvent.disableScrollPropagation(panel);
     L.DomEvent.disableClickPropagation(panel);
+  }, []);
+
+  React.useEffect(() => {
+    const el = scrollListRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() => {
+      setIsScrollable(el.scrollHeight > el.clientHeight);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -68,11 +78,8 @@ export const LayerPanel = <T extends Path<any>>({
             </IconButton>
           </div>
           <div
-            ref={(ref) => {
-              if (ref) {
-                setIsScrollable(ref.scrollHeight > ref.clientHeight);
-              }
-            }}
+            ref={scrollListRef}
+            role="list"
             style={{
               ...styles.layerList,
               boxShadow: isScrollable
@@ -83,6 +90,7 @@ export const LayerPanel = <T extends Path<any>>({
             {layers.map((layer, i) => (
               <div
                 key={layer.id}
+                role="listitem"
                 draggable
                 onDragStart={() => setDragIndex(i)}
                 onDragOver={(e) => { e.preventDefault(); setOverIndex(i); }}
@@ -95,6 +103,7 @@ export const LayerPanel = <T extends Path<any>>({
                 style={{
                   width: "100%",
                   opacity: dragIndex === i ? 0.4 : 1,
+                  userSelect: dragIndex !== null ? "none" : undefined,
                   borderTop: overIndex === i && dragIndex !== i
                     ? `2px solid ${tomtomSecondaryColor}`
                     : "2px solid transparent",

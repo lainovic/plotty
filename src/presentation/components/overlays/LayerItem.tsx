@@ -1,5 +1,6 @@
 import React from "react";
 import { Checkbox, IconButton } from "@mui/material";
+import "./LayerPanel.css";
 
 import { tomtomSecondaryColor } from "../../../shared/colors";
 import AdsClickIcon from "@mui/icons-material/AdsClick";
@@ -93,24 +94,26 @@ const LayerItem: React.FC<LayerItemProps> = ({
           />
         </label>
       ) : (
-        <AndroidIcon style={styles.androidIcon} />
+        <AndroidIcon style={styles.androidIcon} aria-hidden="true" />
       )}
       <div style={styles.nameColumn}>
         {editing ? (
           <input
             ref={inputRef}
+            className="layer-name-input"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={handleKeyDown}
             onBlur={commitEdit}
             style={styles.nameInput}
+            aria-label="Layer name"
           />
         ) : (
           <>
-            <button style={styles.layerName} onClick={onClicked}>
+            <button className="layer-name" style={styles.layerName} title="Fly to layer" onClick={onClicked}>
               {name}
             </button>
-            <span style={styles.pointCount}>{pointCount} pts</span>
+            <span style={styles.pointCount}>{pointCount} <abbr title="points">pts</abbr></span>
           </>
         )}
         {(hovered || editing) && (

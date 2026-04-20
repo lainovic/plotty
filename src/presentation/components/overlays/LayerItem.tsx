@@ -16,7 +16,6 @@ interface LayerItemProps {
   onNameChange: (newName: string) => void;
   onColorChange: (hex: string) => void;
   onClicked: (e?: React.MouseEvent) => void;
-  onZoomedIn: () => void;
   onDelete: () => void;
 }
 
@@ -29,7 +28,6 @@ const LayerItem: React.FC<LayerItemProps> = ({
   onNameChange,
   onColorChange,
   onClicked,
-  onZoomedIn,
   onDelete,
 }) => {
   const [editing, setEditing] = React.useState(false);

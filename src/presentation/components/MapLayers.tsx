@@ -60,7 +60,7 @@ export const MapLayers = () => {
     };
   }, [map]);
 
-  const { flyToBoundingBox, zoomToBoundingBox, flyToCoordinates } =
+  const { flyToBoundingBox, flyToCoordinates } =
     useMapUtils();
 
   const toggleVisibility = (id: string) => {
@@ -98,9 +98,6 @@ export const MapLayers = () => {
         layers={layers}
         onLayerClicked={(layer: Layer<any>) =>
           flyToBoundingBox([...layer.path.points])
-        }
-        onLayerZoomedIn={(layer: Layer<any>) =>
-          zoomToBoundingBox([...layer.path.points])
         }
         onVisibilityChange={(layer) => toggleVisibility(layer.id)}
         onNameChange={(layer, newName) => renameLayer(layer.id, newName)}

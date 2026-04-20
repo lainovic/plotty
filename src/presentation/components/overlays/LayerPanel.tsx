@@ -12,7 +12,6 @@ interface LayerPanelProps<T extends Path<any>> {
   style?: React.CSSProperties;
   layers: Layer<T>[];
   onLayerClicked: (layer: Layer<T>) => void;
-  onLayerZoomedIn: (layer: Layer<T>) => void;
   onVisibilityChange: (layer: Layer<T>) => void;
   onNameChange: (layer: Layer<T>, newName: string) => void;
   onDelete: (layer: Layer<T>) => void;
@@ -24,7 +23,6 @@ export const LayerPanel = <T extends Path<any>>({
   style,
   layers,
   onLayerClicked,
-  onLayerZoomedIn,
   onVisibilityChange,
   onNameChange,
   onDelete,
@@ -79,7 +77,6 @@ export const LayerPanel = <T extends Path<any>>({
                 name={layer.name}
                 onNameChange={(newName) => onNameChange(layer, newName)}
                 onClicked={onLayerClicked.bind(null, layer)}
-                onZoomedIn={() => onLayerZoomedIn(layer)}
                 onDelete={() => onDelete(layer)}
                 onColorChange={(hex) => onColorChange(layer, hex)}
               />

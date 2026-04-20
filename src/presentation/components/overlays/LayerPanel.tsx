@@ -17,6 +17,7 @@ interface LayerPanelProps<T extends Path<any>> {
   onNameChange: (layer: Layer<T>, newName: string) => void;
   onDelete: (layer: Layer<T>) => void;
   onClearAll: () => void;
+  onColorChange: (layer: Layer<T>, hex: string) => void;
 }
 
 export const LayerPanel = <T extends Path<any>>({
@@ -28,6 +29,7 @@ export const LayerPanel = <T extends Path<any>>({
   onNameChange,
   onDelete,
   onClearAll,
+  onColorChange,
 }: LayerPanelProps<T>) => {
   const [isScrollable, setIsScrollable] = React.useState(false);
   const panelRef = React.useRef<HTMLDivElement>(null);
@@ -71,6 +73,7 @@ export const LayerPanel = <T extends Path<any>>({
               <LayerItem
                 key={layer.id}
                 checked={layer.visible}
+                color={layer.color.toHex().slice(0, 7)}
                 pointCount={layer.path.points.length}
                 onVisibilityChange={() => onVisibilityChange(layer)}
                 name={layer.name}
@@ -78,6 +81,7 @@ export const LayerPanel = <T extends Path<any>>({
                 onClicked={onLayerClicked.bind(null, layer)}
                 onZoomedIn={() => onLayerZoomedIn(layer)}
                 onDelete={() => onDelete(layer)}
+                onColorChange={(hex) => onColorChange(layer, hex)}
               />
             ))}
           </div>

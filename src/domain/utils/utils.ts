@@ -18,6 +18,10 @@ export function areLayersEqual<T extends Path<any>>(
 
   return prevLayers.every((prevLayer, index) => {
     const nextLayer = nextLayers[index];
-    return prevLayer.id === nextLayer.id && prevLayer.visible === nextLayer.visible;
+    return (
+      prevLayer.id === nextLayer.id &&
+      prevLayer.visible === nextLayer.visible &&
+      prevLayer.color.equals(nextLayer.color)
+    );
   });
 }

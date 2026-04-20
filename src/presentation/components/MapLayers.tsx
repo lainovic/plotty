@@ -79,6 +79,12 @@ export const MapLayers = () => {
     if (focusedLayerId === id) setFocusedLayerId(null);
   };
 
+  const recolorLayer = (id: string, hex: string) => {
+    setLayers((prev) =>
+      prev.map((l) => (l.id === id ? { ...l, color: Color.fromHex(hex) } : l))
+    );
+  };
+
   return (
     <FocusProvider focusedLayerId={focusedLayerId} setFocusedLayerId={setFocusedLayerId}>
       {importing && (
@@ -99,6 +105,7 @@ export const MapLayers = () => {
         onNameChange={(layer, newName) => renameLayer(layer.id, newName)}
         onDelete={(layer) => deleteLayer(layer.id)}
         onClearAll={() => { setLayers([]); setFocusedLayerId(null); }}
+        onColorChange={(layer, hex) => recolorLayer(layer.id, hex)}
       />
       <GotoDialog
         onCoordinatesChange={(coordinates: Coordinates) => {

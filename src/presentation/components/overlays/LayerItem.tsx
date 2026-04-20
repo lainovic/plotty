@@ -10,9 +10,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 interface LayerItemProps {
   name: string;
   pointCount: number;
+  color: string;
   checked: boolean;
   onVisibilityChange: (newValue: boolean) => void;
   onNameChange: (newName: string) => void;
+  onColorChange: (hex: string) => void;
   onClicked: (e?: React.MouseEvent) => void;
   onZoomedIn: () => void;
   onDelete: () => void;
@@ -21,9 +23,11 @@ interface LayerItemProps {
 const LayerItem: React.FC<LayerItemProps> = ({
   name,
   pointCount,
+  color,
   checked,
   onVisibilityChange,
   onNameChange,
+  onColorChange,
   onClicked,
   onZoomedIn,
   onDelete,
@@ -94,12 +98,26 @@ const LayerItem: React.FC<LayerItemProps> = ({
           </IconButton>
         </div>
       ) : (
-        <div style={styles.nameColumn}>
-          <button style={styles.layerName} onClick={onClicked}>
-            {name}
-          </button>
-          <span style={styles.pointCount}>{pointCount} pts</span>
-        </div>
+        <>
+          <label
+            style={{ ...styles.colorSwatch, background: color }}
+            title="Change layer color"
+          >
+            <input
+              type="color"
+              value={color}
+              onChange={(e) => onColorChange(e.target.value)}
+              style={styles.colorInput}
+              aria-label="Layer color"
+            />
+          </label>
+          <div style={styles.nameColumn}>
+            <button style={styles.layerName} onClick={onClicked}>
+              {name}
+            </button>
+            <span style={styles.pointCount}>{pointCount} pts</span>
+          </div>
+        </>
       )}
     </div>
   );
@@ -116,6 +134,26 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: "8px",
     fontSize: "0.95rem",
     width: "100%",
+  },
+  colorSwatch: {
+    position: "relative",
+    width: "16px",
+    height: "16px",
+    borderRadius: "50%",
+    flexShrink: 0,
+    cursor: "pointer",
+    border: "1px solid rgba(0,0,0,0.15)",
+    overflow: "hidden",
+  },
+  colorInput: {
+    position: "absolute",
+    inset: 0,
+    opacity: 0,
+    width: "100%",
+    height: "100%",
+    cursor: "pointer",
+    padding: 0,
+    border: "none",
   },
   nameColumn: {
     display: "flex",

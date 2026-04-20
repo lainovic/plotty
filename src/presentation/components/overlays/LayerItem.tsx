@@ -68,6 +68,18 @@ const LayerItem: React.FC<LayerItemProps> = ({
         onChange={(event) => onVisibilityChange(event.target.checked)}
         inputProps={{ "aria-label": "Toggle layer visibility" }}
       />
+      <label
+        style={{ ...styles.colorSwatch, background: color }}
+        title="Change layer color"
+      >
+        <input
+          type="color"
+          value={color}
+          onChange={(e) => onColorChange(e.target.value)}
+          style={styles.colorInput}
+          aria-label="Layer color"
+        />
+      </label>
       {hovered || editing ? (
         <div style={styles.actions}>
           {editing ? (
@@ -98,26 +110,12 @@ const LayerItem: React.FC<LayerItemProps> = ({
           </IconButton>
         </div>
       ) : (
-        <>
-          <label
-            style={{ ...styles.colorSwatch, background: color }}
-            title="Change layer color"
-          >
-            <input
-              type="color"
-              value={color}
-              onChange={(e) => onColorChange(e.target.value)}
-              style={styles.colorInput}
-              aria-label="Layer color"
-            />
-          </label>
-          <div style={styles.nameColumn}>
-            <button style={styles.layerName} onClick={onClicked}>
-              {name}
-            </button>
-            <span style={styles.pointCount}>{pointCount} pts</span>
-          </div>
-        </>
+        <div style={styles.nameColumn}>
+          <button style={styles.layerName} onClick={onClicked}>
+            {name}
+          </button>
+          <span style={styles.pointCount}>{pointCount} pts</span>
+        </div>
       )}
     </div>
   );

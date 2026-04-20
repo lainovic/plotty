@@ -56,9 +56,9 @@ export const MapLayers = () => {
     map.on("contextmenu", handleRightClick);
 
     return () => {
-      map.off("contextmenu");
+      map.off("contextmenu", handleRightClick);
     };
-  }, []);
+  }, [map]);
 
   const { flyToBoundingBox, zoomToBoundingBox, flyToCoordinates } =
     useMapUtils();
@@ -117,7 +117,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: "200px",
     paddingTop: "10px",
     transform: "translateY(-50%)",
-    backgroundColor: "hsl(0, 0%, 100%, 0.8)",
+    backgroundColor: "hsla(0, 0%, 100%, 0.8)",
     fontFamily: "'Roboto', sans-serif",
     borderRadius: "12px",
     zIndex: Z_INDEX.LAYER_PANEL,

@@ -92,19 +92,23 @@ export const GotoDialog: React.FC<GotoDialogProps> = ({
         <TextField
           inputRef={latitudeInputRef}
           label="latitude"
-          id="outlined-start-adornment"
+          id="goto-latitude"
           sx={{ m: 1, width: "25ch" }}
           value={latitude}
           onChange={(e) => setLatitude(e.target.value)}
           onPaste={handlePaste}
+          type="number"
+          inputProps={{ inputMode: "decimal", autoComplete: "off" }}
         />
         <TextField
           label="longitude"
-          id="outlined-start-adornment"
+          id="goto-longitude"
           sx={{ m: 1, width: "25ch" }}
           value={longitude}
           onChange={(e) => setLongitude(e.target.value)}
           onPaste={handlePaste}
+          type="number"
+          inputProps={{ inputMode: "decimal", autoComplete: "off" }}
         />
       </DialogContent>
       <DialogActions>

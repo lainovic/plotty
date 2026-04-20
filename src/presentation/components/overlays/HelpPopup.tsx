@@ -14,16 +14,20 @@ import { Z_INDEX } from "../../constants/zIndex";
 const cssStyles = `
   .open {
     opacity: 1;
-    transform: translateY(0) scale(1)
-    filter: blur(0);
+    transform: translateY(0) scale(1);
     transition: transform 0.2s cubic-bezier(0.345, 0.275, 0.505, 1.625), opacity 0.2s ease-out;
   }
 
   .close {
     opacity: 0;
     transform: translateY(-8px) scale(0.95);
-    filter: blur(3px);
-    transition: transform 0.4s ease-out, opacity 0.4s ease-out, filter 0.2s ease-out;
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .open, .close {
+      transition: none;
+    }
   }
 `;
 
@@ -33,14 +37,6 @@ const grey = {
   900: "#1C2025",
 };
 
-const blue = {
-  200: "#99CCFF",
-  300: "#66B2FF",
-  400: "#3399FF",
-  500: "#007FFF",
-  600: "#0072E5",
-  700: "#0066CC",
-};
 
 const Button = styled(BaseButton)(
   ({ theme }) => `
@@ -52,7 +48,7 @@ const Button = styled(BaseButton)(
   padding: 8px 16px;
   border-radius: 8px;
   color: white;
-  transition: all 150ms ease;
+  transition: background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
   cursor: pointer;
   border: 1px solid ${tomtomSecondaryColor};
   box-shadow: 0 2px 1px ${
@@ -219,7 +215,7 @@ function PopupWithTrigger(props: PopupProps) {
 
   return (
     <Section>
-      <Button ref={setAnchor} onClick={() => setOpen((o) => !o)}>
+      <Button ref={setAnchor} onClick={() => setOpen((o) => !o)} aria-label="Toggle help">
         ?
       </Button>
       <StyledPopup anchor={anchor} open={open} {...other}>

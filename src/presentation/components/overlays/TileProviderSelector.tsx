@@ -65,6 +65,7 @@ export const TileProviderSelector: React.FC<TileProviderSelectorProps> = ({
         onChange={(e: SelectChangeEvent<TileVendors>) =>
           setSelectedVendor(e.target.value as TileVendors)
         }
+        inputProps={{ "aria-label": "Map tile provider" }}
         sx={{
           color: `${tomtomBlackColor}`,
           "&.MuiSvgIcon-root": { color: `${tomtomSecondaryColor}` },
@@ -103,7 +104,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: "start",
     padding: "10px",
     minHeight: "50px",
-    backgroundColor: "hsl(0, 0%, 100%, 0.8)",
+    backgroundColor: "hsla(0, 0%, 100%, 0.8)",
     borderRadius: "12px",
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
     zIndex: Z_INDEX.TILE_PROVIDER,

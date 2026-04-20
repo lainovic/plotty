@@ -9,6 +9,8 @@ import React from "react";
  * @param style - Optional CSS styles to apply to the component.
  */
 
+let instanceCount = 0;
+
 export default function PasswordInput({
   label,
   initialValue,
@@ -21,27 +23,23 @@ export default function PasswordInput({
   style?: React.CSSProperties;
 }) {
   const [value, setValue] = React.useState(initialValue);
+  const id = React.useRef(`password-input-${++instanceCount}`).current;
+
   return (
-    <div
-      style={{
-        display: "inline-block",
-        ...style,
-      }}
-    >
-      <label htmlFor="apiKeyField">{label}:</label>
+    <div style={{ display: "inline-block", ...style }}>
+      <label htmlFor={id}>{label}:</label>
       <input
-        onPaste={(e) => {
-          e.stopPropagation();
-        }}
+        onPaste={(e) => e.stopPropagation()}
         style={{
           marginLeft: "10px",
-          backgroundColor: "hsl(0, 0%, 100%, 0.0)",
+          backgroundColor: "transparent",
           ...(value === ""
             ? { border: "1px solid red" }
             : { border: "none", borderBottom: "1px solid #ccc" }),
         }}
-        id="apiKeyField"
+        id={id}
         type="password"
+        autoComplete="off"
         value={value}
         onChange={(e) => {
           const value = e.target.value;

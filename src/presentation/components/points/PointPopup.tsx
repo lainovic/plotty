@@ -25,16 +25,16 @@ export default function PointPopup({
     <div style={styles.container}>
       <h3 style={styles.title}>{title}</h3>
       {content}
-      <IconButton aria-label="left" onClick={onLeftArrowClick}>
+      <IconButton aria-label="previous point" onClick={onLeftArrowClick}>
         <KeyboardArrowLeftIcon fontSize="small" />
       </IconButton>
-      <IconButton aria-label="right" onClick={onRightArrowClick}>
+      <IconButton aria-label="next point" onClick={onRightArrowClick}>
         <KeyboardArrowRightIcon fontSize="small" />
       </IconButton>
-      <IconButton aria-label="center" onClick={onLocateClick}>
+      <IconButton aria-label="locate on map" onClick={onLocateClick}>
         <AdsClickIcon fontSize="small" />
       </IconButton>
-      <IconButton aria-label="copy" onClick={onCopyContentClick}>
+      <IconButton aria-label="copy coordinates" onClick={onCopyContentClick}>
         <ContentCopyIcon fontSize="small" />
       </IconButton>
     </div>

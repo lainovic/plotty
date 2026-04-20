@@ -1,5 +1,5 @@
 import { Layer, createLayer } from "../entities/Layer";
-import { GeoPath } from "../entities/GeoPath";
+import { GeoPath, GeoRenderHint } from "../entities/GeoPath";
 import { LogPath } from "../entities/LogPath";
 import { TtpPath } from "../entities/TtpPath";
 import { Route } from "../entities/Route";
@@ -14,6 +14,8 @@ import { RouteSource } from "../value-objects/RoutingModel";
 type SerializedGeoPath = {
   type: "geo";
   points: { latitude: number; longitude: number }[];
+  renderHint?: GeoRenderHint;
+  properties?: Record<string, unknown>;
 };
 
 type SerializedTtpPath = {
@@ -101,6 +103,8 @@ function serializePath(path: Path<any>): SerializedPath {
       latitude: p.latitude,
       longitude: p.longitude,
     })),
+    renderHint: (path as GeoPath).renderHint,
+    properties: (path as GeoPath).properties,
   };
 }
 
@@ -141,7 +145,10 @@ function deserializePath(serialized: SerializedPath): Path<any> {
       );
     case "geo":
       return new GeoPath(
-        serialized.points.map((p) => new Coordinates(p.latitude, p.longitude))
+        serialized.points.map((p) => new Coordinates(p.latitude, p.longitude)),
+        undefined,
+        serialized.renderHint,
+        serialized.properties,
       );
   }
 }

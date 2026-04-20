@@ -130,69 +130,64 @@ export function HelpPopup() {
           lastTransitionedPropertyOnExit="transform"
         >
           <PopupBody>
-            <h3 style={fmtStyles.header}>Layers</h3>
+            <h3 style={fmtStyles.header}>Adding layers</h3>
+            Drag and drop a file onto the map, or paste content anywhere on the
+            page. Supported formats:
             <div style={fmtStyles.help}>
-              Layer is a generic term for a set of points that can be displayed
-              on the map. <br />
-              It can be a route from the routing API response, or simply a
-              collection of geographic coordinates.
+              <strong>GeoJSON</strong> — .geojson files or pasted GeoJSON.
+              Each feature becomes a separate layer, named from its{" "}
+              <code>properties.name</code> if present.
+              <br />
+              <strong>Route JSON</strong> — TomTom routing API response (v0.0.12).
+              <br />
+              <strong>Logcat</strong> — Android logcat with supported navigation tags.
+              <br />
+              <strong>TTP</strong> — TomTom Positioning v0.7 format.
+              <br />
+              <strong>Coordinates</strong> — raw lat/lng pairs, any separator.
             </div>
-            To add a new layer, paste its contents into the app, or drag and
-            drop a file containing the layer. Once the layer is successfully
-            loaded, a toast notification will appear, and the layer will be
-            displayed on the map, along with the layer panel on the right.
-            <div style={fmtStyles.help}>
-              The layer panel contains a list of all layers currently loaded
-              into the app.
-            </div>
-            You can overview the layer by clicking on its name. You can also
-            toggle the visibility of each layer by clicking on the checkbox in
-            front of the layer name.
+            <h3 style={fmtStyles.header}>Layer panel</h3>
+            The panel on the right is always visible. Hover a layer to reveal
+            actions: locate <AdsClickIcon style={{ fontSize: "1em", verticalAlign: "middle" }} />,
+            rename, and delete. Click the color dot to change a layer's color.
+            The checkbox toggles visibility. Click the layer name to fly to its
+            extent.
             <br />
             <h3 style={fmtStyles.header}>Points</h3>
-            Navigate between points on a focused layer with the arrows in the
-            popup or the keys <span style={fmtStyles.emphasize}>
-              H
-            </span> and <span style={fmtStyles.emphasize}>L</span>.
+            Click a point to open its popup. Navigate between points with{" "}
+            <span style={fmtStyles.emphasize}>H</span> / <span style={fmtStyles.emphasize}>L</span>{" "}
+            or the arrow buttons in the popup.
             <br />
-            You can also copy the coordinates of a point by clicking the{" "}
-            <ContentCopyIcon fontSize="small" /> button in the popup.
-            <br />
-            You can focus the map on a point by clicking the{" "}
-            <AdsClickIcon fontSize="small" />
-            button.
+            Use <ContentCopyIcon style={{ fontSize: "1em", verticalAlign: "middle" }} /> to copy
+            coordinates, and <AdsClickIcon style={{ fontSize: "1em", verticalAlign: "middle" }} /> to
+            pan to a point without changing zoom. Log point popups also show a
+            locate button next to any coordinate-valued fields.
             <br />
             <h3 style={fmtStyles.header}>Go to a location</h3>
-            Press the <span style={fmtStyles.emphasize}>G</span> key to open the
-            dialog to enter coordinates to navigate to. You can paste the pair
-            of coordinates into the latitude field and longitude will be
-            automatically filled in. Press the{" "}
-            <span style={fmtStyles.emphasize}>Enter</span> key to navigate to
-            the specified location.
+            Press <span style={fmtStyles.emphasize}>G</span> to toggle the Go To
+            dialog. Paste a coordinate pair into the latitude field — longitude
+            fills in automatically. Press{" "}
+            <span style={fmtStyles.emphasize}>Enter</span> to navigate.
             <br />
-            You can also copy the coordinates of the current map center by
-            right-clicking on the map.
+            Right-click anywhere on the map to copy those coordinates to the
+            clipboard.
             <br />
             <h3 style={fmtStyles.header}>Tiles</h3>
-            Switch between tile providers using the selector in the lower left
-            corner, or by using the keys{" "}
-            <span style={fmtStyles.emphasize}>J</span> and{" "}
-            <span style={fmtStyles.emphasize}>K</span>.
+            OpenStreetMap is the default — no API key required. Switch providers
+            with <span style={fmtStyles.emphasize}>J</span> /{" "}
+            <span style={fmtStyles.emphasize}>K</span> or the selector in the
+            lower-left corner. TomTom options require an API key.
             <br />
-            For TomTom tiles, you will need to provide an API key.
-            <br />
-            <h3 style={fmtStyles.header}>Ruler mode</h3>
-            Toggle ruler mode by pressing the{" "}
-            <span style={fmtStyles.emphasize}>R</span> key. In ruler mode, you
-            can measure distances between points by clicking on the map to add
-            points to the ruler. You can drag the points around as well.
-            <br />
-            The measured distance will be displayed in the ruler panel and
-            copied to the clipboard.
+            <h3 style={fmtStyles.header}>Ruler</h3>
+            Press <span style={fmtStyles.emphasize}>R</span> to toggle ruler
+            mode. Click the map to add measurement points; drag to reposition
+            them. The distance is shown in the panel and copied to the
+            clipboard. Close with the × button or press{" "}
+            <span style={fmtStyles.emphasize}>R</span> again.
             <br />
             <div style={fmtStyles.help}>
-              Press the <span style={fmtStyles.emphasize}>?</span> key to toggle
-              this popup.
+              Press <span style={fmtStyles.emphasize}>?</span> to toggle this
+              panel. Keyboard shortcuts are shown above the ? button.
             </div>
           </PopupBody>
         </CssTransition>

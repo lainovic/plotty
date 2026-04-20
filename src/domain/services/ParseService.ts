@@ -4,6 +4,7 @@ import TtpParser from "../parsers/TtpParser";
 import GeoPointsParser from "../parsers/GeoPointsParser";
 import { ParseResult } from "../parsers/Parser";
 import { LogcatParser } from "../parsers/logcat/LogcatParser";
+import GeoJsonParser from "../parsers/GeoJsonParser";
 import { Maybe } from "../../shared/Maybe";
 import { MaybeParsed } from "../parsers/Parser";
 
@@ -13,6 +14,7 @@ export class ParseService {
     new RouteParser(),
     new TtpParser(),
     new LogcatParser(),
+    new GeoJsonParser(),
     new GeoPointsParser(),
   ];
 

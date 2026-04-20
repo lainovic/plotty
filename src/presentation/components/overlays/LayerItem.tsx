@@ -3,6 +3,7 @@ import { Checkbox, IconButton } from "@mui/material";
 
 import { tomtomSecondaryColor } from "../../../shared/colors";
 import AdsClickIcon from "@mui/icons-material/AdsClick";
+import AndroidIcon from "@mui/icons-material/Android";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -76,7 +77,7 @@ const LayerItem: React.FC<LayerItemProps> = ({
         onChange={(event) => onVisibilityChange(event.target.checked)}
         inputProps={{ "aria-label": "Toggle layer visibility" }}
       />
-      {showColorPicker && (
+      {showColorPicker ? (
         <label
           style={{ ...styles.colorSwatch, background: localColor }}
           title="Change layer color"
@@ -89,6 +90,8 @@ const LayerItem: React.FC<LayerItemProps> = ({
             aria-label="Layer color"
           />
         </label>
+      ) : (
+        <AndroidIcon style={styles.androidIcon} />
       )}
       <div style={styles.nameColumn}>
         {editing ? (
@@ -145,6 +148,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: "8px",
     fontSize: "0.95rem",
     width: "100%",
+  },
+  androidIcon: {
+    width: "16px",
+    height: "16px",
+    fontSize: "16px",
+    flexShrink: 0,
+    color: "rgba(0,0,0,0.3)",
   },
   colorSwatch: {
     position: "relative",

@@ -13,9 +13,9 @@ function App() {
       <header style={styles.header}>
         <div style={styles.headerBrand}>
           <div style={styles.headerWordmark}>
-            Plot<span style={styles.headerSpan}>ty</span>
+            Plo<span style={styles.headerSpan}>tt</span>y
           </div>
-          <div style={styles.kicker}>Map utility</div>
+          <div style={styles.kicker}>Lightweight map utility</div>
         </div>
       </header>
       <main style={styles.container}>

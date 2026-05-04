@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { LayerPanel } from "./overlays/LayerPanel";
 import { GotoDialog } from "./overlays/GotoDialog";
 import { filterLayers } from "../../domain/utils/utils";
-import { Layer, createLayer } from "../../domain/entities/Layer";
+import { createLayer } from "../../domain/entities/Layer";
 import { FocusProvider } from "../contexts/FocusContext";
 import { GeoPath } from "../../domain/entities/GeoPath";
 import { TtpPath } from "../../domain/entities/TtpPath";
@@ -16,7 +16,7 @@ import { usePathImport } from "../hooks/usePathImport";
 import { AnyPath } from "../../domain/entities/Path";
 import { Color } from "../../domain/value-objects/Color";
 import { useColors } from "../hooks/useLayerColors";
-import { usePersistedLayers } from "../hooks/usePersistedLayers";
+import { useLayerStore } from "../hooks/useLayerStore";
 import { onlyInDevelopment, useRenderTime } from "../hooks/useRenderTime";
 import { Z_INDEX } from "../constants/zIndex";
 import { Coordinates } from "../../domain/value-objects/Coordinates";
@@ -27,24 +27,24 @@ export const MapLayers = () => {
   useRenderTime("MapLayers", onlyInDevelopment);
 
   const map = useMap();
-  const [layers, setLayers] = usePersistedLayers();
-  const [focusedLayerId, setFocusedLayerId] = React.useState<string | null>(null);
+  const store = useLayerStore();
   const { getNextColor } = useColors();
 
   const { importing } = usePathImport({
     target: map.getContainer(),
     onPathsImported: (paths: AnyPath[]) => {
-      const newLayers = paths.map((path) =>
-        createLayer(path.getName(), Color.fromHex(getNextColor()), path)
+      store.addLayers(
+        paths.map((path) =>
+          createLayer(path.getName(), Color.fromHex(getNextColor()), path)
+        )
       );
-      setLayers((prev) => [...prev, ...newLayers]);
     },
   });
 
-  const routeLayers = filterLayers(layers, Route);
-  const geoPathLayers = filterLayers(layers, GeoPath);
-  const ttpPathLayers = filterLayers(layers, TtpPath);
-  const logPathLayers = filterLayers(layers, LogPath);
+  const routeLayers = filterLayers(store.layers, Route);
+  const geoPathLayers = filterLayers(store.layers, GeoPath);
+  const ttpPathLayers = filterLayers(store.layers, TtpPath);
+  const logPathLayers = filterLayers(store.layers, LogPath);
 
   React.useEffect(() => {
     const handleRightClick = (e: L.LeafletMouseEvent) => {
@@ -64,43 +64,10 @@ export const MapLayers = () => {
     };
   }, [map]);
 
-  const { flyToBoundingBox, flyToCoordinates } =
-    useMapUtils();
-
-  const toggleVisibility = (id: string) => {
-    setLayers((prev) =>
-      prev.map((l) => (l.id === id ? { ...l, visible: !l.visible } : l))
-    );
-  };
-
-  const renameLayer = (id: string, newName: string) => {
-    setLayers((prev) =>
-      prev.map((l) => (l.id === id ? { ...l, name: newName } : l))
-    );
-  };
-
-  const deleteLayer = (id: string) => {
-    setLayers((prev) => prev.filter((l) => l.id !== id));
-    if (focusedLayerId === id) setFocusedLayerId(null);
-  };
-
-  const recolorLayer = (id: string, hex: string) => {
-    setLayers((prev) =>
-      prev.map((l) => (l.id === id ? { ...l, color: Color.fromHex(hex) } : l))
-    );
-  };
-
-  const reorderLayers = (fromIndex: number, toIndex: number) => {
-    setLayers((prev) => {
-      const next = [...prev];
-      const [moved] = next.splice(fromIndex, 1);
-      next.splice(toIndex, 0, moved);
-      return next;
-    });
-  };
+  const { flyToBoundingBox, flyToCoordinates } = useMapUtils();
 
   return (
-    <FocusProvider focusedLayerId={focusedLayerId} setFocusedLayerId={setFocusedLayerId}>
+    <FocusProvider>
       {importing && (
         <div style={styles.overlay}>
           <div style={styles.spinner}>Importing...</div>
@@ -108,16 +75,14 @@ export const MapLayers = () => {
       )}
       <LayerPanel
         style={styles.layerPanel}
-        layers={layers}
-        onLayerClicked={(layer: Layer<AnyPath>) =>
-          flyToBoundingBox([...layer.path.points])
-        }
-        onVisibilityChange={(layer) => toggleVisibility(layer.id)}
-        onNameChange={(layer, newName) => renameLayer(layer.id, newName)}
-        onDelete={(layer) => deleteLayer(layer.id)}
-        onClearAll={() => { setLayers([]); setFocusedLayerId(null); }}
-        onColorChange={(layer, hex) => recolorLayer(layer.id, hex)}
-        onReorder={reorderLayers}
+        layers={store.layers}
+        onLayerClicked={(layer) => flyToBoundingBox([...layer.path.points])}
+        onVisibilityChange={(layer) => store.toggleVisibility(layer.id)}
+        onNameChange={(layer, newName) => store.rename(layer.id, newName)}
+        onDelete={(layer) => store.remove(layer.id)}
+        onClearAll={store.clearAll}
+        onColorChange={(layer, hex) => store.recolor(layer.id, hex)}
+        onReorder={store.reorder}
       />
       <GotoDialog
         onCoordinatesChange={(coordinates: Coordinates) => {

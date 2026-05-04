@@ -16,11 +16,11 @@ export function usePointFocus(
   pointCount: number,
   layerId: string
 ): PointFocusHookReturnType {
-  const { focusedLayerId, setFocusedLayerId } = useFocusContext();
-  const isFocused = focusedLayerId === layerId;
+  const { focusLayer, blur, isFocused } = useFocusContext();
+  const isLayerFocused = isFocused(layerId);
 
   const currentIndex = React.useRef<number>(0);
-  const isFocusedRef = React.useRef(isFocused);
+  const isFocusedRef = React.useRef(isLayerFocused);
   const pointCountRef = React.useRef(pointCount);
   const layerIdRef = React.useRef(layerId);
   const map = useMap();
@@ -30,24 +30,24 @@ export function usePointFocus(
 
   const [focusedPointIndex, setFocusedPointIndex] = React.useState<number | null>(null);
 
-  React.useEffect(() => { isFocusedRef.current = isFocused; }, [isFocused]);
+  React.useEffect(() => { isFocusedRef.current = isLayerFocused; }, [isLayerFocused]);
   React.useEffect(() => { pointCountRef.current = pointCount; }, [pointCount]);
   React.useEffect(() => { layerIdRef.current = layerId; }, [layerId]);
 
   // Close popups and clear highlight when this layer loses focus
   React.useEffect(() => {
-    if (!isFocused) {
+    if (!isLayerFocused) {
       markers.current.forEach((marker) => marker?.closePopup());
       setFocusedPointIndex(null);
     }
-  }, [isFocused]);
+  }, [isLayerFocused]);
 
   // Unfocus on map click
   React.useEffect(() => {
-    const handleMapClick = () => setFocusedLayerId(null);
+    const handleMapClick = () => blur();
     map.on("click", handleMapClick);
     return () => { map.off("click", handleMapClick); };
-  }, [map]);
+  }, [map, blur]);
 
   // Keyboard navigation
   React.useEffect(() => {
@@ -62,10 +62,10 @@ export function usePointFocus(
   }, []);
 
   const handlePointClick = React.useCallback((index: number) => {
-    setFocusedLayerId(layerIdRef.current);
+    focusLayer(layerIdRef.current);
     currentIndex.current = index;
     setFocusedPointIndex(index);
-  }, [setFocusedLayerId]);
+  }, [focusLayer]);
 
   const handleGoingForward = React.useCallback(() => {
     if (!isFocusedRef.current) return;

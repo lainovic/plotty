@@ -11,6 +11,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import EditLocationAltIcon from "@mui/icons-material/EditLocationAlt";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface LayerItemProps {
   name: string;
@@ -69,36 +70,41 @@ const LayerItem: React.FC<LayerItemProps> = ({
     if (e.key === "Escape") setEditing(false);
   };
 
+  const displayName = name.trim() || "Untitled layer";
+
   return (
     <div style={styles.layerItem}>
-      <DragIndicatorIcon style={styles.dragHandle} />
-      <Checkbox
-        sx={{
-          color: `${tomtomSecondaryColor}`,
-          "&.Mui-checked": { color: `${tomtomSecondaryColor}` },
-        }}
-        checked={checked}
-        onChange={(event) => onVisibilityChange(event.target.checked)}
-        inputProps={{ "aria-label": "Toggle layer visibility" }}
-      />
-      {showColorPicker ? (
-        <label
-          style={{ ...styles.colorSwatch, background: localColor }}
-          title="Change layer color"
-        >
-          <input
-            type="color"
-            value={localColor}
-            onChange={(e) => handleColorChange(e.target.value)}
-            style={styles.colorInput}
-            aria-label="Layer color"
+      <div style={styles.rowTop}>
+        <div style={styles.leadingRail}>
+          <DragIndicatorIcon style={styles.dragHandle} />
+          <Checkbox
+            sx={{
+              color: `${tomtomSecondaryColor}`,
+              "&.Mui-checked": { color: `${tomtomSecondaryColor}` },
+              padding: "2px",
+            }}
+            checked={checked}
+            onChange={(event) => onVisibilityChange(event.target.checked)}
+            inputProps={{ "aria-label": "Toggle layer visibility" }}
           />
-        </label>
-      ) : (
-        <AndroidIcon style={styles.androidIcon} aria-hidden="true" />
-      )}
-      <div style={styles.nameColumn}>
-        <div style={styles.rowTop}>
+          {showColorPicker ? (
+            <label
+              style={{ ...styles.colorSwatch, background: localColor }}
+              title="Change layer color"
+            >
+              <input
+                type="color"
+                value={localColor}
+                onChange={(e) => handleColorChange(e.target.value)}
+                style={styles.colorInput}
+                aria-label="Layer color"
+              />
+            </label>
+          ) : (
+            <AndroidIcon style={styles.androidIcon} aria-hidden="true" />
+          )}
+        </div>
+        <div style={styles.metaColumn}>
           {editing ? (
             <input
               ref={inputRef}
@@ -112,18 +118,25 @@ const LayerItem: React.FC<LayerItemProps> = ({
             />
           ) : (
             <button className="layer-name" style={styles.layerName} title="Fly to layer" onClick={onClicked}>
-              {name}
+              {displayName}
             </button>
           )}
           <span style={styles.pointCount}>{pointCount} <abbr title="points">pts</abbr></span>
         </div>
-        <div style={styles.actionsRow}>
+      </div>
+      <div style={styles.actionsRow}>
+          <div style={styles.primaryActions}>
           {editing ? (
             <>
               <button style={styles.primaryAction} type="button" onClick={commitEdit}>
+                <CheckIcon style={styles.primaryIcon} />
                 Save
               </button>
-              <IconButton aria-label="confirm rename" size="small" onClick={commitEdit}>
+              <button style={styles.secondaryAction} type="button" onClick={() => setEditing(false)}>
+                <CloseIcon style={styles.primaryIcon} />
+                Cancel
+              </button>
+              <IconButton aria-label="confirm rename" size="small" onClick={commitEdit} sx={styles.utilityButtonSx}>
                 <CheckIcon fontSize="small" />
               </IconButton>
             </>
@@ -137,44 +150,64 @@ const LayerItem: React.FC<LayerItemProps> = ({
                 <EditIcon style={styles.primaryIcon} />
                 Rename
               </button>
-              <div style={styles.reorderGroup}>
-                <span style={styles.reorderLabel}>Order</span>
-                <IconButton aria-label="move layer up" size="small" onClick={onMoveUp} disabled={!onMoveUp}>
-                  <ArrowUpwardIcon fontSize="small" />
-                </IconButton>
-                <IconButton aria-label="move layer down" size="small" onClick={onMoveDown} disabled={!onMoveDown}>
-                  <ArrowDownwardIcon fontSize="small" />
-                </IconButton>
-              </div>
-              <IconButton aria-label="delete layer" size="small" onClick={onDelete} style={styles.deleteAction}>
-                <DeleteIcon fontSize="small" />
-              </IconButton>
             </>
           )}
-        </div>
+          </div>
+          {!editing && (
+            <div style={styles.trailingActions}>
+              <IconButton
+                aria-label="move layer up"
+                size="small"
+                onClick={onMoveUp}
+                disabled={!onMoveUp}
+                sx={styles.utilityButtonSx}
+              >
+                <ArrowUpwardIcon fontSize="small" />
+              </IconButton>
+              <IconButton
+                aria-label="move layer down"
+                size="small"
+                onClick={onMoveDown}
+                disabled={!onMoveDown}
+                sx={styles.utilityButtonSx}
+              >
+                <ArrowDownwardIcon fontSize="small" />
+              </IconButton>
+              <IconButton aria-label="delete layer" size="small" onClick={onDelete} style={styles.deleteAction} sx={styles.deleteButtonSx}>
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </div>
+          )}
       </div>
     </div>
   );
 };
 
-const styles: { [key: string]: React.CSSProperties } = {
+const styles: { [key: string]: React.CSSProperties | Record<string, unknown> } = {
   layerItem: {
     display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "column",
+    alignItems: "stretch",
     justifyContent: "flex-start",
-    padding: "10px 12px",
-    borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
+    padding: "9px 12px 8px",
+    borderBottom: "1px solid rgba(0, 0, 0, 0.08)",
     borderRadius: "8px",
-    fontSize: "0.95rem",
+    fontSize: "0.92rem",
     width: "100%",
+    gap: "5px",
+  },
+  leadingRail: {
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+    flexShrink: 0,
   },
   dragHandle: {
     fontSize: "16px",
     flexShrink: 0,
     cursor: "grab",
     color: "rgba(0,0,0,0.18)",
-    marginLeft: "-4px",
+    marginLeft: "-2px",
   },
   androidIcon: {
     width: "16px",
@@ -203,40 +236,58 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: 0,
     border: "none",
   },
-  nameColumn: {
-    display: "flex",
-    flexDirection: "column",
-    flex: 1,
-    minWidth: 0,
-  },
-  rowTop: {
+  metaColumn: {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
     gap: "8px",
+    minWidth: 0,
+    flex: 1,
+  },
+  rowTop: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    width: "100%",
   },
   actionsRow: {
     display: "flex",
     alignItems: "center",
+    justifyContent: "space-between",
+    gap: "8px",
+    width: "100%",
+    paddingLeft: "59px",
+  },
+  primaryActions: {
+    display: "flex",
+    alignItems: "center",
     flexWrap: "wrap",
-    gap: "6px",
-    marginTop: "6px",
-    marginLeft: "10px",
+    gap: "5px",
+    minWidth: 0,
+  },
+  trailingActions: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "4px",
+    flexShrink: 0,
   },
   layerName: {
     display: "block",
-    paddingLeft: "2px",
-    borderRadius: "10px",
+    padding: 0,
+    borderRadius: "6px",
     background: "none",
     border: "none",
     cursor: "pointer",
     fontSize: "inherit",
     fontFamily: "inherit",
+    fontWeight: 500,
+    lineHeight: 1.25,
     textAlign: "left",
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
-    width: "100%",
+    flex: 1,
+    minWidth: 0,
   },
   nameInput: {
     flex: 1,
@@ -251,58 +302,56 @@ const styles: { [key: string]: React.CSSProperties } = {
   primaryAction: {
     display: "inline-flex",
     alignItems: "center",
-    gap: "6px",
+    gap: "5px",
     border: `1px solid ${tomtomSecondaryColor}26`,
     background: `${tomtomSecondaryColor}12`,
     color: "rgba(0,0,0,0.76)",
     borderRadius: "999px",
-    padding: "4px 10px",
-    fontSize: "0.72rem",
+    padding: "3px 9px",
+    fontSize: "0.69rem",
     fontWeight: 700,
     cursor: "pointer",
   },
   secondaryAction: {
     display: "inline-flex",
     alignItems: "center",
-    gap: "6px",
+    gap: "5px",
     border: "1px solid rgba(0,0,0,0.08)",
     background: "transparent",
     color: "rgba(0,0,0,0.64)",
     borderRadius: "999px",
-    padding: "4px 10px",
-    fontSize: "0.72rem",
+    padding: "3px 9px",
+    fontSize: "0.69rem",
     fontWeight: 600,
     cursor: "pointer",
   },
   primaryIcon: {
-    fontSize: "0.9rem",
-  },
-  reorderGroup: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "2px",
-    border: "1px solid rgba(0,0,0,0.08)",
-    borderRadius: "999px",
-    padding: "2px 4px 2px 8px",
-  },
-  reorderLabel: {
-    fontSize: "0.68rem",
-    color: "rgba(0,0,0,0.42)",
-    fontWeight: 700,
-    letterSpacing: "0.03em",
-    textTransform: "uppercase",
+    fontSize: "0.86rem",
   },
   deleteAction: {
-    marginLeft: "auto",
     color: "rgba(125,0,0,0.75)",
   },
-  pointCount: {
-    padding: "3px 8px",
-    fontSize: "0.68rem",
-    color: "rgba(0,0,0,0.45)",
+  utilityButtonSx: {
+    color: "rgba(0,0,0,0.52)",
+    padding: "4px",
+    border: "1px solid rgba(0,0,0,0.08)",
     borderRadius: "999px",
-    background: "rgba(0,0,0,0.04)",
+    backgroundColor: "rgba(255,255,255,0.6)",
+  },
+  deleteButtonSx: {
+    marginLeft: "2px",
+  },
+  pointCount: {
+    display: "inline-flex",
+    alignItems: "center",
+    padding: "2px 7px",
+    fontSize: "0.64rem",
+    color: "rgba(0,0,0,0.54)",
+    borderRadius: "999px",
+    background: "rgba(0,0,0,0.06)",
     whiteSpace: "nowrap",
+    flexShrink: 0,
+    minHeight: "20px",
   },
 };
 

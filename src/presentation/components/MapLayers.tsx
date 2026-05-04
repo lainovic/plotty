@@ -138,7 +138,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     position: "fixed",
     top: "50%",
     right: "10px",
-    width: "200px",
+    width: "clamp(280px, 24vw, 360px)",
     paddingTop: "10px",
     transform: "translateY(-50%)",
     backgroundColor: "hsla(0, 0%, 100%, 0.8)",
@@ -148,6 +148,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    boxShadow: "0 10px 24px rgba(0, 0, 0, 0.12)",
+    border: "1px solid rgba(0,0,0,0.06)",
+    backdropFilter: "blur(14px)",
   },
   overlay: {
     position: "fixed",

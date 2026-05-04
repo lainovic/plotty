@@ -16,26 +16,65 @@ export default function PasswordInput({
   initialValue,
   onValueChange,
   style,
+  compact = false,
 }: {
   label: string;
   initialValue: string;
   onValueChange: (key: string) => void;
   style?: React.CSSProperties;
+  compact?: boolean;
 }) {
   const [value, setValue] = React.useState(initialValue);
   const id = React.useRef(`password-input-${++instanceCount}`).current;
 
+  React.useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+
   return (
-    <div style={{ display: "inline-block", ...style }}>
-      <label htmlFor={id}>{label}:</label>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: compact ? "column" : "row",
+        alignItems: compact ? "stretch" : "center",
+        gap: compact ? "2px" : "0",
+        fontFamily: "'Roboto', sans-serif",
+        ...style,
+      }}
+    >
+      <label
+        htmlFor={id}
+        style={
+          compact
+            ? {
+                fontSize: "0.62rem",
+                color: "rgba(0,0,0,0.46)",
+                fontWeight: 600,
+                letterSpacing: "0.01em",
+              }
+            : undefined
+        }
+      >
+        {label}
+        {!compact ? ":" : null}
+      </label>
       <input
         onPaste={(e) => e.stopPropagation()}
         style={{
-          marginLeft: "10px",
           backgroundColor: "transparent",
+          font: "inherit",
+          width: compact ? "100%" : undefined,
+          fontSize: compact ? "0.82rem" : undefined,
+          padding: compact ? "2px 0 4px" : undefined,
           ...(value === ""
-            ? { border: "1px solid red" }
+            ? { border: compact ? "1px solid rgba(223,27,18,0.45)" : "1px solid red" }
             : { border: "none", borderBottom: "1px solid #ccc" }),
+          ...(compact
+            ? {
+                borderRadius: "0",
+                borderBottom: value === "" ? undefined : "1px solid rgba(0,0,0,0.16)",
+              }
+            : { marginLeft: "10px" }),
         }}
         id={id}
         type="password"

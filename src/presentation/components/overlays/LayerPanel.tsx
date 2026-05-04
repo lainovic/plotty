@@ -76,7 +76,7 @@ export const LayerPanel = <T extends AnyPath>({
           <div style={styles.header}>
             <div>
               <h3 style={styles.title}>Layers</h3>
-              <p style={styles.subtitle}>Inspect, organize, and jump between imported data.</p>
+              <p style={styles.subtitle}>Imported paths and routes</p>
             </div>
             <IconButton
               aria-label="clear all layers"
@@ -146,23 +146,23 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: "0 8px 10px 10px",
-    borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
+    padding: "0 8px 8px 10px",
+    borderBottom: "1px solid rgba(0, 0, 0, 0.08)",
     width: "100%",
   },
   title: {
-    fontSize: "1.1rem",
+    fontSize: "0.98rem",
     color: `${tomtomSecondaryColor}`,
     userSelect: "none",
-    fontWeight: 600,
+    fontWeight: 700,
     margin: 0,
   },
   subtitle: {
-    margin: "2px 0 0",
-    fontSize: "0.7rem",
+    margin: "1px 0 0",
+    fontSize: "0.66rem",
     color: "rgba(0,0,0,0.45)",
-    lineHeight: 1.35,
-    maxWidth: "150px",
+    lineHeight: 1.2,
+    maxWidth: "190px",
   },
   emptyState: {
     display: "flex",
@@ -196,7 +196,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "0.88rem",
     fontWeight: 700,
     color: "rgba(0,0,0,0.72)",
-    maxWidth: "180px",
+    maxWidth: "240px",
     lineHeight: 1.35,
   },
   emptySteps: {
@@ -206,7 +206,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "0.76rem",
     color: "rgba(0,0,0,0.48)",
     lineHeight: 1.45,
-    maxWidth: "184px",
+    maxWidth: "248px",
   },
   layerList: {
     display: "flex",
@@ -215,7 +215,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: "flex-start",
     justifyContent: "start",
     overflowY: "auto",
-    maxHeight: "250px",
+    maxHeight: "336px",
     scrollbarWidth: "thin",
     scrollbarColor: `${tomtomSecondaryColor}CC transparent`,
     width: "100%",

@@ -11,14 +11,11 @@ function App() {
   return (
     <div style={styles.appShell}>
       <header style={styles.header}>
-        <div style={styles.headerBlock}>
-          <div style={styles.kicker}>Geospatial utility</div>
+        <div style={styles.headerBrand}>
           <div style={styles.headerWordmark}>
-            Plo<span style={styles.headerSpan}>tt</span>y
+            Plot<span style={styles.headerSpan}>ty</span>
           </div>
-        </div>
-        <div style={styles.headerNote}>
-          Import coordinates, routes, and logs. Inspect layers fast.
+          <div style={styles.kicker}>Map utility</div>
         </div>
       </header>
       <main style={styles.container}>
@@ -63,43 +60,37 @@ const styles: { [key: string]: React.CSSProperties } = {
     zIndex: 1500,
     display: "flex",
     alignItems: "center",
-    justifyContent: "space-between",
-    padding: "10px 14px",
-    borderRadius: "18px",
-    background: "rgba(255,255,255,0.82)",
+    justifyContent: "flex-start",
+    padding: "8px 14px",
+    minHeight: "52px",
+    borderRadius: "16px",
+    background: "rgba(255,255,255,0.78)",
     backdropFilter: "blur(14px)",
     border: "1px solid rgba(0,0,0,0.06)",
-    boxShadow: "0 8px 28px rgba(0,0,0,0.08)",
+    boxShadow: "0 8px 20px rgba(0,0,0,0.07)",
     color: `${tomtomBlackColor}`,
     fontFamily: "'Roboto', sans-serif",
   },
-  headerBlock: {
+  headerBrand: {
     display: "flex",
-    flexDirection: "column",
-    gap: "2px",
+    alignItems: "baseline",
+    gap: "10px",
   },
   kicker: {
-    fontSize: "0.62rem",
+    fontSize: "0.68rem",
     textTransform: "uppercase",
-    letterSpacing: "0.12em",
+    letterSpacing: "0.08em",
     color: "rgba(0,0,0,0.42)",
-    fontWeight: 700,
+    fontWeight: 600,
   },
   headerWordmark: {
-    fontSize: "1rem",
+    fontSize: "1.15rem",
     textTransform: "uppercase",
-    fontWeight: 700,
-    letterSpacing: "0.04em",
+    fontWeight: 800,
+    letterSpacing: "0.02em",
   },
   headerSpan: {
     color: `${tomtomSecondaryColor}`,
-  },
-  headerNote: {
-    fontSize: "0.75rem",
-    color: "rgba(0,0,0,0.56)",
-    textAlign: "right",
-    maxWidth: "260px",
-    lineHeight: 1.35,
   },
 };
 

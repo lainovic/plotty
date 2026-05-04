@@ -21,9 +21,8 @@ export function MapUtilityDock({ onTileProviderChanged }: MapUtilityDockProps) {
 
   return (
     <div style={styles.dock}>
-      <div style={styles.sectionBlock}>
+      <div style={styles.sectionHeader}>
         <div style={styles.sectionKicker}>Utilities</div>
-        <div style={styles.sectionText}>Move the map or measure distance.</div>
       </div>
       <div style={styles.toolsRow}>
         <ToolButton
@@ -40,9 +39,8 @@ export function MapUtilityDock({ onTileProviderChanged }: MapUtilityDockProps) {
         />
       </div>
       <div style={styles.divider} />
-      <div style={styles.sectionBlock}>
-        <div style={styles.sectionKicker}>Map tiles</div>
-        <div style={styles.sectionText}>Switch basemaps and add provider keys.</div>
+      <div style={styles.sectionHeader}>
+        <div style={styles.sectionKicker}>Basemap</div>
       </div>
       <TileProviderSelector
         onTileProviderChanged={onTileProviderChanged}
@@ -86,47 +84,46 @@ const styles: { [key: string]: React.CSSProperties } = {
     zIndex: Z_INDEX.TILE_PROVIDER,
     display: "flex",
     flexDirection: "column",
-    gap: "10px",
+    gap: "5px",
     background: "hsla(0, 0%, 100%, 0.9)",
-    borderRadius: "18px",
-    padding: "12px",
-    boxShadow: "0 10px 24px rgba(0, 0, 0, 0.12)",
+    borderRadius: "16px",
+    padding: "8px",
+    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)",
     border: "1px solid rgba(0,0,0,0.06)",
-    minWidth: "260px",
+    width: "min(320px, calc(100vw - 20px))",
     backdropFilter: "blur(14px)",
+    fontFamily: "'Roboto', sans-serif",
+    color: "rgba(0,0,0,0.76)",
   },
-  sectionBlock: {
+  sectionHeader: {
     display: "flex",
-    flexDirection: "column",
-    gap: "2px",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   sectionKicker: {
     fontSize: "0.62rem",
-    fontWeight: 800,
-    letterSpacing: "0.12em",
+    fontWeight: 700,
+    letterSpacing: "0.1em",
     textTransform: "uppercase",
     color: "rgba(0,0,0,0.42)",
-  },
-  sectionText: {
-    fontSize: "0.74rem",
-    color: "rgba(0,0,0,0.62)",
-    lineHeight: 1.35,
   },
   toolsRow: {
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
-    gap: "8px",
+    gap: "5px",
   },
   toolButton: {
     display: "flex",
     alignItems: "center",
-    gap: "10px",
+    gap: "8px",
     border: "1px solid rgba(0,0,0,0.08)",
     background: "rgba(255,255,255,0.78)",
-    borderRadius: "12px",
-    padding: "6px 10px 6px 6px",
+    borderRadius: "9px",
+    padding: "3px 7px 3px 3px",
     cursor: "pointer",
     textAlign: "left",
+    font: "inherit",
+    color: "inherit",
   },
   toolIcon: {
     pointerEvents: "none",
@@ -134,12 +131,12 @@ const styles: { [key: string]: React.CSSProperties } = {
   toolLabel: {
     fontSize: "0.78rem",
     fontWeight: 700,
-    letterSpacing: "0.04em",
-    textTransform: "uppercase",
+    letterSpacing: "0.01em",
     color: "rgba(0,0,0,0.72)",
   },
   divider: {
     height: "1px",
     background: "rgba(0,0,0,0.06)",
+    margin: "1px 0 2px",
   },
 };

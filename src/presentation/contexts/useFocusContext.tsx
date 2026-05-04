@@ -1,11 +1,5 @@
-import React, { createContext, useContext } from "react";
-
-interface FocusContextType {
-  focusedLayerId: string | null;
-  setFocusedLayerId: (id: string | null) => void;
-}
-
-const FocusContext = createContext<FocusContextType | null>(null);
+import { useContext } from "react";
+import { FocusContext } from "./FocusContext";
 
 export const useFocusContext = () => {
   const context = useContext(FocusContext);
@@ -14,13 +8,3 @@ export const useFocusContext = () => {
   }
   return context;
 };
-
-export const FocusProvider: React.FC<{
-  children: React.ReactNode;
-  focusedLayerId: string | null;
-  setFocusedLayerId: (id: string | null) => void;
-}> = ({ children, focusedLayerId, setFocusedLayerId }) => (
-  <FocusContext.Provider value={{ focusedLayerId, setFocusedLayerId }}>
-    {children}
-  </FocusContext.Provider>
-);

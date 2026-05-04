@@ -122,7 +122,7 @@ export function HelpPopup() {
       }}
     >
       <style>{cssStyles}</style>
-      <div style={fmtStyles.shortcutHint}>? · G · R · J K · H L</div>
+      <div style={fmtStyles.shortcutHint}>? · G · R · J/K · H/L</div>
       <PopupWithTrigger>
         <CssTransition
           enterClassName="open"
@@ -130,64 +130,20 @@ export function HelpPopup() {
           lastTransitionedPropertyOnExit="transform"
         >
           <PopupBody>
-            <h3 style={fmtStyles.header}>Adding layers</h3>
-            Drag and drop a file onto the map, or paste content anywhere on the
-            page. Supported formats:
+            <h3 style={fmtStyles.header}>Quick Start</h3>
             <div style={fmtStyles.help}>
-              <strong>GeoJSON</strong> — .geojson files or pasted GeoJSON.
-              Each feature becomes a separate layer, named from its{" "}
-              <code>properties.name</code> if present.
-              <br />
-              <strong>Route JSON</strong> — TomTom routing API response (v0.0.12).
-              <br />
-              <strong>Logcat</strong> — Android logcat with supported navigation tags.
-              <br />
-              <strong>TTP</strong> — TomTom Positioning v0.7 format.
-              <br />
-              <strong>Coordinates</strong> — raw lat/lng pairs, any separator.
+              Drop a file on the map, or focus the map and paste content.
+              Supported imports: GeoJSON, TomTom route JSON, TTP, supported
+              logcat navigation messages, and raw coordinates.
             </div>
-            <h3 style={fmtStyles.header}>Layer panel</h3>
-            The panel on the right is always visible. Hover a layer to reveal
-            actions: locate <AdsClickIcon style={{ fontSize: "1em", verticalAlign: "middle" }} />,
-            rename, and delete. Click the color dot to change a layer's color.
-            The checkbox toggles visibility. Click the layer name to fly to its
-            extent.
-            <br />
-            <h3 style={fmtStyles.header}>Points</h3>
-            Click a point to open its popup. Navigate between points with{" "}
-            <span style={fmtStyles.emphasize}>H</span> / <span style={fmtStyles.emphasize}>L</span>{" "}
-            or the arrow buttons in the popup.
-            <br />
-            Use <ContentCopyIcon style={{ fontSize: "1em", verticalAlign: "middle" }} /> to copy
-            coordinates, and <AdsClickIcon style={{ fontSize: "1em", verticalAlign: "middle" }} /> to
-            pan to a point without changing zoom. Log point popups also show a
-            locate button next to any coordinate-valued fields.
-            <br />
-            <h3 style={fmtStyles.header}>Go to a location</h3>
-            Press <span style={fmtStyles.emphasize}>G</span> to toggle the Go To
-            dialog. Paste a coordinate pair into the latitude field — longitude
-            fills in automatically. Press{" "}
-            <span style={fmtStyles.emphasize}>Enter</span> to navigate.
-            <br />
-            Right-click anywhere on the map to copy those coordinates to the
-            clipboard.
-            <br />
-            <h3 style={fmtStyles.header}>Tiles</h3>
-            OpenStreetMap is the default — no API key required. Switch providers
-            with <span style={fmtStyles.emphasize}>J</span> /{" "}
-            <span style={fmtStyles.emphasize}>K</span> or the selector in the
-            lower-left corner. TomTom options require an API key.
-            <br />
-            <h3 style={fmtStyles.header}>Ruler</h3>
-            Press <span style={fmtStyles.emphasize}>R</span> to toggle ruler
-            mode. Click the map to add measurement points; drag to reposition
-            them. The distance is shown in the panel and copied to the
-            clipboard. Close with the × button or press{" "}
-            <span style={fmtStyles.emphasize}>R</span> again.
-            <br />
+            <h3 style={fmtStyles.header}>Operator Notes</h3>
+            <div style={fmtStyles.compactList}>
+              <div>Use the layer panel to jump, rename, recolor, reorder, hide, or delete results.</div>
+              <div>Use <ContentCopyIcon style={{ fontSize: "1em", verticalAlign: "middle" }} /> to copy coordinates and <AdsClickIcon style={{ fontSize: "1em", verticalAlign: "middle" }} /> to pan to a point.</div>
+              <div>Use the lower-left tool dock for <span style={fmtStyles.emphasize}>Go To</span>, <span style={fmtStyles.emphasize}>Ruler</span>, and map tiles.</div>
+            </div>
             <div style={fmtStyles.help}>
-              Press <span style={fmtStyles.emphasize}>?</span> to toggle this
-              panel. Keyboard shortcuts are shown above the ? button.
+              Shortcuts: <span style={fmtStyles.emphasize}>?</span> help, <span style={fmtStyles.emphasize}>G</span> Go To, <span style={fmtStyles.emphasize}>R</span> ruler, <span style={fmtStyles.emphasize}>J/K</span> tiles, <span style={fmtStyles.emphasize}>H/L</span> point navigation.
             </div>
           </PopupBody>
         </CssTransition>
@@ -240,10 +196,17 @@ const fmtStyles: { [key: string]: React.CSSProperties } = {
     color: tomtomSecondaryColor,
   },
   help: {
-    color: "gray",
+    color: "rgba(0,0,0,0.6)",
     borderLeft: `1px solid ${tomtomSecondaryColor}`,
     paddingLeft: "8px",
     margin: "8px 0",
+  },
+  compactList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    color: "rgba(0,0,0,0.72)",
+    lineHeight: 1.45,
   },
   header: {
     fontSize: "1.0rem",

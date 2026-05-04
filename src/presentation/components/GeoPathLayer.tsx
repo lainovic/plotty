@@ -1,5 +1,6 @@
 import React from "react";
 import { LayerGroup, Polyline, Polygon, Popup } from "react-leaflet";
+import { LeafletMouseEvent } from "leaflet";
 import { usePointFocus } from "../hooks/usePointFocus";
 import { Point } from "./points/Point";
 import { GeoPathPopup } from "./points/GeoPathPopup";
@@ -27,7 +28,7 @@ export const GeoPathLayer: React.FC<PathComponentProps<GeoPath>> = React.memo(({
   const hasProps = !!layer.path.properties;
 
   const onGeomClick = hasProps
-    ? (e: any) => setPopupPos([e.latlng.lat, e.latlng.lng])
+    ? (e: LeafletMouseEvent) => setPopupPos([e.latlng.lat, e.latlng.lng])
     : undefined;
 
   return (

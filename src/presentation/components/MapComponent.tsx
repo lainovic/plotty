@@ -1,10 +1,10 @@
 import React from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { TileProviderSelector } from "./overlays/TileProviderSelector";
 import { openStreetMapTileProvider } from "../providers/const";
 import { MapLayers } from "./MapLayers";
 import { onlyInDevelopment, useRenderTime } from "../hooks/useRenderTime";
+import { MapUtilityDock } from "./overlays/MapUtilityDock";
 
 function MapPlaceholder() {
   return (
@@ -43,7 +43,7 @@ export const MapComponent = () => {
           />
           <MapLayers />
         </MapContainer>
-        <TileProviderSelector
+        <MapUtilityDock
           onTileProviderChanged={(p) => {
             setTileConfig({
               url: p.getUrl(),

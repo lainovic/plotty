@@ -18,7 +18,7 @@ export default class GeoPointsParser implements Parser<GeoPath> {
       while ((match = regex.exec(text))) {
         const latitude = parseFloat(match[1]);
         const longitude = parseFloat(match[2]);
-        if (latitude && longitude) {
+        if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
           points.push(new Coordinates(latitude, longitude));
         }
       }

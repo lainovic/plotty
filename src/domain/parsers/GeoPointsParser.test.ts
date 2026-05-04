@@ -37,6 +37,16 @@ describe("GeoPointsParser", () => {
     }
   });
 
+  it("accepts zero values in coordinates", () => {
+    const result = parser.parse("0, 0\n0, 4.88969\n52.37403, 0");
+    expect(Maybe.isSuccess(result)).toBe(true);
+    if (Maybe.isSuccess(result)) {
+      expect(result.value.paths[0].points).toHaveLength(3);
+      expect(result.value.paths[0].points[0].latitude).toBe(0);
+      expect(result.value.paths[0].points[0].longitude).toBe(0);
+    }
+  });
+
   it("returns failure on garbage input", () => {
     const result = parser.parse("hello world, no coordinates here");
     expect(Maybe.isFailure(result)).toBe(true);

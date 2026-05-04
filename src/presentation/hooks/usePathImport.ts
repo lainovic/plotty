@@ -1,17 +1,34 @@
 import React from "react";
-import { Path } from "../../domain/entities/Path";
+import { AnyPath } from "../../domain/entities/Path";
 import { ParseService } from "../../domain/services/ParseService";
 import { toast } from "react-toastify";
 
 const parseService = new ParseService();
+const INTERACTIVE_SELECTOR = [
+  "input",
+  "textarea",
+  "button",
+  "select",
+  "option",
+  "[contenteditable='true']",
+  "[contenteditable='']",
+  "[role='textbox']",
+].join(", ");
 
-type UsePathImportProps<T extends Path<any>> = {
-  onPathsImported: (paths: T[]) => void;
+type UsePathImportProps = {
+  target: HTMLElement | null;
+  onPathsImported: (paths: AnyPath[]) => void;
 };
 
-export function usePathImport<T extends Path<any>>({
+function isInteractiveTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  return target.isContentEditable || target.closest(INTERACTIVE_SELECTOR) !== null;
+}
+
+export function usePathImport({
+  target,
   onPathsImported,
-}: UsePathImportProps<T>) {
+}: UsePathImportProps) {
   const [importing, setImporting] = React.useState(false);
 
   const parseNonBlocking = async (content: string) => {
@@ -20,7 +37,7 @@ export function usePathImport<T extends Path<any>>({
       // Ensure the importing state is rendered before heavy processing.
       await new Promise((resolve) => setTimeout(resolve, 50));
 
-      const result = parseService.parse<T>(content);
+      const result = parseService.parse(content);
       toast.success(result.message);
       if (result.paths.length > 0) {
         onPathsImported(result.paths);
@@ -33,11 +50,17 @@ export function usePathImport<T extends Path<any>>({
   };
 
   React.useEffect(() => {
+    if (!target) return;
+    const previousTabIndex = target.getAttribute("tabindex");
+
+    const focusTarget = (event: MouseEvent) => {
+      if (event.target === target) {
+        target.focus();
+      }
+    };
+
     const handlePaste = async (event: ClipboardEvent) => {
-      if (
-        event.target instanceof HTMLInputElement ||
-        event.target instanceof HTMLTextAreaElement
-      ) {
+      if (isInteractiveTarget(event.target)) {
         return;
       }
       event.preventDefault();
@@ -45,12 +68,10 @@ export function usePathImport<T extends Path<any>>({
     };
 
     const handleDrop = async (event: DragEvent) => {
-      if (
-        event.target instanceof HTMLInputElement ||
-        event.target instanceof HTMLTextAreaElement
-      ) {
+      if (isInteractiveTarget(event.target)) {
         return;
       }
+      if (!event.dataTransfer?.files.length) return;
       event.preventDefault();
       const file = event.dataTransfer?.files[0];
       if (file) {
@@ -63,18 +84,31 @@ export function usePathImport<T extends Path<any>>({
       }
     };
 
-    const preventDefault = (event: Event) => event.preventDefault();
+    const preventDefault = (event: DragEvent) => {
+      if (isInteractiveTarget(event.target)) return;
+      if (event.dataTransfer?.types.includes("Files")) {
+        event.preventDefault();
+      }
+    };
 
-    document.body.addEventListener("paste", handlePaste);
-    document.body.addEventListener("drop", handleDrop);
-    document.body.addEventListener("dragover", preventDefault);
+    if (previousTabIndex === null) {
+      target.tabIndex = 0;
+    }
+    target.addEventListener("paste", handlePaste);
+    target.addEventListener("drop", handleDrop);
+    target.addEventListener("dragover", preventDefault);
+    target.addEventListener("click", focusTarget);
 
     return () => {
-      document.body.removeEventListener("paste", handlePaste);
-      document.body.removeEventListener("drop", handleDrop);
-      document.body.removeEventListener("dragover", preventDefault);
+      target.removeEventListener("paste", handlePaste);
+      target.removeEventListener("drop", handleDrop);
+      target.removeEventListener("dragover", preventDefault);
+      target.removeEventListener("click", focusTarget);
+      if (previousTabIndex === null) {
+        target.removeAttribute("tabindex");
+      }
     };
-  }, [onPathsImported]);
+  }, [onPathsImported, target]);
 
   return { importing };
 }

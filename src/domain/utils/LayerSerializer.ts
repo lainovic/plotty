@@ -3,7 +3,7 @@ import { GeoPath, GeoRenderHint } from "../entities/GeoPath";
 import { LogPath } from "../entities/LogPath";
 import { TtpPath } from "../entities/TtpPath";
 import { Route } from "../entities/Route";
-import { Path } from "../entities/Path";
+import { AnyPath } from "../entities/Path";
 import { Color } from "../value-objects/Color";
 import { Coordinates } from "../value-objects/Coordinates";
 import { TtpPoint, TtpPointType } from "../value-objects/TtpPoint";
@@ -64,7 +64,14 @@ type SerializedLayer = {
   path: SerializedPath;
 };
 
-function serializePath(path: Path<any>): SerializedPath {
+function assertGeoPath(path: AnyPath): GeoPath {
+  if (path instanceof GeoPath) {
+    return path;
+  }
+  throw new Error(`Unsupported path type for serialization: ${path.constructor.name}`);
+}
+
+function serializePath(path: AnyPath): SerializedPath {
   if (path instanceof Route) {
     return { type: "route", source: path.source };
   }
@@ -97,18 +104,19 @@ function serializePath(path: Path<any>): SerializedPath {
       })),
     };
   }
+  const geoPath = assertGeoPath(path);
   return {
     type: "geo",
-    points: path.points.map((p) => ({
+    points: geoPath.points.map((p) => ({
       latitude: p.latitude,
       longitude: p.longitude,
     })),
-    renderHint: (path as GeoPath).renderHint,
-    properties: (path as GeoPath).properties,
+    renderHint: geoPath.renderHint,
+    properties: geoPath.properties,
   };
 }
 
-function deserializePath(serialized: SerializedPath): Path<any> {
+function deserializePath(serialized: SerializedPath): AnyPath {
   switch (serialized.type) {
     case "route":
       return new Route(serialized.source);
@@ -153,7 +161,7 @@ function deserializePath(serialized: SerializedPath): Path<any> {
   }
 }
 
-export function serializeLayers(layers: Layer<any>[]): string {
+export function serializeLayers(layers: Layer<AnyPath>[]): string {
   const serialized: SerializedLayer[] = layers.map((layer) => ({
     id: layer.id,
     name: layer.name,
@@ -164,7 +172,7 @@ export function serializeLayers(layers: Layer<any>[]): string {
   return JSON.stringify(serialized);
 }
 
-export function deserializeLayers(json: string): Layer<any>[] {
+export function deserializeLayers(json: string): Layer<AnyPath>[] {
   const serialized: SerializedLayer[] = JSON.parse(json);
   return serialized.map((s) => {
     const path = deserializePath(s.path);

@@ -3,7 +3,6 @@ import { ExtraMap } from "../../value-objects/LogPoint";
 import {
   LogcatTagMatcher,
   SupportedTag,
-  supportedTags,
 } from "./LogcatTagMatcher";
 
 export type LogcatMessage = {
@@ -73,40 +72,6 @@ class RoutePlannerParser implements MessageParser {
     }
     return null;
   }
-}
-
-export type ParsePattern = {
-  name: string;
-  regex: RegExp;
-};
-
-class PatternParser implements LogcatMessageParser {
-  constructor(private readonly patterns: ParsePattern[]) {}
-
-  parse(message: string): LogcatMessage | null {
-    const extra = new Map();
-    for (const { name, regex } of this.patterns) {
-      const match = message.match(regex);
-      if (match) extra.set(name, highlightCaptureGroups(match));
-    }
-    if (extra.size > 0) {
-      return { latitude: 0, longitude: 0, extra };
-    }
-    return null;
-  }
-}
-
-function highlightCaptureGroups(match: RegExpMatchArray): string {
-  if (!match || match.length === 0) return "";
-
-  let result = match[0];
-  for (let i = 1; i < match.length; i++) {
-    const group = match[i];
-    if (group) {
-      result = result.replace(group, `\x1b[31m${group}\x1b[0m`);
-    }
-  }
-  return result;
 }
 
 const tagToParser: Record<SupportedTag, new () => MessageParser> = {

@@ -39,6 +39,18 @@ describe("TtpParser", () => {
     }
   });
 
+  it("stores numeric speed values", () => {
+    const text = validTtp([
+      ttpPoint(1000000, TtpPointType.Incoming, 52.37403, 4.88969),
+    ]);
+    const result = parser.parse(text);
+    expect(Maybe.isSuccess(result)).toBe(true);
+    if (Maybe.isSuccess(result)) {
+      expect(typeof result.value.paths[0].points[0].speed).toBe("number");
+      expect(result.value.paths[0].points[0].speed).toBeCloseTo(30.5);
+    }
+  });
+
   it("skips duplicate timestamps", () => {
     const text = validTtp([
       ttpPoint(1000000, TtpPointType.Incoming, 52.37403, 4.88969),

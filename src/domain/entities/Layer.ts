@@ -1,8 +1,8 @@
 import { Color } from "../value-objects/Color";
-import { Path } from "./Path";
+import { AnyPath } from "./Path";
 import { v4 as uuid } from "uuid";
 
-export interface Layer<T extends Path<any>> {
+export interface Layer<T extends AnyPath> {
   readonly id: string;
   name: string;
   color: Color;
@@ -10,7 +10,7 @@ export interface Layer<T extends Path<any>> {
   path: T;
 }
 
-export function createLayer<T extends Path<any>>(
+export function createLayer<T extends AnyPath>(
   name: string,
   color: Color,
   path: T

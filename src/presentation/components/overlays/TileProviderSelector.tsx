@@ -32,10 +32,12 @@ const tileProviderMap: Map<TileVendors, TileProvider> = new Map([
 
 interface TileProviderSelectorProps {
   onTileProviderChanged: (tileProvider: TileProvider) => void;
+  embedded?: boolean;
 }
 
 export const TileProviderSelector: React.FC<TileProviderSelectorProps> = ({
   onTileProviderChanged,
+  embedded = false,
 }) => {
   const [selectedVendor, setSelectedVendor] = React.useState<TileVendors>(TileVendors.OpenStreetMap);
 
@@ -61,7 +63,8 @@ export const TileProviderSelector: React.FC<TileProviderSelectorProps> = ({
   const selectedProvider = tileProviderMap.get(selectedVendor);
 
   return (
-    <div style={styles.container}>
+    <div style={embedded ? styles.embeddedContainer : styles.container}>
+      {embedded && <div style={styles.embeddedLabel}>Provider</div>}
       <Select
         value={selectedVendor}
         onChange={(e: SelectChangeEvent<TileVendors>) =>
@@ -110,5 +113,21 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: "12px",
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
     zIndex: Z_INDEX.TILE_PROVIDER,
+  },
+  embeddedContainer: {
+    display: "flex",
+    flexDirection: "row",
+    gap: "10px",
+    alignItems: "center",
+    justifyContent: "start",
+    minHeight: "50px",
+    flexWrap: "wrap",
+  },
+  embeddedLabel: {
+    fontSize: "0.72rem",
+    color: "rgba(0,0,0,0.52)",
+    fontWeight: 700,
+    letterSpacing: "0.04em",
+    textTransform: "uppercase",
   },
 };

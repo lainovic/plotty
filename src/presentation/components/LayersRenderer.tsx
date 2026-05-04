@@ -1,5 +1,5 @@
 import React from "react";
-import { Path } from "../../domain/entities/Path";
+import { AnyPath } from "../../domain/entities/Path";
 import { GeoPath } from "../../domain/entities/GeoPath";
 import { LogPath } from "../../domain/entities/LogPath";
 import { TtpPath } from "../../domain/entities/TtpPath";
@@ -14,7 +14,7 @@ import { LogPathLayer } from "./LogPathLayer";
 import { TtpPathLayer } from "./TtpPathLayer";
 import { RouteLayer } from "./RouteLayer";
 
-function createLayersComponent<T extends Path<any>>(
+function createLayersComponent<T extends AnyPath>(
   LayerComponent: React.ComponentType<PathComponentProps<T>>
 ): React.FC<PathComponentsProps<T>> {
   return React.memo(

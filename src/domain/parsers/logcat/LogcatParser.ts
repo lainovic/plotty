@@ -35,8 +35,9 @@ export class LogcatParser implements Parser<LogPath> {
         paths: [new LogPath(points)],
         message: "Parsed Logcat successfully.",
       });
-    } catch (error: any) {
-      return Maybe.failure(`Error parsing as logcat: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return Maybe.failure(`Error parsing as logcat: ${message}`);
     }
   }
 }

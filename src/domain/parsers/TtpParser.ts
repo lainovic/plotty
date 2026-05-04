@@ -39,21 +39,22 @@ export default class TtpParser implements Parser<TtpPath> {
         paths: [new TtpPath(points)],
         message,
       });
-    } catch (error: any) {
-      return Maybe.failure(`Error parsing as TTP: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return Maybe.failure(`Error parsing as TTP: ${message}`);
     }
   }
 
   private parsePoints(lines: string[], type: TtpPointType): TtpPoint[] {
     const points: TtpPoint[] = [];
-    let seenTimestaps = new Set<number>();
+    const seenTimestamps = new Set<number>();
     lines.forEach((line) => {
       if (line.startsWith("#")) {
         return; // skip comments
       }
       const parts = line.split(",");
       const reception_timestamp = parseFloat(parts[0]);
-      if (reception_timestamp === 0 || seenTimestaps.has(reception_timestamp)) {
+      if (reception_timestamp === 0 || seenTimestamps.has(reception_timestamp)) {
         return;
       }
       if (parts[1] !== type) {
@@ -64,7 +65,7 @@ export default class TtpParser implements Parser<TtpPath> {
       const heading = parts[9];
       const speed = parts[11];
       if (!lon || !lat || !speed || !heading) {
-        seenTimestaps.add(reception_timestamp);
+        seenTimestamps.add(reception_timestamp);
         return;
       }
 
@@ -73,12 +74,12 @@ export default class TtpParser implements Parser<TtpPath> {
           type,
           parseFloat(lat),
           parseFloat(lon),
-          parseFloat(speed).toFixed(2) as any as number,
+          Number.parseFloat(Number.parseFloat(speed).toFixed(2)),
           reception_timestamp,
           parseFloat(heading)
         );
         points.push(point);
-        seenTimestaps.add(reception_timestamp);
+        seenTimestamps.add(reception_timestamp);
       } catch {
         // skip malformed points
       }

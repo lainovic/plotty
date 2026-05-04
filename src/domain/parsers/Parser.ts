@@ -1,7 +1,7 @@
 import { Maybe } from "../../shared/Maybe";
-import { Path } from "../entities/Path";
+import { AnyPath } from "../entities/Path";
 
-export interface ParseResult<T extends Path<any>> {
+export interface ParseResult<T extends AnyPath> {
   paths: T[];
   message: string;
 }
@@ -11,8 +11,8 @@ export interface ParseResult<T extends Path<any>> {
  *
  * @template T - The type of the parsed result.
  */
-export type MaybeParsed<T extends Path<any>> = Maybe<string, ParseResult<T>>;
+export type MaybeParsed<T extends AnyPath> = Maybe<string, ParseResult<T>>;
 
-export interface Parser<T extends Path<any>> {
+export interface Parser<T extends AnyPath> {
   parse(input: string): MaybeParsed<T>;
 }

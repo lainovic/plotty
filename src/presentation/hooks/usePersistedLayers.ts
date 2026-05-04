@@ -1,11 +1,11 @@
 import React from "react";
 import { Layer } from "../../domain/entities/Layer";
-import { Path } from "../../domain/entities/Path";
+import { AnyPath } from "../../domain/entities/Path";
 import { serializeLayers, deserializeLayers } from "../../domain/utils/LayerSerializer";
 
 const STORAGE_KEY = "plotty_layers";
 
-function loadFromStorage(): Layer<any>[] {
+function loadFromStorage(): Layer<AnyPath>[] {
   try {
     const json = localStorage.getItem(STORAGE_KEY);
     if (!json) return [];
@@ -16,8 +16,8 @@ function loadFromStorage(): Layer<any>[] {
   }
 }
 
-export function usePersistedLayers<T extends Path<any>>() {
-  const [layers, setLayers] = React.useState<Layer<T>[]>(() => loadFromStorage());
+export function usePersistedLayers() {
+  const [layers, setLayers] = React.useState<Layer<AnyPath>[]>(() => loadFromStorage());
 
   React.useEffect(() => {
     try {

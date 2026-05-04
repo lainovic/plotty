@@ -1,16 +1,18 @@
 import { Layer } from "../entities/Layer";
-import { Path } from "../entities/Path";
+import { AnyPath } from "../entities/Path";
 
-export function filterLayers<T extends Path<any>>(
-  layers: Layer<any>[],
-  type: new (...args: any[]) => T
+type PathConstructor<T extends AnyPath> = abstract new (...args: unknown[]) => T;
+
+export function filterLayers<T extends AnyPath>(
+  layers: Layer<AnyPath>[],
+  type: PathConstructor<T>
 ): Layer<T>[] {
   return layers.filter(
     (layer): layer is Layer<T> => layer.path instanceof type
   );
 }
 
-export function areLayersEqual<T extends Path<any>>(
+export function areLayersEqual<T extends AnyPath>(
   prevLayers: Layer<T>[],
   nextLayers: Layer<T>[]
 ): boolean {

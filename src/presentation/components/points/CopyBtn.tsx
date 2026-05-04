@@ -1,6 +1,6 @@
 import React from "react";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { toast } from "react-toastify";
+import { copyToClipboard } from "../../utils/clipboard";
 
 export function CopyBtn({ value, label }: { value: string; label: string }) {
   const [hovered, setHovered] = React.useState(false);
@@ -11,8 +11,7 @@ export function CopyBtn({ value, label }: { value: string; label: string }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={() => {
-        navigator.clipboard.writeText(value);
-        toast.success("Copied to clipboard");
+        void copyToClipboard(value, "Copied to clipboard");
       }}
     >
       <ContentCopyIcon style={{ fontSize: "11px" }} />

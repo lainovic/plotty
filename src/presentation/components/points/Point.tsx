@@ -3,9 +3,9 @@ import { CircleMarker, Popup, useMap } from "react-leaflet";
 import { CoordContent } from "./CoordContent";
 import PointPopup from "./PointPopup";
 import L from "leaflet";
-import { toast } from "react-toastify";
 import { tomtomPrimaryColor } from "../../../shared/colors";
 import { Coordinates } from "../../../domain/value-objects/Coordinates";
+import { copyToClipboard } from "../../utils/clipboard";
 
 interface PointProps {
   point: Coordinates;
@@ -46,10 +46,11 @@ export const Point: React.FC<PointProps> = React.memo(({
   onReady = () => {},
   onClick = () => {},
   onCopy = () => {
-    navigator.clipboard.writeText(
-      `${point.latitude.toFixed(5)}, ${point.longitude.toFixed(5)}`
+    void copyToClipboard(
+      `${point.latitude.toFixed(5)}, ${point.longitude.toFixed(5)}`,
+      "Coordinates copied to clipboard",
+      "Failed to copy coordinates"
     );
-    toast.success("Coordiates copied to clipboard");
   },
   onLeft = () => {},
   onRight = () => {},

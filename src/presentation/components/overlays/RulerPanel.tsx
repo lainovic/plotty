@@ -4,6 +4,8 @@ import Ruler from "./Ruler";
 import { tomtomBlackColor } from "../../../shared/colors";
 import { Z_INDEX } from "../../constants/zIndex";
 import { isTypingInInput } from "../../utils/keyboardUtils";
+import { copyToClipboard } from "../../utils/clipboard";
+import { TOGGLE_RULER_EVENT } from "./MapUtilityDock";
 
 export const RulerPanel: React.FC = () => {
   const [distance, setDistance] = React.useState<number>(-1);
@@ -20,9 +22,14 @@ export const RulerPanel: React.FC = () => {
     };
 
     window.addEventListener("keydown", handleKeyDown);
-
+    const handleToggleEvent = () => {
+      setRulerMode((prev) => !prev);
+      setDistance(-1);
+    };
+    window.addEventListener(TOGGLE_RULER_EVENT, handleToggleEvent);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener(TOGGLE_RULER_EVENT, handleToggleEvent);
     };
   }, []);
 
@@ -56,7 +63,12 @@ export const RulerPanel: React.FC = () => {
           onDistanceChange={(distance, shouldCopy) => {
             setDistance(distance);
             if (shouldCopy && distance !== -1)
-              navigator.clipboard.writeText(distance.toFixed(2));
+              void copyToClipboard(
+                distance.toFixed(2),
+                "Distance copied to clipboard",
+                "Failed to copy distance",
+                { notifyOnSuccess: false }
+              );
           }}
         />
       </>

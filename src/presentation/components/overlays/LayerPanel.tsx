@@ -1,6 +1,6 @@
 import React from "react";
 import { tomtomSecondaryColor } from "../../../shared/colors";
-import { Path } from "../../../domain/entities/Path";
+import { AnyPath } from "../../../domain/entities/Path";
 import { Layer } from "../../../domain/entities/Layer";
 import L from "leaflet";
 import "./LayerPanel.css";
@@ -10,7 +10,7 @@ import { IconButton } from "@mui/material";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 
-interface LayerPanelProps<T extends Path<any>> {
+interface LayerPanelProps<T extends AnyPath> {
   style?: React.CSSProperties;
   layers: Layer<T>[];
   onLayerClicked: (layer: Layer<T>) => void;
@@ -22,7 +22,7 @@ interface LayerPanelProps<T extends Path<any>> {
   onReorder: (fromIndex: number, toIndex: number) => void;
 }
 
-export const LayerPanel = <T extends Path<any>>({
+export const LayerPanel = <T extends AnyPath>({
   style,
   layers,
   onLayerClicked,
@@ -62,13 +62,22 @@ export const LayerPanel = <T extends Path<any>>({
         <div style={style}>
           <div style={styles.emptyState}>
             <FileUploadOutlinedIcon style={styles.emptyIcon} />
-            <p style={styles.emptyText}>Drop a file or paste JSON to add a layer</p>
+            <div style={styles.emptyBadge}>Step 1</div>
+            <p style={styles.emptyTitle}>Import something to start exploring.</p>
+            <div style={styles.emptySteps}>
+              <div>Drop a file directly on the map.</div>
+              <div>Or focus the map and paste coordinates, GeoJSON, route JSON, TTP, or logcat.</div>
+              <div>Your imported results will appear here as layers.</div>
+            </div>
           </div>
         </div>
       ) : (
         <div style={style}>
           <div style={styles.header}>
-            <h3 style={styles.title}>Layers</h3>
+            <div>
+              <h3 style={styles.title}>Layers</h3>
+              <p style={styles.subtitle}>Inspect, organize, and jump between imported data.</p>
+            </div>
             <IconButton
               aria-label="clear all layers"
               size="small"
@@ -119,6 +128,8 @@ export const LayerPanel = <T extends Path<any>>({
                   onClicked={onLayerClicked.bind(null, layer)}
                   onDelete={() => onDelete(layer)}
                   onColorChange={(hex) => onColorChange(layer, hex)}
+                  onMoveUp={i > 0 ? () => onReorder(i, i - 1) : undefined}
+                  onMoveDown={i < layers.length - 1 ? () => onReorder(i, i + 1) : undefined}
                   showColorPicker={!(layer.path instanceof LogPath)}
                 />
               </div>
@@ -146,6 +157,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontWeight: 600,
     margin: 0,
   },
+  subtitle: {
+    margin: "2px 0 0",
+    fontSize: "0.7rem",
+    color: "rgba(0,0,0,0.45)",
+    lineHeight: 1.35,
+    maxWidth: "150px",
+  },
   emptyState: {
     display: "flex",
     flexDirection: "column",
@@ -164,7 +182,31 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "0.78rem",
     color: "rgba(0,0,0,0.4)",
     lineHeight: 1.4,
-    maxWidth: "160px",
+    maxWidth: "170px",
+  },
+  emptyBadge: {
+    fontSize: "0.64rem",
+    fontWeight: 800,
+    letterSpacing: "0.12em",
+    textTransform: "uppercase",
+    color: `${tomtomSecondaryColor}`,
+  },
+  emptyTitle: {
+    margin: 0,
+    fontSize: "0.88rem",
+    fontWeight: 700,
+    color: "rgba(0,0,0,0.72)",
+    maxWidth: "180px",
+    lineHeight: 1.35,
+  },
+  emptySteps: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    fontSize: "0.76rem",
+    color: "rgba(0,0,0,0.48)",
+    lineHeight: 1.45,
+    maxWidth: "184px",
   },
   layerList: {
     display: "flex",

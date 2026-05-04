@@ -1,12 +1,11 @@
 import React from "react";
 import { useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { toast } from "react-toastify";
 import { LayerPanel } from "./overlays/LayerPanel";
 import { GotoDialog } from "./overlays/GotoDialog";
 import { filterLayers } from "../../domain/utils/utils";
 import { Layer, createLayer } from "../../domain/entities/Layer";
-import { FocusProvider } from "../contexts/useFocusContext";
+import { FocusProvider } from "../contexts/FocusContext";
 import { GeoPath } from "../../domain/entities/GeoPath";
 import { TtpPath } from "../../domain/entities/TtpPath";
 import { Route } from "../../domain/entities/Route";
@@ -14,7 +13,7 @@ import { LogPath } from "../../domain/entities/LogPath";
 import { useMapUtils } from "../hooks/useMapUtils";
 import { RulerPanel } from "./overlays/RulerPanel";
 import { usePathImport } from "../hooks/usePathImport";
-import { Path } from "../../domain/entities/Path";
+import { AnyPath } from "../../domain/entities/Path";
 import { Color } from "../../domain/value-objects/Color";
 import { useColors } from "../hooks/useLayerColors";
 import { usePersistedLayers } from "../hooks/usePersistedLayers";
@@ -22,6 +21,7 @@ import { onlyInDevelopment, useRenderTime } from "../hooks/useRenderTime";
 import { Z_INDEX } from "../constants/zIndex";
 import { Coordinates } from "../../domain/value-objects/Coordinates";
 import { GeoPathLayers, LogPathLayers, TtpPathLayers, RouteLayers } from "./LayersRenderer";
+import { copyToClipboard } from "../utils/clipboard";
 
 export const MapLayers = () => {
   useRenderTime("MapLayers", onlyInDevelopment);
@@ -32,7 +32,8 @@ export const MapLayers = () => {
   const { getNextColor } = useColors();
 
   const { importing } = usePathImport({
-    onPathsImported: (paths: Path<any>[]) => {
+    target: map.getContainer(),
+    onPathsImported: (paths: AnyPath[]) => {
       const newLayers = paths.map((path) =>
         createLayer(path.getName(), Color.fromHex(getNextColor()), path)
       );
@@ -49,8 +50,11 @@ export const MapLayers = () => {
     const handleRightClick = (e: L.LeafletMouseEvent) => {
       const latlng = map.mouseEventToLatLng(e.originalEvent);
       const coordinates = `${latlng.lat.toFixed(5)}, ${latlng.lng.toFixed(5)}`;
-      navigator.clipboard.writeText(coordinates);
-      toast.success("Coordinates copied to clipboard.");
+      void copyToClipboard(
+        coordinates,
+        "Coordinates copied to clipboard.",
+        "Failed to copy coordinates."
+      );
     };
 
     map.on("contextmenu", handleRightClick);
@@ -105,7 +109,7 @@ export const MapLayers = () => {
       <LayerPanel
         style={styles.layerPanel}
         layers={layers}
-        onLayerClicked={(layer: Layer<any>) =>
+        onLayerClicked={(layer: Layer<AnyPath>) =>
           flyToBoundingBox([...layer.path.points])
         }
         onVisibilityChange={(layer) => toggleVisibility(layer.id)}

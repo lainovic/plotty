@@ -1,8 +1,14 @@
 import { Maybe } from "../../shared/Maybe";
 import { Route } from "../entities/Route";
 import { MaybeParsed, Parser } from "./Parser";
+import { RouteSource } from "../value-objects/RoutingModel";
 
 const supportedVersion = "0.0.12";
+
+type RouteResponse = {
+  formatVersion?: string;
+  routes?: RouteSource[];
+};
 
 /**
  * Parses a JSON string containing route data and returns the parsed routes.
@@ -26,7 +32,7 @@ const supportedVersion = "0.0.12";
 export default class RouteParser implements Parser<Route> {
   parse(text: string): MaybeParsed<Route> {
     try {
-      const json = JSON.parse(text);
+      const json = JSON.parse(text) as RouteResponse | null;
       if (!json) return Maybe.failure("Empty JSON");
 
       const { formatVersion, routes } = json;
@@ -48,8 +54,9 @@ export default class RouteParser implements Parser<Route> {
           message: "No routes found in the given JSON.",
         });
       }
-    } catch (error: any) {
-      return Maybe.failure(`Error parsing as JSON: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return Maybe.failure(`Error parsing as JSON: ${message}`);
     }
   }
 }

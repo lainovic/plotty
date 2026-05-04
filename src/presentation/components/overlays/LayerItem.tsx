@@ -3,12 +3,14 @@ import { Checkbox, IconButton } from "@mui/material";
 import "./LayerPanel.css";
 
 import { tomtomSecondaryColor } from "../../../shared/colors";
-import AdsClickIcon from "@mui/icons-material/AdsClick";
 import AndroidIcon from "@mui/icons-material/Android";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import EditLocationAltIcon from "@mui/icons-material/EditLocationAlt";
 
 interface LayerItemProps {
   name: string;
@@ -20,6 +22,8 @@ interface LayerItemProps {
   onColorChange: (hex: string) => void;
   onClicked: (e?: React.MouseEvent) => void;
   onDelete: () => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
   showColorPicker?: boolean;
 }
 
@@ -33,10 +37,11 @@ const LayerItem: React.FC<LayerItemProps> = ({
   onColorChange,
   onClicked,
   onDelete,
+  onMoveUp,
+  onMoveDown,
   showColorPicker = true,
 }) => {
   const [editing, setEditing] = React.useState(false);
-  const [hovered, setHovered] = React.useState(false);
   const [draft, setDraft] = React.useState(name);
   const [localColor, setLocalColor] = React.useState(color);
   const colorDebounce = React.useRef<ReturnType<typeof setTimeout>>();
@@ -65,12 +70,8 @@ const LayerItem: React.FC<LayerItemProps> = ({
   };
 
   return (
-    <div
-      style={styles.layerItem}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <DragIndicatorIcon style={{ ...styles.dragHandle, opacity: hovered ? 0.35 : 0.12 }} />
+    <div style={styles.layerItem}>
+      <DragIndicatorIcon style={styles.dragHandle} />
       <Checkbox
         sx={{
           color: `${tomtomSecondaryColor}`,
@@ -97,46 +98,60 @@ const LayerItem: React.FC<LayerItemProps> = ({
         <AndroidIcon style={styles.androidIcon} aria-hidden="true" />
       )}
       <div style={styles.nameColumn}>
-        {editing ? (
-          <input
-            ref={inputRef}
-            className="layer-name-input"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onBlur={commitEdit}
-            style={styles.nameInput}
-            aria-label="Layer name"
-          />
-        ) : (
-          <>
+        <div style={styles.rowTop}>
+          {editing ? (
+            <input
+              ref={inputRef}
+              className="layer-name-input"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onBlur={commitEdit}
+              style={styles.nameInput}
+              aria-label="Layer name"
+            />
+          ) : (
             <button className="layer-name" style={styles.layerName} title="Fly to layer" onClick={onClicked}>
               {name}
             </button>
-            <span style={styles.pointCount}>{pointCount} <abbr title="points">pts</abbr></span>
-          </>
-        )}
-        {(hovered || editing) && (
-          <div style={styles.actionsOverlay}>
-            {editing ? (
+          )}
+          <span style={styles.pointCount}>{pointCount} <abbr title="points">pts</abbr></span>
+        </div>
+        <div style={styles.actionsRow}>
+          {editing ? (
+            <>
+              <button style={styles.primaryAction} type="button" onClick={commitEdit}>
+                Save
+              </button>
               <IconButton aria-label="confirm rename" size="small" onClick={commitEdit}>
                 <CheckIcon fontSize="small" />
               </IconButton>
-            ) : (
-              <>
-                <IconButton aria-label="locate layer on map" size="small" onClick={onClicked}>
-                  <AdsClickIcon fontSize="small" />
+            </>
+          ) : (
+            <>
+              <button style={styles.primaryAction} type="button" onClick={onClicked}>
+                <EditLocationAltIcon style={styles.primaryIcon} />
+                View
+              </button>
+              <button style={styles.secondaryAction} type="button" onClick={startEditing}>
+                <EditIcon style={styles.primaryIcon} />
+                Rename
+              </button>
+              <div style={styles.reorderGroup}>
+                <span style={styles.reorderLabel}>Order</span>
+                <IconButton aria-label="move layer up" size="small" onClick={onMoveUp} disabled={!onMoveUp}>
+                  <ArrowUpwardIcon fontSize="small" />
                 </IconButton>
-                <IconButton aria-label="rename layer" size="small" onClick={startEditing}>
-                  <EditIcon fontSize="small" />
+                <IconButton aria-label="move layer down" size="small" onClick={onMoveDown} disabled={!onMoveDown}>
+                  <ArrowDownwardIcon fontSize="small" />
                 </IconButton>
-                <IconButton aria-label="delete layer" size="small" onClick={onDelete}>
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
-              </>
-            )}
-          </div>
-        )}
+              </div>
+              <IconButton aria-label="delete layer" size="small" onClick={onDelete} style={styles.deleteAction}>
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -148,7 +163,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    padding: "8px 12px",
+    padding: "10px 12px",
     borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
     borderRadius: "8px",
     fontSize: "0.95rem",
@@ -158,7 +173,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "16px",
     flexShrink: 0,
     cursor: "grab",
-    color: "rgba(0,0,0,1)",
+    color: "rgba(0,0,0,0.18)",
     marginLeft: "-4px",
   },
   androidIcon: {
@@ -189,25 +204,28 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: "none",
   },
   nameColumn: {
-    position: "relative",
     display: "flex",
     flexDirection: "column",
     flex: 1,
     minWidth: 0,
   },
-  actionsOverlay: {
-    position: "absolute",
-    right: 0,
-    top: 0,
-    bottom: 0,
+  rowTop: {
     display: "flex",
     alignItems: "center",
-    background: "linear-gradient(to right, transparent, hsla(0,0%,100%,0.97) 16px)",
-    paddingLeft: "16px",
+    justifyContent: "space-between",
+    gap: "8px",
+  },
+  actionsRow: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: "6px",
+    marginTop: "6px",
+    marginLeft: "10px",
   },
   layerName: {
     display: "block",
-    paddingLeft: "12px",
+    paddingLeft: "2px",
     borderRadius: "10px",
     background: "none",
     border: "none",
@@ -222,7 +240,6 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   nameInput: {
     flex: 1,
-    marginLeft: "12px",
     fontSize: "inherit",
     fontFamily: "inherit",
     border: "none",
@@ -231,10 +248,61 @@ const styles: { [key: string]: React.CSSProperties } = {
     background: "transparent",
     width: "100%",
   },
+  primaryAction: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "6px",
+    border: `1px solid ${tomtomSecondaryColor}26`,
+    background: `${tomtomSecondaryColor}12`,
+    color: "rgba(0,0,0,0.76)",
+    borderRadius: "999px",
+    padding: "4px 10px",
+    fontSize: "0.72rem",
+    fontWeight: 700,
+    cursor: "pointer",
+  },
+  secondaryAction: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "6px",
+    border: "1px solid rgba(0,0,0,0.08)",
+    background: "transparent",
+    color: "rgba(0,0,0,0.64)",
+    borderRadius: "999px",
+    padding: "4px 10px",
+    fontSize: "0.72rem",
+    fontWeight: 600,
+    cursor: "pointer",
+  },
+  primaryIcon: {
+    fontSize: "0.9rem",
+  },
+  reorderGroup: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "2px",
+    border: "1px solid rgba(0,0,0,0.08)",
+    borderRadius: "999px",
+    padding: "2px 4px 2px 8px",
+  },
+  reorderLabel: {
+    fontSize: "0.68rem",
+    color: "rgba(0,0,0,0.42)",
+    fontWeight: 700,
+    letterSpacing: "0.03em",
+    textTransform: "uppercase",
+  },
+  deleteAction: {
+    marginLeft: "auto",
+    color: "rgba(125,0,0,0.75)",
+  },
   pointCount: {
-    paddingLeft: "12px",
-    fontSize: "0.75rem",
-    color: "rgba(0,0,0,0.4)",
+    padding: "3px 8px",
+    fontSize: "0.68rem",
+    color: "rgba(0,0,0,0.45)",
+    borderRadius: "999px",
+    background: "rgba(0,0,0,0.04)",
+    whiteSpace: "nowrap",
   },
 };
 

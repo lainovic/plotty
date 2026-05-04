@@ -24,3 +24,5 @@ export class Path<T extends Coordinates> {
     return !this.empty();
   }
 }
+
+export type AnyPath = Path<Coordinates>;

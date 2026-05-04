@@ -119,8 +119,10 @@ export class Route extends Path<RoutePoint> {
     const seekPointIndex = (index: number, point: Coordinates) => {
       while (
         index < path.points.length &&
-        path.points[index].latitude !== point.latitude &&
-        path.points[index].longitude !== point.longitude
+        (
+          path.points[index].latitude !== point.latitude ||
+          path.points[index].longitude !== point.longitude
+        )
       ) {
         index++;
       }

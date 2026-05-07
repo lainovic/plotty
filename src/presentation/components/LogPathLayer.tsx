@@ -1,6 +1,7 @@
 import React from "react";
 import { LayerGroup } from "react-leaflet";
 import { Point } from "./points/Point";
+import { CrashMarker } from "./points/CrashMarker";
 import { usePointFocus } from "../hooks/usePointFocus";
 import { PathComponentProps } from "../shared/PathComponentsProps";
 import { LogPath } from "../../domain/entities/LogPath";
@@ -51,6 +52,15 @@ export const LogPathLayer: React.FC<PathComponentProps<LogPath>> = React.memo(
             />
           );
         })}
+        {layer.path.crashes
+          .filter((c) => c.nearestPointIndex >= 0)
+          .map((c) => (
+            <CrashMarker
+              key={`crash-${c.lineNumber}`}
+              crash={c}
+              position={points[c.nearestPointIndex]}
+            />
+          ))}
       </LayerGroup>
     );
   }

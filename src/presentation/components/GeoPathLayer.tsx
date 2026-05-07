@@ -56,6 +56,7 @@ export const GeoPathLayer: React.FC<PathComponentProps<GeoPath>> = React.memo(({
           highlighted={index === focusedPointIndex}
           color={color}
           radius={renderHint === "points" ? 8 : 5}
+          showCopyButton={false}
         />
       ))}
     </LayerGroup>

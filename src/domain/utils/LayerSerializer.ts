@@ -6,6 +6,7 @@ import { Route } from "../entities/Route";
 import { AnyPath } from "../entities/Path";
 import { Color } from "../value-objects/Color";
 import { Coordinates } from "../value-objects/Coordinates";
+import { CrashEvent, CrashType } from "../value-objects/CrashEvent";
 import { TtpPoint, TtpPointType } from "../value-objects/TtpPoint";
 import { LogPoint } from "../value-objects/LogPoint";
 import { LogLevel } from "../value-objects/LogLevel";
@@ -30,6 +31,14 @@ type SerializedTtpPath = {
   }[];
 };
 
+type SerializedCrashEvent = {
+  type: string;
+  description: string;
+  lineNumber: number;
+  timestamp: number | null;
+  nearestPointIndex: number;
+};
+
 type SerializedLogPath = {
   type: "log";
   points: {
@@ -43,6 +52,7 @@ type SerializedLogPath = {
     speed: number | null;
     heading: number | null;
   }[];
+  crashes?: SerializedCrashEvent[];
 };
 
 type SerializedRoute = {
@@ -102,6 +112,13 @@ function serializePath(path: AnyPath): SerializedPath {
         speed: p.speed,
         heading: p.heading,
       })),
+      crashes: path.crashes.map((c) => ({
+        type: c.type,
+        description: c.description,
+        lineNumber: c.lineNumber,
+        timestamp: c.timestamp,
+        nearestPointIndex: c.nearestPointIndex,
+      })),
     };
   }
   const geoPath = assertGeoPath(path);
@@ -149,7 +166,14 @@ function deserializePath(serialized: SerializedPath): AnyPath {
               p.speed,
               p.heading
             )
-        )
+        ),
+        (serialized.crashes ?? []).map((c): CrashEvent => ({
+          type: c.type as CrashType,
+          description: c.description,
+          lineNumber: c.lineNumber,
+          timestamp: c.timestamp,
+          nearestPointIndex: c.nearestPointIndex,
+        }))
       );
     case "geo":
       return new GeoPath(

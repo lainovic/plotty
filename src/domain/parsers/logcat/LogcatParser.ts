@@ -1,6 +1,7 @@
 import { Maybe } from "../../../shared/Maybe";
 import { LogPath } from "../../entities/LogPath";
 import { LogcatEntry } from "../../value-objects/LogcatEntry";
+import { CrashEvent, CrashType } from "../../value-objects/CrashEvent";
 import { LogLevel } from "../../value-objects/LogLevel";
 import { LogPoint, ExtraMap } from "../../value-objects/LogPoint";
 import { MaybeParsed, Parser } from "../Parser";
@@ -64,12 +65,12 @@ function toUtcTimestamp(date: string, time: string, timezone?: string): number {
   const result = new Date();
   if (date.includes("-")) {
     const [month, day] = date.split("-").map(Number);
-    const [hours, minutes, seconds] = time.split(":").map(Number);
-    const [sec, ms] = seconds.toString().split(".").map(Number);
+    const [hoursStr, minutesStr, secondsStr] = time.split(":");
+    const [sec, ms] = secondsStr.split(".").map(Number);
 
     result.setMonth(month - 1);
     result.setDate(day);
-    result.setHours(hours, minutes, sec, ms);
+    result.setHours(Number(hoursStr), Number(minutesStr), sec, ms);
 
     if (timezone) {
       const tzOffset = parseInt(timezone);
@@ -77,9 +78,9 @@ function toUtcTimestamp(date: string, time: string, timezone?: string): number {
       result.setMinutes(result.getMinutes() + localOffset - tzOffset);
     }
   } else {
-    const [hours, minutes, seconds] = time.split(":").map(Number);
-    const [sec, ms] = seconds.toString().split(".").map(Number);
-    result.setHours(hours, minutes, sec, ms);
+    const [hoursStr, minutesStr, secondsStr] = time.split(":");
+    const [sec, ms] = secondsStr.split(".").map(Number);
+    result.setHours(Number(hoursStr), Number(minutesStr), sec, ms);
   }
 
   return result.getTime();
@@ -106,9 +107,10 @@ function buildEntry(
 }
 
 function parseEntry(line: string): LogcatEntry | null {
-  if (!line.trim()) return null;
+  const trimmed = line.trim();
+  if (!trimmed) return null;
   for (const fmt of logcatFormats) {
-    const match = line.match(fmt.regex);
+    const match = trimmed.match(fmt.regex);
     if (match) return fmt.createFromMatch(match);
   }
   return null;
@@ -210,21 +212,78 @@ function toLogPoint(entry: LogcatEntry, message: LogcatMessage, lineNumber: numb
   }
 }
 
+// --- Crash detection ---
+
+interface CrashPattern {
+  regex: RegExp;
+  type: CrashType;
+  extract(match: RegExpMatchArray): string;
+}
+
+const crashPatterns: CrashPattern[] = [
+  {
+    regex: /FATAL EXCEPTION:\s*(.+)/,
+    type: "fatal-exception",
+    extract: ([, detail]) => `FATAL EXCEPTION: ${detail.trim()}`,
+  },
+  {
+    regex: /Fatal signal (\d+) \(([^)]+)\)/,
+    type: "fatal-signal",
+    extract: ([, sig, name]) => `Fatal signal ${sig} (${name})`,
+  },
+  {
+    regex: /ANR in\s+(.+)/,
+    type: "anr",
+    extract: ([, pkg]) => `ANR in ${pkg.trim()}`,
+  },
+];
+
+function detectCrash(
+  line: string,
+  entry: LogcatEntry | null,
+  lineNumber: number,
+  nearestPointIndex: number
+): CrashEvent | null {
+  for (const { regex, type, extract } of crashPatterns) {
+    const match = line.match(regex);
+    if (match) {
+      return {
+        type,
+        description: extract(match),
+        lineNumber,
+        timestamp: entry?.timestamp ?? null,
+        nearestPointIndex,
+      };
+    }
+  }
+  return null;
+}
+
 // --- Public parser ---
 
 export class LogcatParser implements Parser<LogPath> {
   parse(text: string): MaybeParsed<LogPath> {
     try {
       const points: LogPoint[] = [];
+      const crashes: CrashEvent[] = [];
 
       text.split("\n").forEach((line, lineNumber) => {
         try {
           const entry = parseEntry(line);
-          if (entry === null) return;
-          const message = parseMessage(entry);
-          if (message === null) return;
-          const point = toLogPoint(entry, message, lineNumber);
-          if (point !== null) points.push(point);
+
+          if (entry !== null) {
+            const message = parseMessage(entry);
+            if (message !== null) {
+              const point = toLogPoint(entry, message, lineNumber);
+              if (point !== null) {
+                points.push(point);
+                return;
+              }
+            }
+          }
+
+          const crash = detectCrash(line, entry, lineNumber, points.length - 1);
+          if (crash !== null) crashes.push(crash);
         } catch {
           // skip malformed entries
         }
@@ -235,7 +294,7 @@ export class LogcatParser implements Parser<LogPath> {
       }
 
       return Maybe.success({
-        paths: [new LogPath(points)],
+        paths: [new LogPath(points, crashes)],
         message: "Parsed Logcat successfully.",
       });
     } catch (error: unknown) {

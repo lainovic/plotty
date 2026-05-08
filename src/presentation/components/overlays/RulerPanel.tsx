@@ -5,11 +5,15 @@ import { tomtomBlackColor } from "../../../shared/colors";
 import { Z_INDEX } from "../../constants/zIndex";
 import { isTypingInInput } from "../../utils/keyboardUtils";
 import { copyToClipboard } from "../../utils/clipboard";
-import { TOGGLE_RULER_EVENT } from "./MapUtilityDock";
+import { TOGGLE_RULER_EVENT, RULER_STATE_CHANGED } from "./MapUtilityDock";
 
 export const RulerPanel: React.FC = () => {
   const [distance, setDistance] = React.useState<number>(-1);
   const [rulerMode, setRulerMode] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    window.dispatchEvent(new CustomEvent(RULER_STATE_CHANGED, { detail: rulerMode }));
+  }, [rulerMode]);
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -36,7 +40,6 @@ export const RulerPanel: React.FC = () => {
   return (
     rulerMode && (
       <>
-        <div style={styles.overlay}></div>
         <div style={styles.panel}>
           <button
             style={styles.closeBtn}
@@ -77,22 +80,12 @@ export const RulerPanel: React.FC = () => {
 };
 
 const styles: { [key: string]: React.CSSProperties } = {
-  overlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    zIndex: Z_INDEX.RULER_OVERLAY,
-    pointerEvents: "none",
-  },
   panel: {
     position: "fixed",
     top: "80%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    backgroundColor: "hsla(0, 0%, 100%, 0.92)",
     padding: "20px",
     borderRadius: "12px",
     fontFamily: "'Roboto', sans-serif",

@@ -35,7 +35,7 @@ export const MapLayers = ({ onTileProviderChanged }: MapLayersProps) => {
   const store = useLayerStore();
   const { getNextColor } = useColors();
 
-  const { importing } = usePathImport({
+  const { importing, isDraggingOver } = usePathImport({
     target: map.getContainer(),
     onPathsImported: (paths: AnyPath[]) => {
       store.addLayers(
@@ -73,6 +73,11 @@ export const MapLayers = ({ onTileProviderChanged }: MapLayersProps) => {
 
   return (
     <FocusProvider>
+      {isDraggingOver && (
+        <div style={styles.dropZone}>
+          <div style={styles.dropZoneLabel}>Drop to import</div>
+        </div>
+      )}
       {importing && (
         <div style={styles.overlay}>
           <div style={styles.spinner}>Importing...</div>
@@ -122,6 +127,26 @@ const styles: { [key: string]: React.CSSProperties } = {
     boxShadow: "0 10px 24px rgba(0, 0, 0, 0.12)",
     border: "1px solid rgba(0,0,0,0.06)",
     backdropFilter: "blur(14px)",
+  },
+  dropZone: {
+    position: "fixed",
+    inset: 0,
+    zIndex: Z_INDEX.OVERLAY,
+    margin: "12px",
+    borderRadius: "12px",
+    border: "2px dashed rgba(25, 136, 207, 0.55)",
+    backgroundColor: "rgba(25, 136, 207, 0.07)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    pointerEvents: "none",
+  },
+  dropZoneLabel: {
+    fontSize: "1.1rem",
+    fontWeight: 600,
+    color: "rgba(25, 136, 207, 0.85)",
+    fontFamily: "'Roboto', sans-serif",
+    letterSpacing: "0.02em",
   },
   overlay: {
     position: "fixed",

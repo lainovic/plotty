@@ -13,7 +13,7 @@ import { tomtomSecondaryColor } from "../../../shared/colors";
 import Spacer from "../../shared/Spacer";
 import { Coordinates } from "../../../domain/value-objects/Coordinates";
 import { isTypingInInput } from "../../utils/keyboardUtils";
-import { TOGGLE_GOTO_EVENT } from "./MapUtilityDock";
+import { TOGGLE_GOTO_EVENT, GOTO_STATE_CHANGED } from "./MapUtilityDock";
 
 interface GotoDialogProps {
   onCoordinatesChange: (coordinates: Coordinates) => void;
@@ -23,6 +23,10 @@ export const GotoDialog: React.FC<GotoDialogProps> = ({
   onCoordinatesChange,
 }) => {
   const [open, setOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    window.dispatchEvent(new CustomEvent(GOTO_STATE_CHANGED, { detail: open }));
+  }, [open]);
   const [latitude, setLatitude] = React.useState("");
   const [longitude, setLongitude] = React.useState("");
   const [errorText, setErrorText] = React.useState<string | null>(null);
@@ -108,7 +112,7 @@ export const GotoDialog: React.FC<GotoDialogProps> = ({
         <DialogTitle>Go to a location</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Jump the map to a precise coordinate pair.
+            Jump the map to a precise coordinate pair. Paste a "lat, lng" pair into either field to fill both.
           </DialogContentText>
           <Spacer heightInPx={20} />
           {errorText && <Alert severity="error" style={styles.alert}>{errorText}</Alert>}

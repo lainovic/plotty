@@ -6,8 +6,24 @@ import { tomtomBlackColor, tomtomSecondaryColor } from "../../../shared/colors";
 
 export const TOGGLE_GOTO_EVENT = "plotty:toggle-goto";
 export const TOGGLE_RULER_EVENT = "plotty:toggle-ruler";
+export const GOTO_STATE_CHANGED = "plotty:goto-state";
+export const RULER_STATE_CHANGED = "plotty:ruler-state";
 
 export function MapUtilityDock() {
+  const [gotoActive, setGotoActive] = React.useState(false);
+  const [rulerActive, setRulerActive] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleGoto = (e: Event) => setGotoActive((e as CustomEvent<boolean>).detail);
+    const handleRuler = (e: Event) => setRulerActive((e as CustomEvent<boolean>).detail);
+    window.addEventListener(GOTO_STATE_CHANGED, handleGoto);
+    window.addEventListener(RULER_STATE_CHANGED, handleRuler);
+    return () => {
+      window.removeEventListener(GOTO_STATE_CHANGED, handleGoto);
+      window.removeEventListener(RULER_STATE_CHANGED, handleRuler);
+    };
+  }, []);
+
   const emit = (eventName: string) => {
     window.dispatchEvent(new CustomEvent(eventName));
   };
@@ -17,12 +33,14 @@ export function MapUtilityDock() {
       <ToolButton
         label="Go To"
         accent={tomtomSecondaryColor}
+        active={gotoActive}
         onClick={() => emit(TOGGLE_GOTO_EVENT)}
         icon={<TravelExploreIcon fontSize="small" />}
       />
       <ToolButton
         label="Ruler"
         accent={tomtomBlackColor}
+        active={rulerActive}
         onClick={() => emit(TOGGLE_RULER_EVENT)}
         icon={<StraightenIcon fontSize="small" />}
       />
@@ -34,15 +52,26 @@ function ToolButton({
   label,
   icon,
   accent,
+  active,
   onClick,
 }: {
   label: string;
   icon: React.ReactNode;
   accent: string;
+  active: boolean;
   onClick: () => void;
 }) {
   return (
-    <button className="tool-button" style={styles.toolButton} onClick={onClick} type="button">
+    <button
+      className="tool-button"
+      style={{
+        ...styles.toolButton,
+        ...(active ? { background: `${accent}18`, borderColor: `${accent}50` } : {}),
+      }}
+      onClick={onClick}
+      type="button"
+      aria-pressed={active}
+    >
       <span aria-hidden="true" style={{ ...styles.toolIcon, color: accent, background: `${accent}12` }}>
         {icon}
       </span>

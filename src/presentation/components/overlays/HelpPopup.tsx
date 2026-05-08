@@ -140,7 +140,7 @@ export function HelpPopup() {
             <div style={fmtStyles.compactList}>
               <div>Use the layer panel to jump, rename, recolor, reorder, hide, or delete results.</div>
               <div>Use <ContentCopyIcon style={{ fontSize: "1em", verticalAlign: "middle" }} /> to copy coordinates and <AdsClickIcon style={{ fontSize: "1em", verticalAlign: "middle" }} /> to pan to a point.</div>
-              <div>Use the lower-left tool dock for <span style={fmtStyles.emphasize}>Go To</span>, <span style={fmtStyles.emphasize}>Ruler</span>, and map tiles.</div>
+              <div>Use the lower-left tool dock for <span style={fmtStyles.emphasize}>Go To</span> and <span style={fmtStyles.emphasize}>Ruler</span>. Change the basemap in the layer panel.</div>
             </div>
             <div style={fmtStyles.help}>
               Shortcuts: <span style={fmtStyles.emphasize}>?</span> help, <span style={fmtStyles.emphasize}>G</span> Go To, <span style={fmtStyles.emphasize}>R</span> ruler, <span style={fmtStyles.emphasize}>J/K</span> tiles, <span style={fmtStyles.emphasize}>H/L</span> point navigation.

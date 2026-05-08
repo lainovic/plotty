@@ -30,6 +30,8 @@ export function usePathImport({
   onPathsImported,
 }: UsePathImportProps) {
   const [importing, setImporting] = React.useState(false);
+  const [isDraggingOver, setIsDraggingOver] = React.useState(false);
+  const dragCounter = React.useRef(0);
 
   const parseNonBlocking = async (content: string) => {
     setImporting(true);
@@ -67,7 +69,20 @@ export function usePathImport({
       await parseNonBlocking(event.clipboardData?.getData("text") || "");
     };
 
+    const handleDragEnter = (event: DragEvent) => {
+      if (!event.dataTransfer?.types.includes("Files")) return;
+      dragCounter.current++;
+      setIsDraggingOver(true);
+    };
+
+    const handleDragLeave = () => {
+      dragCounter.current--;
+      if (dragCounter.current === 0) setIsDraggingOver(false);
+    };
+
     const handleDrop = async (event: DragEvent) => {
+      dragCounter.current = 0;
+      setIsDraggingOver(false);
       if (isInteractiveTarget(event.target)) {
         return;
       }
@@ -97,12 +112,16 @@ export function usePathImport({
     target.addEventListener("paste", handlePaste);
     target.addEventListener("drop", handleDrop);
     target.addEventListener("dragover", preventDefault);
+    target.addEventListener("dragenter", handleDragEnter);
+    target.addEventListener("dragleave", handleDragLeave);
     target.addEventListener("click", focusTarget);
 
     return () => {
       target.removeEventListener("paste", handlePaste);
       target.removeEventListener("drop", handleDrop);
       target.removeEventListener("dragover", preventDefault);
+      target.removeEventListener("dragenter", handleDragEnter);
+      target.removeEventListener("dragleave", handleDragLeave);
       target.removeEventListener("click", focusTarget);
       if (previousTabIndex === null) {
         target.removeAttribute("tabindex");
@@ -110,5 +129,5 @@ export function usePathImport({
     };
   }, [onPathsImported, target]);
 
-  return { importing };
+  return { importing, isDraggingOver };
 }

@@ -9,21 +9,15 @@ export const ZoomText: React.FC = () => {
   useMapEvents({
     zoomend: (e) => {
       setText(`Zoom level ${e.target.getZoom()}`);
-      setIsVisible(true);
     },
   });
 
   React.useEffect(() => {
     if (!text) return;
-
-    const timeout = setTimeout(() => {
-      setIsVisible(false);
-    }, 500);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [isVisible]);
+    setIsVisible(true);
+    const timeout = setTimeout(() => setIsVisible(false), 500);
+    return () => clearTimeout(timeout);
+  }, [text]);
 
   return (
     <div
@@ -49,6 +43,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontFamily: "'Roboto', sans-serif",
     fontSize: "14px",
     zIndex: Z_INDEX.ZOOM_TEXT,
+    transition: "opacity 0.2s ease",
+    pointerEvents: "none",
   },
   text: {
     margin: 0,

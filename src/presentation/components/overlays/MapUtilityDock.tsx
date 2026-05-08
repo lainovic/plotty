@@ -1,7 +1,6 @@
 import React from "react";
 import TravelExploreIcon from "@mui/icons-material/TravelExplore";
 import StraightenIcon from "@mui/icons-material/Straighten";
-import { IconButton } from "@mui/material";
 import { Z_INDEX } from "../../constants/zIndex";
 import { tomtomBlackColor, tomtomSecondaryColor } from "../../../shared/colors";
 import { TileProviderSelector } from "./TileProviderSelector";
@@ -21,31 +20,35 @@ export function MapUtilityDock({ onTileProviderChanged }: MapUtilityDockProps) {
 
   return (
     <div style={styles.dock}>
-      <div style={styles.sectionHeader}>
-        <div style={styles.sectionKicker}>Utilities</div>
-      </div>
-      <div style={styles.toolsRow}>
-        <ToolButton
-          label="Go To"
-          accent={tomtomSecondaryColor}
-          onClick={() => emit(TOGGLE_GOTO_EVENT)}
-          icon={<TravelExploreIcon fontSize="small" />}
-        />
-        <ToolButton
-          label="Ruler"
-          accent={tomtomBlackColor}
-          onClick={() => emit(TOGGLE_RULER_EVENT)}
-          icon={<StraightenIcon fontSize="small" />}
-        />
-      </div>
+      <section aria-labelledby="utilities-label">
+        <div style={styles.sectionHeader}>
+          <div id="utilities-label" style={styles.sectionKicker}>Utilities</div>
+        </div>
+        <div style={styles.toolsRow}>
+          <ToolButton
+            label="Go To"
+            accent={tomtomSecondaryColor}
+            onClick={() => emit(TOGGLE_GOTO_EVENT)}
+            icon={<TravelExploreIcon fontSize="small" />}
+          />
+          <ToolButton
+            label="Ruler"
+            accent={tomtomBlackColor}
+            onClick={() => emit(TOGGLE_RULER_EVENT)}
+            icon={<StraightenIcon fontSize="small" />}
+          />
+        </div>
+      </section>
       <div style={styles.divider} />
-      <div style={styles.sectionHeader}>
-        <div style={styles.sectionKicker}>Basemap</div>
-      </div>
-      <TileProviderSelector
-        onTileProviderChanged={onTileProviderChanged}
-        embedded
-      />
+      <section aria-labelledby="basemap-label">
+        <div style={styles.sectionHeader}>
+          <div id="basemap-label" style={styles.sectionKicker}>Basemap</div>
+        </div>
+        <TileProviderSelector
+          onTileProviderChanged={onTileProviderChanged}
+          embedded
+        />
+      </section>
     </div>
   );
 }
@@ -62,15 +65,10 @@ function ToolButton({
   onClick: () => void;
 }) {
   return (
-    <button style={styles.toolButton} onClick={onClick} type="button">
-      <IconButton
-        aria-label={label}
-        onClick={onClick}
-        size="small"
-        style={{ ...styles.toolIcon, color: accent, background: `${accent}12` }}
-      >
+    <button className="tool-button" style={styles.toolButton} onClick={onClick} type="button">
+      <span aria-hidden="true" style={{ ...styles.toolIcon, color: accent, background: `${accent}12` }}>
         {icon}
-      </IconButton>
+      </span>
       <span style={styles.toolLabel}>{label}</span>
     </button>
   );
@@ -124,8 +122,14 @@ const styles: { [key: string]: React.CSSProperties } = {
     textAlign: "left",
     font: "inherit",
     color: "inherit",
+    touchAction: "manipulation",
   },
   toolIcon: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: "50%",
+    padding: "5px",
     pointerEvents: "none",
   },
   toolLabel: {

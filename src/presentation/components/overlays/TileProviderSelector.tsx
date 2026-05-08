@@ -20,7 +20,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 enum TileVendors {
   TomTomOrbisMaps = "TomTom Orbis Maps",
   TomTomMaps = "TomTom Maps",
-  OpenStreetMap = "Open Street Map",
+  OpenStreetMap = "OpenStreetMap",
   GoogleMap = "Google Maps",
 }
 
@@ -110,36 +110,40 @@ export const TileProviderSelector: React.FC<TileProviderSelectorProps> = ({
         <div style={styles.keySection}>
           <button
             type="button"
+            className="key-toggle"
             style={styles.keyToggle}
             onClick={() => setIsKeyEditorOpen((prev) => !prev)}
             aria-expanded={isKeyEditorOpen}
+            aria-controls="key-editor-panel"
           >
             <span style={styles.keyToggleLead}>
-              <KeyOutlinedIcon style={styles.keyIcon} />
+              <KeyOutlinedIcon style={styles.keyIcon} aria-hidden="true" />
               {hasApiKey ? "API key saved" : "Add API key"}
             </span>
             <span style={styles.keyToggleMeta}>
               {isKeyEditorOpen ? "Hide" : "Edit"}
               {isKeyEditorOpen ? (
-                <KeyboardArrowUpIcon fontSize="small" />
+                <KeyboardArrowUpIcon fontSize="small" aria-hidden="true" />
               ) : (
-                <KeyboardArrowDownIcon fontSize="small" />
+                <KeyboardArrowDownIcon fontSize="small" aria-hidden="true" />
               )}
             </span>
           </button>
-          {isKeyEditorOpen && (
-            <PasswordInput
-              key={selectedVendor}
-              label="API key"
-              initialValue={authProvider.getApiKey() || ""}
-              onValueChange={(key) => {
-                authProvider.setApiKey(key);
-                onTileProviderChanged(authProvider);
-              }}
-              compact
-              style={styles.embeddedKeyField}
-            />
-          )}
+          <div id="key-editor-panel">
+            {isKeyEditorOpen && (
+              <PasswordInput
+                key={selectedVendor}
+                label="API key"
+                initialValue={authProvider.getApiKey() || ""}
+                onValueChange={(key) => {
+                  authProvider.setApiKey(key);
+                  onTileProviderChanged(authProvider);
+                }}
+                compact
+                style={styles.embeddedKeyField}
+              />
+            )}
+          </div>
         </div>
       )}
       {authProvider && !embedded && (
@@ -208,6 +212,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: "rgba(0,0,0,0.62)",
     cursor: "pointer",
     textAlign: "left",
+    touchAction: "manipulation",
   },
   keyToggleLead: {
     display: "inline-flex",

@@ -61,3 +61,10 @@
     transform: rotate(360deg);
   }
 }
+
+.tool-button:focus-visible,
+.key-toggle:focus-visible {
+  outline: 2px solid var(--tt-primary-color);
+  outline-offset: 2px;
+  border-radius: 4px;
+}

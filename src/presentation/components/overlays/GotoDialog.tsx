@@ -23,6 +23,7 @@ export const GotoDialog: React.FC<GotoDialogProps> = ({
 }) => {
   const [open, setOpen] = React.useState(false);
   const [input, setInput] = React.useState("");
+  const inputRef = React.useRef<HTMLInputElement>(null);
   const [errorText, setErrorText] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -71,6 +72,7 @@ export const GotoDialog: React.FC<GotoDialogProps> = ({
     <Dialog
       open={open}
       onClose={onClose}
+      TransitionProps={{ onEntered: () => inputRef.current?.focus() }}
       PaperProps={{
         component: "form",
         onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
@@ -91,7 +93,7 @@ export const GotoDialog: React.FC<GotoDialogProps> = ({
         </DialogContentText>
         {errorText && <Alert severity="error" style={styles.alert}>{errorText}</Alert>}
         <TextField
-          autoFocus
+          inputRef={inputRef}
           label="Coordinates"
           id="goto-coordinates"
           fullWidth

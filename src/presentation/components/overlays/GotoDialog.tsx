@@ -127,10 +127,10 @@ export const GotoDialog: React.FC<GotoDialogProps> = ({
               setErrorText(null);
             }}
             onPaste={handlePaste}
-            type="number"
+            type="text"
             error={!!errorText}
-            helperText="Range: -90 to 90"
-            inputProps={{ inputMode: "decimal", autoComplete: "off" }}
+            helperText="e.g. 48.8566"
+            inputProps={{ inputMode: "decimal", autoComplete: "off", spellCheck: false }}
           />
           <TextField
             label="longitude"
@@ -142,10 +142,10 @@ export const GotoDialog: React.FC<GotoDialogProps> = ({
               setErrorText(null);
             }}
             onPaste={handlePaste}
-            type="number"
+            type="text"
             error={!!errorText}
-            helperText="Range: -180 to 180"
-            inputProps={{ inputMode: "decimal", autoComplete: "off" }}
+            helperText="e.g. 2.3522"
+            inputProps={{ inputMode: "decimal", autoComplete: "off", spellCheck: false }}
           />
         </DialogContent>
         <DialogActions>

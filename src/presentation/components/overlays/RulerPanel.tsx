@@ -42,6 +42,7 @@ export const RulerPanel: React.FC = () => {
       <>
         <div style={styles.panel}>
           <button
+            className="tool-button"
             style={styles.closeBtn}
             onClick={() => setRulerMode(false)}
             aria-label="close ruler"

@@ -185,10 +185,10 @@ function PopupWithTrigger(props: PopupProps) {
 
 const fmtStyles: { [key: string]: React.CSSProperties } = {
   shortcutHint: {
-    fontSize: "0.65rem",
-    color: "rgba(0,0,0,0.35)",
+    fontSize: "0.75rem",
+    color: "rgba(0,0,0,0.5)",
     fontFamily: "'Roboto', sans-serif",
-    letterSpacing: "0.08em",
+    letterSpacing: "0.06em",
     userSelect: "none",
     paddingRight: "4px",
   },

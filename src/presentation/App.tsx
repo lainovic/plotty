@@ -11,11 +11,8 @@ function App() {
   return (
     <div style={styles.appShell}>
       <header style={styles.header}>
-        <div style={styles.headerBrand}>
-          <div style={styles.headerWordmark}>
-            Plo<span style={styles.headerSpan}>tt</span>y
-          </div>
-          <div style={styles.kicker}>Lightweight map utility</div>
+        <div style={styles.headerWordmark}>
+          Plo<span style={styles.headerSpan}>tt</span>y
         </div>
       </header>
       <main style={styles.container}>
@@ -56,33 +53,17 @@ const styles: { [key: string]: React.CSSProperties } = {
     position: "fixed",
     top: "10px",
     left: "68px",
-    width: "fit-content",
-    maxWidth: "calc(100vw - 78px)",
     zIndex: 1500,
     display: "flex",
     alignItems: "center",
-    justifyContent: "flex-start",
-    padding: "8px 12px",
-    minHeight: "44px",
-    borderRadius: "14px",
+    padding: "5px 10px",
+    borderRadius: "10px",
     background: "rgba(255,255,255,0.78)",
     backdropFilter: "blur(14px)",
     border: "1px solid rgba(0,0,0,0.06)",
-    boxShadow: "0 6px 18px rgba(0,0,0,0.07)",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
     color: `${tomtomBlackColor}`,
     fontFamily: "'Roboto', sans-serif",
-  },
-  headerBrand: {
-    display: "flex",
-    alignItems: "baseline",
-    gap: "8px",
-  },
-  kicker: {
-    fontSize: "0.62rem",
-    textTransform: "uppercase",
-    letterSpacing: "0.08em",
-    color: "rgba(0,0,0,0.42)",
-    fontWeight: 600,
   },
   headerWordmark: {
     fontSize: "0.98rem",

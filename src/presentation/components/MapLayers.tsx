@@ -73,6 +73,9 @@ export const MapLayers = ({ onTileProviderChanged }: MapLayersProps) => {
 
   return (
     <FocusProvider>
+      {store.layers.length === 0 && !isDraggingOver && (
+        <div style={styles.importHint}>Drop a file or paste to import</div>
+      )}
       {isDraggingOver && (
         <div style={styles.dropZone}>
           <div style={styles.dropZoneLabel}>Drop to import</div>
@@ -127,6 +130,20 @@ const styles: { [key: string]: React.CSSProperties } = {
     boxShadow: "0 10px 24px rgba(0, 0, 0, 0.12)",
     border: "1px solid rgba(0,0,0,0.06)",
     backdropFilter: "blur(14px)",
+  },
+  importHint: {
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    fontSize: "0.82rem",
+    fontWeight: 500,
+    color: "rgba(0,0,0,0.28)",
+    fontFamily: "'Roboto', sans-serif",
+    letterSpacing: "0.03em",
+    pointerEvents: "none",
+    userSelect: "none",
+    whiteSpace: "nowrap",
   },
   dropZone: {
     position: "fixed",

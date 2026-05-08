@@ -41,17 +41,17 @@ export const MapComponent = () => {
             minZoom={0}
             maxZoom={tileConfig.maxZoom}
           />
-          <MapLayers />
+          <MapLayers
+            onTileProviderChanged={(p) => {
+              setTileConfig({
+                url: p.getUrl(),
+                attribution: p.getAttribution(),
+                maxZoom: p.getMaxZoom(),
+              });
+            }}
+          />
         </MapContainer>
-        <MapUtilityDock
-          onTileProviderChanged={(p) => {
-            setTileConfig({
-              url: p.getUrl(),
-              attribution: p.getAttribution(),
-              maxZoom: p.getMaxZoom(),
-            });
-          }}
-        />
+        <MapUtilityDock />
       </div>
     </>
   );

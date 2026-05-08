@@ -22,8 +22,13 @@ import { Z_INDEX } from "../constants/zIndex";
 import { Coordinates } from "../../domain/value-objects/Coordinates";
 import { GeoPathLayers, LogPathLayers, TtpPathLayers, RouteLayers } from "./LayersRenderer";
 import { copyToClipboard } from "../utils/clipboard";
+import { TileProvider } from "../providers/TileProvider";
 
-export const MapLayers = () => {
+interface MapLayersProps {
+  onTileProviderChanged: (tileProvider: TileProvider) => void;
+}
+
+export const MapLayers = ({ onTileProviderChanged }: MapLayersProps) => {
   useRenderTime("MapLayers", onlyInDevelopment);
 
   const map = useMap();
@@ -83,6 +88,7 @@ export const MapLayers = () => {
         onClearAll={store.clearAll}
         onColorChange={(layer, hex) => store.recolor(layer.id, hex)}
         onReorder={store.reorder}
+        onTileProviderChanged={onTileProviderChanged}
       />
       <GotoDialog
         onCoordinatesChange={(coordinates: Coordinates) => {

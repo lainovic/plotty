@@ -9,6 +9,8 @@ import { LogPath } from "../../../domain/entities/LogPath";
 import { IconButton } from "@mui/material";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
+import { TileProviderSelector } from "./TileProviderSelector";
+import { TileProvider } from "../../providers/TileProvider";
 
 interface LayerPanelProps<T extends AnyPath> {
   style?: React.CSSProperties;
@@ -20,6 +22,7 @@ interface LayerPanelProps<T extends AnyPath> {
   onClearAll: () => void;
   onColorChange: (layer: Layer<T>, hex: string) => void;
   onReorder: (fromIndex: number, toIndex: number) => void;
+  onTileProviderChanged: (tileProvider: TileProvider) => void;
 }
 
 export const LayerPanel = <T extends AnyPath>({
@@ -32,6 +35,7 @@ export const LayerPanel = <T extends AnyPath>({
   onClearAll,
   onColorChange,
   onReorder,
+  onTileProviderChanged,
 }: LayerPanelProps<T>) => {
   const [isScrollable, setIsScrollable] = React.useState(false);
   const panelRef = React.useRef<HTMLDivElement>(null);
@@ -56,23 +60,28 @@ export const LayerPanel = <T extends AnyPath>({
     return () => observer.disconnect();
   }, []);
 
+  const basemapSection = (
+    <section aria-labelledby="basemap-label" style={styles.basemapSection}>
+      <div id="basemap-label" style={styles.basemapKicker}>Basemap</div>
+      <TileProviderSelector onTileProviderChanged={onTileProviderChanged} embedded />
+    </section>
+  );
+
   return (
-    <div ref={panelRef}>
+    <div ref={panelRef} style={style}>
       {layers.length === 0 ? (
-        <div style={style}>
-          <div style={styles.emptyState}>
-            <FileUploadOutlinedIcon style={styles.emptyIcon} />
-            <div style={styles.emptyBadge}>Step 1</div>
-            <p style={styles.emptyTitle}>Import something to start exploring.</p>
-            <div style={styles.emptySteps}>
-              <div>Drop a file directly on the map.</div>
-              <div>Or focus the map and paste coordinates, GeoJSON, route JSON, TTP, or logcat.</div>
-              <div>Your imported results will appear here as layers.</div>
-            </div>
+        <div style={styles.emptyState}>
+          <FileUploadOutlinedIcon style={styles.emptyIcon} />
+          <div style={styles.emptyBadge}>Step 1</div>
+          <p style={styles.emptyTitle}>Import something to start exploring.</p>
+          <div style={styles.emptySteps}>
+            <div>Drop a file directly on the map.</div>
+            <div>Or focus the map and paste coordinates, GeoJSON, route JSON, TTP, or logcat.</div>
+            <div>Your imported results will appear here as layers.</div>
           </div>
         </div>
       ) : (
-        <div style={style}>
+        <>
           <div style={styles.header}>
             <div>
               <h3 style={styles.title}>Layers</h3>
@@ -135,8 +144,9 @@ export const LayerPanel = <T extends AnyPath>({
               </div>
             ))}
           </div>
-        </div>
+        </>
       )}
+      {basemapSection}
     </div>
   );
 };
@@ -207,6 +217,21 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: "rgba(0,0,0,0.48)",
     lineHeight: 1.45,
     maxWidth: "248px",
+  },
+  basemapSection: {
+    width: "100%",
+    padding: "8px 8px 4px",
+    borderTop: "1px solid rgba(0,0,0,0.06)",
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+  },
+  basemapKicker: {
+    fontSize: "0.62rem",
+    fontWeight: 700,
+    letterSpacing: "0.1em",
+    textTransform: "uppercase" as const,
+    color: "rgba(0,0,0,0.42)",
   },
   layerList: {
     display: "flex",

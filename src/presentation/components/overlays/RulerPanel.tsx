@@ -48,38 +48,34 @@ export const RulerPanel: React.FC = () => {
     rulerMode && (
       <>
         <div style={styles.panel}>
-          <button
-            className="tool-button"
-            style={styles.closeBtn}
-            onClick={() => setRulerMode(false)}
-            aria-label="close ruler"
-          >
-            ×
-          </button>
-          <div style={styles.iconContainer}>
-            <StraightenIcon />
-          </div>
-          {distance <= 0 ? (
-            <p style={styles.message}>
-              Click on the map to measure distance
-            </p>
-          ) : (
-            <p style={styles.message}>
-              {formatDistance(distance)}
-            </p>
-          )}
-          <div style={styles.actions}>
-            {distance >= 0 && (
+          <div style={styles.row}>
+            <StraightenIcon style={styles.icon} />
+            <span style={styles.distanceText}>
+              {distance <= 0 ? "Click to start measuring" : formatDistance(distance)}
+            </span>
+            <div style={styles.rowActions}>
+              {distance >= 0 && (
+                <button
+                  className="tool-button"
+                  style={styles.actionBtn}
+                  onClick={handleClear}
+                >
+                  clear
+                </button>
+              )}
               <button
                 className="tool-button"
-                style={styles.clearBtn}
-                onClick={handleClear}
+                style={styles.closeBtn}
+                onClick={() => setRulerMode(false)}
+                aria-label="close ruler"
               >
-                clear
+                ×
               </button>
-            )}
-            <p style={styles.hint}>press R to toggle</p>
+            </div>
           </div>
+          <p style={styles.hint}>
+            {distance > 0 ? "drag markers to adjust · R to toggle" : "press R to toggle"}
+          </p>
         </div>
         <Ruler
           key={rulerKey}
@@ -105,42 +101,38 @@ const styles: { [key: string]: React.CSSProperties } = {
     left: "50%",
     transform: "translateX(-50%)",
     backgroundColor: "hsla(0, 0%, 100%, 0.92)",
-    padding: "20px",
+    padding: "10px 14px 8px",
     borderRadius: "12px",
     fontFamily: "'Roboto', sans-serif",
     zIndex: Z_INDEX.RULER_OVERLAY,
     color: "rgba(0,0,0,0.76)",
-    fontSize: "1.0rem",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     backdropFilter: "blur(12px)",
     border: "1px solid rgba(0,0,0,0.06)",
-    textAlign: "center",
     minWidth: "220px",
   },
-  iconContainer: {
+  row: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "10px",
+    gap: "10px",
   },
-  message: {
-    margin: "10px 0",
+  icon: {
+    color: "rgba(0,0,0,0.4)",
+    fontSize: "1.1rem",
+    flexShrink: 0,
+  },
+  distanceText: {
     fontSize: "0.9rem",
+    flex: 1,
+    whiteSpace: "nowrap",
   },
-  actions: {
+  rowActions: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
-    gap: "12px",
-    marginTop: "4px",
+    gap: "2px",
+    marginLeft: "6px",
   },
-  hint: {
-    margin: 0,
-    fontSize: "0.65rem",
-    color: "rgba(0,0,0,0.35)",
-    letterSpacing: "0.02em",
-  },
-  clearBtn: {
+  actionBtn: {
     background: "none",
     border: "none",
     cursor: "pointer",
@@ -150,19 +142,22 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: "4px",
     letterSpacing: "0.02em",
     font: "inherit",
-    textTransform: "lowercase" as const,
   },
   closeBtn: {
-    position: "absolute",
-    top: "8px",
-    right: "10px",
     background: "none",
     border: "none",
     cursor: "pointer",
-    fontSize: "1.4rem",
+    fontSize: "1.2rem",
     lineHeight: 1,
     color: "rgba(0,0,0,0.4)",
     padding: "2px 4px",
     borderRadius: "4px",
+  },
+  hint: {
+    margin: "5px 0 0",
+    fontSize: "0.62rem",
+    color: "rgba(0,0,0,0.35)",
+    letterSpacing: "0.02em",
+    textAlign: "center",
   },
 };

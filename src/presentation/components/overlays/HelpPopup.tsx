@@ -213,8 +213,6 @@ const fmtStyles: { [key: string]: React.CSSProperties } = {
     color: `${tomtomSecondaryColor}`,
     fontFamily: "'Roboto', sans-serif",
     fontWeight: 700,
-    height: "3vh",
-    display: "flex",
-    alignItems: "center",
+    margin: "8px 0 4px",
   },
 };

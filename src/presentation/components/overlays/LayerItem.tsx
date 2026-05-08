@@ -10,7 +10,6 @@ import CheckIcon from "@mui/icons-material/Check";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import EditLocationAltIcon from "@mui/icons-material/EditLocationAlt";
 import CloseIcon from "@mui/icons-material/Close";
 
 interface LayerItemProps {
@@ -136,21 +135,12 @@ const LayerItem: React.FC<LayerItemProps> = ({
                 <CloseIcon style={styles.primaryIcon} />
                 Cancel
               </button>
-              <IconButton aria-label="confirm rename" size="small" onClick={commitEdit} sx={styles.utilityButtonSx}>
-                <CheckIcon fontSize="small" />
-              </IconButton>
             </>
           ) : (
-            <>
-              <button style={styles.primaryAction} type="button" onClick={onClicked}>
-                <EditLocationAltIcon style={styles.primaryIcon} />
-                View
-              </button>
-              <button style={styles.secondaryAction} type="button" onClick={startEditing}>
-                <EditIcon style={styles.primaryIcon} />
-                Rename
-              </button>
-            </>
+            <button style={styles.primaryAction} type="button" onClick={startEditing}>
+              <EditIcon style={styles.primaryIcon} />
+              Rename
+            </button>
           )}
           </div>
           {!editing && (

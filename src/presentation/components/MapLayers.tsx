@@ -115,11 +115,11 @@ export const MapLayers = ({ onTileProviderChanged }: MapLayersProps) => {
 const styles: { [key: string]: React.CSSProperties } = {
   layerPanel: {
     position: "fixed",
-    top: "50%",
+    top: "10px",
     right: "10px",
     width: "clamp(280px, 24vw, 360px)",
     paddingTop: "10px",
-    transform: "translateY(-50%)",
+    maxHeight: "calc(100vh - 20px)",
     backgroundColor: "hsla(0, 0%, 100%, 0.8)",
     fontFamily: "'Roboto', sans-serif",
     borderRadius: "12px",

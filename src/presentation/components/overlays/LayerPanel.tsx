@@ -240,7 +240,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: "flex-start",
     justifyContent: "start",
     overflowY: "auto",
-    maxHeight: "336px",
+    maxHeight: "clamp(160px, calc(100vh - 280px), 420px)",
     scrollbarWidth: "thin",
     scrollbarColor: `${tomtomSecondaryColor}CC transparent`,
     width: "100%",

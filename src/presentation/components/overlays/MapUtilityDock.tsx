@@ -68,7 +68,7 @@ function ToolButton({
       className="tool-button"
       style={{
         ...styles.toolButton,
-        ...(active ? { background: `${accent}18`, borderColor: `${accent}50` } : {}),
+        ...(active ? { background: `${accent}18` } : {}),
       }}
       onClick={onClick}
       type="button"

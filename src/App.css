@@ -15,11 +15,6 @@
   --tt-dark-gray-color: #333333;
 }
 
-.leaflet-container {
-  width: 600px;
-  height: 600px;
-}
-
 .leaflet-container:focus:not(:focus-visible) {
   outline: none;
 }

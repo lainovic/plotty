@@ -83,9 +83,9 @@ export const RulerPanel: React.FC = () => {
 const styles: { [key: string]: React.CSSProperties } = {
   panel: {
     position: "fixed",
-    top: "80%",
+    bottom: "80px",
     left: "50%",
-    transform: "translate(-50%, -50%)",
+    transform: "translateX(-50%)",
     backgroundColor: "hsla(0, 0%, 100%, 0.92)",
     padding: "20px",
     borderRadius: "12px",

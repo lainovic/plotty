@@ -130,13 +130,13 @@ export function HelpPopup() {
           lastTransitionedPropertyOnExit="transform"
         >
           <PopupBody>
-            <h3 style={fmtStyles.header}>Quick Start</h3>
+            <h3 style={fmtStyles.header}>Quick start</h3>
             <div style={fmtStyles.help}>
               Drop a file on the map, or focus the map and paste content.
               Supported imports: GeoJSON, TomTom route JSON, TTP, supported
               logcat navigation messages, and raw coordinates.
             </div>
-            <h3 style={fmtStyles.header}>Operator Notes</h3>
+            <h3 style={fmtStyles.header}>Operator notes</h3>
             <div style={fmtStyles.compactList}>
               <div>Use the layer panel to jump, rename, recolor, reorder, hide, or delete results.</div>
               <div>Use <ContentCopyIcon style={{ fontSize: "1em", verticalAlign: "middle" }} /> to copy coordinates and <AdsClickIcon style={{ fontSize: "1em", verticalAlign: "middle" }} /> to pan to a point.</div>
@@ -212,7 +212,6 @@ const fmtStyles: { [key: string]: React.CSSProperties } = {
     fontSize: "1.0rem",
     color: `${tomtomSecondaryColor}`,
     fontFamily: "'Roboto', sans-serif",
-    textTransform: "uppercase",
     fontWeight: 700,
     height: "3vh",
     display: "flex",

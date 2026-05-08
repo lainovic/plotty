@@ -2,7 +2,9 @@ import React from "react";
 import TravelExploreIcon from "@mui/icons-material/TravelExplore";
 import StraightenIcon from "@mui/icons-material/Straighten";
 import { Z_INDEX } from "../../constants/zIndex";
-import { tomtomBlackColor, tomtomSecondaryColor } from "../../../shared/colors";
+import { tomtomSecondaryColor } from "../../../shared/colors";
+
+const rulerAccent = "#1988cf";
 
 export const TOGGLE_GOTO_EVENT = "plotty:toggle-goto";
 export const TOGGLE_RULER_EVENT = "plotty:toggle-ruler";
@@ -39,7 +41,7 @@ export function MapUtilityDock() {
       />
       <ToolButton
         label="Ruler"
-        accent={tomtomBlackColor}
+        accent={rulerAccent}
         active={rulerActive}
         onClick={() => emit(TOGGLE_RULER_EVENT)}
         icon={<StraightenIcon fontSize="small" />}
